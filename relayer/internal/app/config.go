@@ -22,11 +22,15 @@ var (
 
 func InitApp(debug bool) error {
 	logger.Init(debug)
-	CoreApp = NewRelayerCoreApp()
 	err := InitConfig(debug)
 	if err != nil {
 		return err
 	}
+	orchestrator, err := InitOrchestrator()
+	if err != nil {
+		return err
+	}
+	CoreApp = NewRelayerCoreApp(orchestrator)
 	return nil
 }
 

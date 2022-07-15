@@ -1,26 +1,27 @@
 package app
 
 import (
-	"github.com/vitelabs/vite-portal/internal/core/keeper"
+	"github.com/vitelabs/vite-portal/internal/core/service"
 	"github.com/vitelabs/vite-portal/internal/core/types"
 
-	nodeskeeper "github.com/vitelabs/vite-portal/internal/nodes/keeper"
+	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
+	orchestrator "github.com/vitelabs/vite-portal/internal/orchestrator/interfaces"
 )
 
 type RelayerCoreApp struct {
-	coreKeeper keeper.Keeper
-	nodesKeeper nodeskeeper.Keeper
+	coreService service.Service
+	nodeService nodeservice.Service
 }
 
-func NewRelayerCoreApp() *RelayerCoreApp {
+func NewRelayerCoreApp(o orchestrator.ClientI) *RelayerCoreApp {
 	app := &RelayerCoreApp{}
-	nodesKeeper := nodeskeeper.NewKeeper()
-	app.coreKeeper = keeper.NewKeeper(nodesKeeper)
+	app.nodeService = nodeservice.NewService()
+	app.coreService = service.NewService(app.nodeService)
 	return app
 }
 
 func (app *RelayerCoreApp) HandleRelay(r types.Relay) (string, error) {
-	res, err := app.coreKeeper.HandleRelay(r)
+	res, err := app.coreService.HandleRelay(r)
 	if err != nil {
 		return "", err
 	}

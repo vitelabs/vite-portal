@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"github.com/vitelabs/vite-portal/internal/core/generics"
-	"github.com/vitelabs/vite-portal/internal/nodes/types"
+	"github.com/vitelabs/vite-portal/internal/node/types"
 )
 type NodeI interface {
 	GetName() string
@@ -10,6 +10,6 @@ type NodeI interface {
 	GetRewardAddress() string
 }
 
-type KeeperI interface {
+type ServiceI interface {
 	GetNodes() generics.GenericPage[types.Node]
 }

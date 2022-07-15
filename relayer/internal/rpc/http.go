@@ -22,7 +22,7 @@ type route struct {
 	HandlerFunc httprouter.Handle
 }
 
-func StartHttpRpc(port int32, timeout int64, debug bool) {
+func StartHttpRpc(port int32, timeout int64, debug bool, profile bool) {
 	routes := []route{
 		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: Name},
 		{Name: "AppName", Method: "GET", Path: "/api", HandlerFunc: Name},
@@ -31,7 +31,11 @@ func StartHttpRpc(port int32, timeout int64, debug bool) {
 	}
 
 	if debug {
-		routes = append(routes, route{Name: "DebugMemStats", Method: "GET", Path: "/debug/memstats", HandlerFunc: debugMemStats})
+		routes = append(routes, route{Name: "DebugTest", Method: "GET", Path: "/debug/test", HandlerFunc: debugTest})
+	}
+
+	if profile {
+		routes = append(routes, route{Name: "ProfileMemStats", Method: "GET", Path: "/profile/memstats", HandlerFunc: debugMemStats})
 	}
 
 	srv := &http.Server{

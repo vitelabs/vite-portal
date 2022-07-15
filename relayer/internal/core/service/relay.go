@@ -1,4 +1,4 @@
-package keeper
+package service
 
 import (
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
@@ -6,6 +6,6 @@ import (
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes
-func (k Keeper) HandleRelay(relay coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
+func (s Service) HandleRelay(relay coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
 	return nil, nil
 }

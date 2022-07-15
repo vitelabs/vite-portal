@@ -1,7 +1,7 @@
 package types
 
 import (
-	nodesinterfaces "github.com/vitelabs/vite-portal/internal/nodes/interfaces"
+	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
 )
 
 // SessionHeader defines the header for session information
@@ -12,11 +12,11 @@ type SessionHeader struct {
 }
 
 // NewSession creates a new session from seed data
-func NewSession(keeper nodesinterfaces.KeeperI) {
-	// TODO: move to nodes or session keeper?
+func NewSession(s nodeinterfaces.ServiceI) {
+	// TODO: move to nodes or session service?
 }
 
 // NewSessionNodes creates nodes for the session
-func NewSessionNodes(keeper nodesinterfaces.KeeperI) {
-	// TODO: move to nodes or session keeper?
+func NewSessionNodes(s nodeinterfaces.ServiceI) {
+	// TODO: move to nodes or session service?
 }

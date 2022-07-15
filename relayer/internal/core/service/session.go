@@ -1,4 +1,4 @@
-package keeper
+package service
 
 import (
 	"github.com/vitelabs/vite-portal/internal/core/types"
@@ -7,6 +7,6 @@ import (
 )
 
 // HandleDispatch handles the session information for a client request
-func (k Keeper) HandleDispatch(header types.SessionHeader) (*ct.DispatchResponse, rt.Error) {
+func (s Service) HandleDispatch(header types.SessionHeader) (*ct.DispatchResponse, rt.Error) {
 	return nil, nil
 }

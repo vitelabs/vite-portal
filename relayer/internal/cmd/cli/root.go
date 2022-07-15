@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vitelabs/vite-portal/internal/app"
@@ -49,7 +48,7 @@ var startCmd = &cobra.Command{
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartHttpRpc(app.GlobalConfig.RpcHttpPort, app.GlobalConfig.RpcTimeout, profile)
+		go rpc.StartHttpRpc(app.GlobalConfig.RpcHttpPort, app.GlobalConfig.RpcTimeout, debug, profile)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)
@@ -86,11 +85,4 @@ var stopCmd = &cobra.Command{
 	Run: func(command *cobra.Command, args []string) {
 		fmt.Printf("%s stopped\n", app.AppName)
 	},
-}
-
-func testLoop() {
-	for i := 0; true; i++ {
-		fmt.Println(i, "testLoop")
-		time.Sleep(time.Second * 1)
-	}
 }

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -52,8 +51,6 @@ func Logger() *zerolog.Logger {
 	if !ok {
 		return &logger
 	}
-
-	fmt.Printf("Level: %v\n", logger.GetLevel()) 
 
 	// Append filename + line number and function name
 	infos := runtimeutil.ToFuncInfos(pc)

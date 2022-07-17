@@ -1,7 +1,7 @@
 package types
 
 import (
-	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
+	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
 
@@ -31,7 +31,7 @@ type DispatchResponse struct {
 type DispatchSession struct {
 	Header SessionHeader `json:"header"`
 	// Key SessionKey `json:"key"`
-	Nodes []nodeinterfaces.NodeI `json:"nodes"`
+	Nodes []nodetypes.Node `json:"nodes"`
 }
 
 // Execute attempts to do a request on the specified blockchain

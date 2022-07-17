@@ -33,8 +33,16 @@ func ToByteIndentOrExit(v any) []byte {
 	return output
 }
 
+func ToString(v any) (string, error) {
+	output, err := ToByte(v)
+	if err != nil {
+		return "", err
+	}
+	return string(output), nil
+}
+
 func FromByte(data []byte, v any) error {
-	err := json.Unmarshal(data, v)
+	err := json.Unmarshal(data, &v)
 	return err
 }
 

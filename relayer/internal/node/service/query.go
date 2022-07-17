@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/vitelabs/vite-portal/internal/core/generics"
+	"github.com/vitelabs/vite-portal/internal/generics"
 	"github.com/vitelabs/vite-portal/internal/node/types"
 )
 

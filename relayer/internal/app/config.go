@@ -16,6 +16,7 @@ const (
 )
 
 var (
+	context      *Context
 	CoreApp      *RelayerCoreApp
 	GlobalConfig types.Config
 )
@@ -26,11 +27,16 @@ func InitApp(debug bool) error {
 	if err != nil {
 		return err
 	}
-	orchestrator, err := InitOrchestrator()
+	o, err := InitOrchestrator()
 	if err != nil {
 		return err
 	}
-	CoreApp = NewRelayerCoreApp(orchestrator)
+	c, err := InitContext()
+	if err != nil {
+		return err
+	}
+	context = c
+	CoreApp = NewRelayerCoreApp(o, c)
 	return nil
 }
 
@@ -82,4 +88,9 @@ func loadConfigFromFile(c *types.Config) {
 			logger.Logger().Fatal().Err(err).Msg("cannot write default config to json file")
 		}
 	}
+}
+
+func Shutdown() {
+	logger.Logger().Info().Msg("Shutdown called")
+	context.nodeStore.Close()
 }

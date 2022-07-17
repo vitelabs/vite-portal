@@ -6,7 +6,7 @@ import (
 )
 
 func NewOrchestrator() (interfaces.ClientI, error) {
-	orchestrator := client.NewOrchestratorClient()
+	orchestrator := client.NewClient()
 	return orchestrator, nil
 }
 

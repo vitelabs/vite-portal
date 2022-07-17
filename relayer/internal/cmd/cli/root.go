@@ -62,6 +62,7 @@ var startCmd = &cobra.Command{
 		defer func() {
 			sig := <-signalChannel
 			fmt.Printf("Exit signal %s received\n", sig)
+			app.Shutdown()
 			os.Exit(0)
 		}()
 

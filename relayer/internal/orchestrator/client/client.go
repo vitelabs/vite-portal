@@ -1,15 +1,15 @@
 package client
 
-type OrchestratorClient struct {
+type Client struct {
 }
 
-func NewOrchestratorClient() OrchestratorClient {
-	return OrchestratorClient{}
+func NewClient() *Client {
+	return &Client{}
 }
 
-func (o OrchestratorClient) Connect() error {
+func (c Client) Connect() error {
 	return nil
 }
 
-func (o OrchestratorClient) Subscribe(c chan string) {
+func (c Client) Subscribe(channel chan string) {
 }

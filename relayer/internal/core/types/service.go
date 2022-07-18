@@ -40,7 +40,7 @@ func (r Relay) Execute() (string, roottypes.Error) {
 	res, err := executeHttpRequest(r.Payload.Data, url, "", r.Payload.Method, r.Payload.Headers)
 	if err != nil {
 		// TODO: track metrics
-		return res, NewError(ModuleName, CodeHttpExecutionError, err)
+		return res, NewError(DefaultCodeNamespace, CodeHttpExecutionError, err)
 	}
 	return res, nil
 }

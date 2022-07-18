@@ -10,10 +10,11 @@ type ServiceI interface {
 }
 
 type StoreI interface {
-	GetById(id string) (types.Node, bool)
-	GetAllByChain(c string) []types.Node
+	Get(chain string, id string) (types.Node, bool)
 	Upsert(n types.Node) error
 	UpsertMany(nodes []types.Node) error
-	Remove(id string) error
+	Remove(chain string, id string) error
+	Count(chain string) int
+	Clear()
 	Close()
 }

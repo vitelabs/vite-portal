@@ -11,11 +11,11 @@ import (
 )
 
 func TestHttpExecutionError(t *testing.T) {
-	err := NewError(ModuleName, CodeHttpExecutionError, errors.New("test1234"))
+	err := NewError(DefaultCodeNamespace, CodeHttpExecutionError, errors.New("test1234"))
 
 	require.NotNil(t, err)
 	require.Equal(t, int(err.Code()), CodeHttpExecutionError)
-	require.Equal(t, string(err.CodeNamespace()), ModuleName)
+	require.Equal(t, err.CodeNamespace(), DefaultCodeNamespace)
 	require.Equal(t, reflect.TypeOf(err.Data()), reflect.TypeOf(roottypes.FmtError{}))
 	expectedError := `ERROR:
 Namespace: core

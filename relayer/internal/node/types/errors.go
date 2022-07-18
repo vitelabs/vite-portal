@@ -10,12 +10,12 @@ import (
 const DefaultCodeNamespace roottypes.CodeNamespace = ModuleName
 
 const (
-	CodeHttpExecutionError = iota + 1
-	codeTypeLimit          // This will be the last CodeType + 1
+	CodeInvalidInputError = iota + 1
+	codeTypeLimit         // This will be the last CodeType + 1
 )
 
 var CodeTypeErrors = map[roottypes.CodeType]error{
-	CodeHttpExecutionError: errors.New("error executing the http request: "),
+	CodeInvalidInputError: errors.New("invalid input: "),
 }
 
 func GetCodeError(code roottypes.CodeType) error {

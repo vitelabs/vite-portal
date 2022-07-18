@@ -6,3 +6,7 @@ type Node struct {
 	IpAddress     string `json:"ipAddress"`
 	RewardAddress string `json:"rewardAddress"`
 }
+
+func (n *Node) IsValid() bool {
+	return n != nil && n.Id != "" && n.Chain != "" && n.IpAddress != ""
+}

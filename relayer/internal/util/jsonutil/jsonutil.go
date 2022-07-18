@@ -33,12 +33,12 @@ func ToByteIndentOrExit(v any) []byte {
 	return output
 }
 
-func ToString(v any) (string, error) {
+func ToString(v any) string {
 	output, err := ToByte(v)
 	if err != nil {
-		return "", err
+		return ""
 	}
-	return string(output), nil
+	return string(output)
 }
 
 func FromByte(data []byte, v any) error {

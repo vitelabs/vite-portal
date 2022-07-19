@@ -62,6 +62,26 @@ func TestGet(t *testing.T) {
 	assert.Nil(t, actual2)
 }
 
+func TestGetByIndex(t *testing.T) {
+	c := NewNameObjectCollection()
+	entry1 := testEntry{id: "1", val: "test1"}
+	c.Add(entry1.id, entry1)
+	entry2 := testEntry{id: "2", val: "test2"}
+	c.Add(entry2.id, entry2)
+	
+	actual := c.GetByIndex(-1)
+	assert.Nil(t, actual)
+
+	actual = c.GetByIndex(2)
+	assert.Nil(t, actual)
+
+	actualEntry := c.GetByIndex(0).(testEntry)
+	assert.Equal(t, entry1.id, actualEntry.id)
+
+	actualEntry = c.GetByIndex(1).(testEntry)
+	assert.Equal(t, entry2.id, actualEntry.id)
+}
+
 func TestRemove(t *testing.T) {
 	c := NewNameObjectCollection()
 	entry1 := testEntry{id: "1", val: "test1"}

@@ -51,6 +51,19 @@ func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
 	return node.(types.Node), true
 }
 
+func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
+		// Assign default return values
+		n = *new(types.Node)
+		found = false
+
+		node := s.db[chain].GetByIndex(index)
+		if node == nil {
+			return
+		}
+	
+		return node.(types.Node), true
+}
+
 func (s *MemoryStore) Upsert(n types.Node) error {
 	err := validateNode(n)
 	if err != nil {

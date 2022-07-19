@@ -74,6 +74,12 @@ func (c *NameObjectCollection) Remove(name string) {
 		return
 	}
 
+	existing := c.findEntry(name)
+
+	if existing == nil {
+		return
+	}
+
 	delete(c.entriesMap, name)
 
 	for i := len(c.entriesSlice) - 1; i >= 0; i-- {
@@ -115,6 +121,9 @@ func (c *NameObjectCollection) GetByIndex(i int) any {
 
 // GetNameByIndex gets the name of the entry at the specified index.
 func (c *NameObjectCollection) GetNameByIndex(i int) string {
+	if i >= len(c.entriesSlice) || i < 0 {
+		return ""
+	}
 	return c.entriesSlice[i].name
 }
 

@@ -11,11 +11,13 @@ const DefaultCodeNamespace roottypes.CodeNamespace = ModuleName
 
 const (
 	CodeInvalidInputError = iota + 1
-	codeTypeLimit         // This will be the last CodeType + 1
+	CodeUnexpectedStateError
+	codeTypeLimit // This will be the last CodeType + 1
 )
 
 var CodeTypeErrors = map[roottypes.CodeType]error{
-	CodeInvalidInputError: errors.New("invalid input: "),
+	CodeInvalidInputError:    errors.New("invalid input: "),
+	CodeUnexpectedStateError: errors.New("unexpected state"),
 }
 
 func GetCodeError(code roottypes.CodeType) error {

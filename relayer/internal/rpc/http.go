@@ -29,6 +29,7 @@ func StartHttpRpc(port int32, timeout int64, debug bool, profile bool) {
 		{Name: "AppVersion", Method: "GET", Path: "/api/v1", HandlerFunc: Version},
 		{Name: "Relay", Method: "POST", Path: "/api/v1/client/relay", HandlerFunc: Relay},
 		{Name: "QueryChains", Method: "GET", Path: "/api/v1/query/chains", HandlerFunc: Chains},
+		{Name: "QueryNodes", Method: "GET", Path: "/api/v1/query/nodes", HandlerFunc: Nodes},
 	}
 
 	if debug {

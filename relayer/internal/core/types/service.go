@@ -34,7 +34,7 @@ type DispatchSession struct {
 	Nodes []nodetypes.Node `json:"nodes"`
 }
 
-// Execute attempts to do a request on the specified blockchain
+// Execute attempts to do a request on the specified chain
 func (r Relay) Execute() (string, roottypes.Error) {
 	url := ""
 	res, err := executeHttpRequest(r.Payload.Data, url, "", r.Payload.Method, r.Payload.Headers)

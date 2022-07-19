@@ -11,7 +11,7 @@ type Context struct {
 
 func NewContext() *Context {
 	c := &Context{
-		nodeStore: nodestore.NewKvStore(),
+		nodeStore: nodestore.NewMemoryStore(),
 	}
 	return c
 }

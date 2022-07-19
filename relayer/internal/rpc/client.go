@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -19,8 +18,7 @@ func Relay(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		response := types.RpcRelayErrorResponse{
 			Error: err1,
 		}
-		j, _ := json.Marshal(response)
-		WriteJsonResponseWithCode(w, string(j), r.URL.Path, r.Host, http.StatusBadRequest)
+		WriteResponseWithCode(w, response, http.StatusBadRequest)
 		return
 	}
 	res, err2 := app.CoreApp.HandleRelay(relay)
@@ -28,14 +26,8 @@ func Relay(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		response := types.RpcRelayErrorResponse{
 			Error:    err2,
 		}
-		j, _ := json.Marshal(response)
-		WriteJsonResponseWithCode(w, string(j), r.URL.Path, r.Host, http.StatusBadRequest)
+		WriteResponseWithCode(w, response, http.StatusBadRequest)
 		return
 	}
-	j, err3 := json.Marshal(res)
-	if err3 != nil {
-		WriteErrorResponse(w, http.StatusBadRequest, err3.Error())
-		return
-	}
-	WriteJsonResponse(w, string(j), r.URL.Path, r.Host)
+	WriteResponse(w, res)
 }

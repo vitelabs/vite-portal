@@ -17,9 +17,27 @@ func newTestNode() *types.Node {
 	}
 }
 
+func TestGetChains(t *testing.T) {
+	node := newTestNode()
+	s := NewMemoryStore()
+
+	c := s.GetChains()
+	assert.Empty(t, c)
+	assert.Equal(t, 0, len(c))
+	require.NoError(t, s.Upsert(*node))
+
+	c = s.GetChains()
+	assert.Equal(t, 1, len(c))
+	node.Chain = "chain2"
+	require.NoError(t, s.Upsert(*node))
+
+	c = s.GetChains()
+	assert.Equal(t, 2, len(c))
+}
+
 func TestGet(t *testing.T) {
 	node := newTestNode()
-	s := NewKvStore()
+	s := NewMemoryStore()
 
 	n, found := s.Get(node.Chain, node.Id)
 	assert.Empty(t, n)
@@ -41,7 +59,7 @@ func TestGet(t *testing.T) {
 
 func TestCount(t *testing.T) {
 	node := newTestNode()
-	s := NewKvStore()
+	s := NewMemoryStore()
 
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 0, s.Count(node.Chain))
@@ -86,7 +104,7 @@ func TestUpsertInvalid(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			s := NewKvStore()
+			s := NewMemoryStore()
 			err := s.Upsert(*tc.node)
 			require.Error(t, err)
 			require.Equal(t, "Trying to insert invalid node", err.Error())
@@ -96,7 +114,7 @@ func TestUpsertInvalid(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 	node1 := newTestNode()
-	s := NewKvStore()
+	s := NewMemoryStore()
 
 	assert.Equal(t, 0, s.Count(node1.Chain))
 	require.NoError(t, s.Upsert(*node1))
@@ -116,7 +134,7 @@ func TestRemove(t *testing.T) {
 
 func TestClear(t *testing.T) {
 	node := newTestNode()
-	s := NewKvStore()
+	s := NewMemoryStore()
 
 	s.Clear()
 	assert.Equal(t, 0, s.Count(node.Chain))

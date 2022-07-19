@@ -7,10 +7,15 @@ import (
 	"github.com/vitelabs/vite-portal/internal/app"
 )
 
-func Name(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	WriteResponse(w, app.AppName, r.URL.Path, r.Host)
+func Name(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+	WriteResponse(w, app.AppName)
 }
 
-func Version(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	WriteResponse(w, app.AppVersion, r.URL.Path, r.Host)
+func Version(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+	WriteResponse(w, app.AppVersion)
+}
+
+func Chains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+	res := app.CoreApp.QueryChains()
+	WriteResponse(w, res)
 }

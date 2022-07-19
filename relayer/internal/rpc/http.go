@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
 )
 
 type route struct {
@@ -28,6 +28,7 @@ func StartHttpRpc(port int32, timeout int64, debug bool, profile bool) {
 		{Name: "AppName", Method: "GET", Path: "/api", HandlerFunc: Name},
 		{Name: "AppVersion", Method: "GET", Path: "/api/v1", HandlerFunc: Version},
 		{Name: "Relay", Method: "POST", Path: "/api/v1/client/relay", HandlerFunc: Relay},
+		{Name: "QueryChains", Method: "GET", Path: "/api/v1/query/chains", HandlerFunc: Chains},
 	}
 
 	if debug {
@@ -68,13 +69,18 @@ func cors(w *http.ResponseWriter, r *http.Request) (isOptions bool) {
 	return ((*r).Method == "OPTIONS")
 }
 
-func WriteResponse(w http.ResponseWriter, jsn, path, ip string) {
-	b, err := json.Marshal(jsn)
+func WriteResponse(w http.ResponseWriter, data any) {
+	WriteResponseWithCode(w, data, http.StatusOK)
+}
+
+func WriteResponseWithCode(w http.ResponseWriter, data any, code int) {
+	b, err := jsonutil.ToByte(data)
 	if err != nil {
 		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		fmt.Println(err.Error())
 	} else {
 		writeDefaultHeader(w)
+		w.WriteHeader(code)
 		_, err := w.Write(b)
 		if err != nil {
 			logger.Logger().Error().Err(err).Msg("WriteResponse failed")
@@ -82,45 +88,12 @@ func WriteResponse(w http.ResponseWriter, jsn, path, ip string) {
 	}
 }
 
-func WriteRaw(w http.ResponseWriter, jsn, path, ip string) {
-	writeDefaultHeader(w)
-	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(jsn))
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("WriteRaw failed")
+func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
+	err := &types.RpcError{
+		Code:    code,
+		Message: msg,
 	}
-}
-
-func WriteJsonResponse(w http.ResponseWriter, jsonData, path, ip string) {
-	WriteJsonResponseWithCode(w, jsonData, path, ip, http.StatusOK)
-}
-
-func WriteJsonResponseWithCode(w http.ResponseWriter, jsonData, path, ip string, code int) {
-	writeDefaultHeader(w)
-	var raw map[string]interface{}
-	if err := json.Unmarshal([]byte(jsonData), &raw); err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		logger.Logger().Error().Err(err).Msg("WriteJsonResponseWithCode Unmarshal failed")
-		return
-	}
-	w.WriteHeader(code)
-	err := json.NewEncoder(w).Encode(raw)
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("WriteJsonResponseWithCode Encode failed")
-		return
-	}
-}
-
-func WriteErrorResponse(w http.ResponseWriter, errorCode int, errorMsg string) {
-	writeDefaultHeader(w)
-	w.WriteHeader(errorCode)
-	err := json.NewEncoder(w).Encode(&types.RpcError{
-		Code:    errorCode,
-		Message: errorMsg,
-	})
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("WriteErrorResponse failed")
-	}
+	WriteResponseWithCode(w, err, code)
 }
 
 func writeDefaultHeader(w http.ResponseWriter) {
@@ -138,7 +111,7 @@ func ExtractModel(_ http.ResponseWriter, r *http.Request, _ httprouter.Params, m
 	if err := r.Body.Close(); err != nil {
 		return err
 	}
-	if err := json.Unmarshal(body, model); err != nil {
+	if err := jsonutil.FromByte(body, model); err != nil {
 		return err
 	}
 	return nil

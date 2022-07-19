@@ -6,10 +6,12 @@ import (
 )
 
 type ServiceI interface {
-	GetNodes() generics.GenericPage[types.Node]
+	GetChains() []string
+	GetNodes(chain string, page, limit int) generics.GenericPage[types.Node]
 }
 
 type StoreI interface {
+	GetChains() []string
 	Get(chain string, id string) (types.Node, bool)
 	Upsert(n types.Node) error
 	UpsertMany(nodes []types.Node) error

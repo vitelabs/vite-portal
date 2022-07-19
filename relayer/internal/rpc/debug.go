@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"runtime"
@@ -10,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func debugTest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func debugTest(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	i := 1
 	ticker := time.NewTicker(1 * time.Second)
 	for {
@@ -25,12 +24,8 @@ func debugTest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 }
 
-func debugMemStats(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func debugMemStats(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	b, err := json.Marshal(m)
-	if err != nil {
-		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-	}
-	WriteResponse(w, string(b), r.URL.Path, r.Host)
+	WriteResponse(w, m)
 }

@@ -2,11 +2,11 @@ package store
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/vitelabs/vite-portal/internal/collections"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/node/types"
-	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
 )
 
 type MemoryStore struct {
@@ -118,7 +118,7 @@ func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectio
 func validateNode(n types.Node) error {
 	if !n.IsValid() {
 		err := errors.New("Trying to insert invalid node")
-		logger.Logger().Error().Err(err).Str("node", jsonutil.ToString(n))
+		logger.Logger().Error().Err(err).Str("node", fmt.Sprintf("%#v", n))
 		return err
 	}
 	return nil

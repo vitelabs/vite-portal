@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/vitelabs/vite-portal/internal/app"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/types"
 	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
@@ -101,19 +102,33 @@ func writeDefaultHeader(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 }
 
-func ExtractModel(_ http.ResponseWriter, r *http.Request, _ httprouter.Params, model interface{}) error {
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)) // 1048576 bytes = 1 megabyte
+func ExtractModel(w http.ResponseWriter, r *http.Request, p httprouter.Params, model interface{}) error {
+	body, err := ExtractBody(w, r, p)
 	if err != nil {
 		return err
 	}
 	if len(body) == 0 {
 		return nil
 	}
-	if err := r.Body.Close(); err != nil {
-		return err
-	}
 	if err := jsonutil.FromByte(body, model); err != nil {
 		return err
 	}
 	return nil
+}
+
+func ExtractBody(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) ([]byte, error) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)) // 1048576 bytes = 1 megabyte
+	if err != nil {
+		return nil, err
+	}
+	if len(body) == 0 {
+		return nil, nil
+	}
+	if err := r.Body.Close(); err != nil {
+		return nil, err
+	}
+	if app.GlobalConfig.Debug {
+		logger.Logger().Debug().Str("body", string(body)).Msg("request body")
+	}
+	return body, nil
 }

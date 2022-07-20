@@ -10,9 +10,11 @@ let deployer: any;
 
 describe('test HelloWorld', () => {
   before(async function () {
-    const relayerUrl = 'http://127.0.0.1:56331';
+    const relayerUrl = "http://127.0.0.1:56331";
     relayer = await startRelayer(relayerUrl);
-    provider = vite.newProvider("http://127.0.0.1:23456");
+    // const providerUrl = "http://127.0.0.1:23456";
+    const providerUrl = relayerUrl + "/api/v1/client/relay";
+    provider = vite.newProvider(providerUrl);
     deployer = vite.newAccount(config.networks.local.mnemonic, 0, provider);
     // console.log('deployer', deployer.address);
   });

@@ -22,4 +22,5 @@ go.work
 
 # Custom
 logs/
+main
 relayer_config.json

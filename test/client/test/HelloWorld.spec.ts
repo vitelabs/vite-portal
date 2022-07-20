@@ -2,18 +2,31 @@ import { describe } from "mocha";
 import { expect } from "chai";
 import * as vite from "@vite/vuilder";
 import config from "./vite.config.json";
+import { startRelayer } from "../src/vite"
 
+let relayer: any;
 let provider: any;
 let deployer: any;
 
 describe('test HelloWorld', () => {
   before(async function () {
+    const relayerUrl = 'http://127.0.0.1:56331';
+    relayer = await startRelayer(relayerUrl);
     provider = vite.newProvider("http://127.0.0.1:23456");
     deployer = vite.newAccount(config.networks.local.mnemonic, 0, provider);
     // console.log('deployer', deployer.address);
   });
 
-  it('test contract', async () => {
+  after(async function () {
+    await relayer.stop();
+  });
+
+  it('test height', async function () {
+    const height = await provider.request("ledger_getSnapshotChainHeight");
+    expect(Number(height)).to.be.greaterThan(0);
+  });
+
+  xit('test contract', async () => {
     // compile
     const compiledContracts = await vite.compile('HelloWorld.solpp');
     expect(compiledContracts).to.have.property('HelloWorld');

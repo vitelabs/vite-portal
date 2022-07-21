@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/vitelabs/vite-portal/internal/core/service"
-	"github.com/vitelabs/vite-portal/internal/core/types"
+	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/logger"
+	"github.com/vitelabs/vite-portal/internal/types"
 
 	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
 	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
@@ -24,8 +25,8 @@ func NewRelayerCoreApp(o orchestrator.ClientI, c *Context) *RelayerCoreApp {
 	return app
 }
 
-func (app *RelayerCoreApp) HandleRelay(r types.Relay) (string, error) {
-	if GlobalConfig.Debug {
+func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
+	if types.GlobalConfig.Debug {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
 	res, err := app.coreService.HandleRelay(r)

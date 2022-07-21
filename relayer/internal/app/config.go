@@ -18,7 +18,6 @@ const (
 var (
 	context      *Context
 	CoreApp      *RelayerCoreApp
-	GlobalConfig types.Config
 )
 
 func InitApp(debug bool) error {
@@ -55,8 +54,8 @@ func InitConfig(debug bool) error {
 	logger.Configure(&c)
 
 	// 4. Set global configuration
-	GlobalConfig = c
-	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(GlobalConfig)).Msg("GlobalConfig")
+	types.GlobalConfig = c
+	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(types.GlobalConfig)).Msg("GlobalConfig")
 
 	return nil
 }

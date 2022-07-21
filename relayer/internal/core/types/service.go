@@ -1,7 +1,11 @@
 package types
 
 import (
+	"encoding/json"
+	"strings"
+
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/internal/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
 
@@ -34,10 +38,15 @@ type DispatchSession struct {
 	Nodes []nodetypes.Node `json:"nodes"`
 }
 
-// Execute attempts to do a request on the specified chain
+// Execute attempts to do a request on the specified node
 func (r Relay) Execute() (string, roottypes.Error) {
-	url := ""
-	res, err := executeHttpRequest(r.Payload.Data, url, "", r.Payload.Method, r.Payload.Headers)
+	// TODO: get node HTTP RPC url
+	nodeHttpRpcUrl := "http://127.0.0.1:23456"
+	url := strings.Trim(nodeHttpRpcUrl, "/")
+	if len(r.Payload.Path) > 0 {
+		url = url + "/" + strings.Trim(r.Payload.Path, "/")
+	}
+	res, err := executeHttpRequest(r.Payload.Data, url, types.GlobalConfig.UserAgent, r.Payload.Method, r.Payload.Headers)
 	if err != nil {
 		// TODO: track metrics
 		return res, NewError(DefaultCodeNamespace, CodeHttpExecutionError, err)
@@ -47,5 +56,21 @@ func (r Relay) Execute() (string, roottypes.Error) {
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
 func executeHttpRequest(payload, url, userAgent string, method string, headers map[string][]string) (string, error) {
+	// TODO: set basic auth instead of IP whitelisting
 	return "", nil
+}
+
+// sortJsonResponse sorts json from a relay response
+func sortJsonResponse(r string) string {
+	var rawJSON map[string]interface{}
+	// unmarshal into json
+	if err := json.Unmarshal([]byte(r), &rawJSON); err != nil {
+		return r
+	}
+	// marshal into json
+	res, err := json.Marshal(rawJSON)
+	if err != nil {
+		return r
+	}
+	return string(res)
 }

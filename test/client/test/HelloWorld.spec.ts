@@ -35,13 +35,15 @@ describe('test HelloWorld', () => {
       client.send(providerUrl, method)
     ]
     const result = await Promise.all(promises)
-    console.log(result[0], result[1])
+    console.log("original:", result[0], "relayed:", result[1])
     expect(result[0].result).to.be.equal(result[1].result)
     const height = await provider.request(method)
     expect(Number(height)).to.be.greaterThan(0)
+    expect(Number(height)).to.be.greaterThanOrEqual(Number(result[0].result))
+    expect(Number(height)).to.be.greaterThanOrEqual(Number(result[1].result))
   })
 
-  xit('test contract', async () => {
+  it('test contract', async () => {
     // compile
     const compiledContracts = await vite.compile('HelloWorld.solpp')
     expect(compiledContracts).to.have.property('HelloWorld')

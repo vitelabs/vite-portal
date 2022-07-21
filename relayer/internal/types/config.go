@@ -3,6 +3,7 @@ package types
 var GlobalConfig Config
 
 const (
+	DefaultConfigVersion               = "v0.1"
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
 	DefaultRpcTimeout                  = 10000
@@ -19,6 +20,8 @@ const (
 )
 
 type Config struct {
+	// Version of the configuration schema
+	Version string `json:"version"`
 	// Enable debug mode
 	Debug bool `json:"debug"`
 	// Port number for the HTTP RPC
@@ -54,6 +57,7 @@ type LoggingConfig struct {
 
 func NewDefaultConfig() Config {
 	c := Config{
+		Version:          DefaultConfigVersion,
 		Debug:            DefaultDebug,
 		RpcHttpPort:      DefaultRpcHttpPort,
 		RpcTimeout:       DefaultRpcTimeout,

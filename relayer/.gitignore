@@ -23,4 +23,4 @@ go.work
 # Custom
 logs/
 main
-relayer_config.json
+relayer_config.json*

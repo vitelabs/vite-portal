@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -75,18 +74,32 @@ func WriteResponse(w http.ResponseWriter, data any) {
 }
 
 func WriteResponseWithCode(w http.ResponseWriter, data any, code int) {
-	b, err := jsonutil.ToByte(data)
-	if err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		fmt.Println(err.Error())
-	} else {
-		writeDefaultHeader(w)
-		w.WriteHeader(code)
-		_, err := w.Write(b)
-		if err != nil {
-			logger.Logger().Error().Err(err).Msg("WriteResponse failed")
-		}
+	b, err1 := jsonutil.ToByte(data)
+	if err1 != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, err1.Error())
+		logger.Logger().Error().Err(err1).Msg("WriteResponseWithCode failed")
+		return
 	}
+	writeDefaultHeader(w)
+	w.WriteHeader(code)
+	_, err2 := w.Write(b)
+	if err2 != nil {
+		logger.Logger().Error().Err(err2).Msg("WriteResponseWithCode failed")
+	}
+}
+
+func WriteJsonResponse(w http.ResponseWriter, data string) {
+	WriteJsonResponseWithCode(w, data, http.StatusOK)
+}
+
+func WriteJsonResponseWithCode(w http.ResponseWriter, data string, code int) {
+	var raw map[string]interface{}
+	if err := jsonutil.FromByte([]byte(data), &raw); err != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		logger.Logger().Error().Err(err).Msg("WriteJsonResponseWithCode failed")
+		return
+	}
+	WriteResponseWithCode(w, raw, code)
 }
 
 func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
@@ -134,4 +147,4 @@ func ExtractModelFromBody(body []byte, model interface{}) error {
 		return err
 	}
 	return nil
-} 
+}

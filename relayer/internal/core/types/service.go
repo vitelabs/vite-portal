@@ -1,8 +1,12 @@
 package types
 
 import (
+	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
 	"strings"
+	"time"
 
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	"github.com/vitelabs/vite-portal/internal/types"
@@ -56,8 +60,40 @@ func (r Relay) Execute() (string, roottypes.Error) {
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
 func executeHttpRequest(payload, url, userAgent string, method string, headers map[string][]string) (string, error) {
+	// generate the request
+	req, err := http.NewRequest(method, url, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return "", err
+	}
+	if userAgent != "" {
+		req.Header.Set("User-Agent", userAgent)
+	}
 	// TODO: set basic auth instead of IP whitelisting
-	return "", nil
+	// req.SetBasicAuth(username, password)
+	if len(headers) == 0 {
+		req.Header.Set("Content-Type", "application/json")
+	} else {
+		for k, v := range headers {
+			for _, s := range v {
+				req.Header.Set(k, s)
+			}
+		}
+	}
+	// execute the request
+	resp, err := (&http.Client{Timeout: time.Duration(types.GlobalConfig.RpcNodeTimeout) * time.Millisecond}).Do(req)
+	if err != nil {
+		return "", err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	res := string(body)
+	if types.GlobalConfig.SortJsonResponse {
+		res = sortJsonResponse(res)
+	}
+	return res, nil
 }
 
 // sortJsonResponse sorts json from a relay response

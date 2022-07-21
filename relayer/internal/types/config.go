@@ -6,8 +6,9 @@ const (
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
 	DefaultRpcTimeout                  = 10000
+	DefaultRpcNodeTimeout              = 5000
 	DefaultUserAgent                   = ""
-	DefaultSortJsonResponse            = true
+	DefaultSortJsonResponse            = false
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -24,6 +25,8 @@ type Config struct {
 	RpcHttpPort int32 `json:"rpcHttpPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
+	// The time in milliseconds before a RPC request to a node times out
+	RpcNodeTimeout int64 `json:"rpcNodeTimeout"`
 	// The user agent used when sending RPC requests to nodes
 	UserAgent string `json:"userAgent"`
 	// Whether the JSON response from nodes should be sorted
@@ -54,6 +57,7 @@ func NewDefaultConfig() Config {
 		Debug:            DefaultDebug,
 		RpcHttpPort:      DefaultRpcHttpPort,
 		RpcTimeout:       DefaultRpcTimeout,
+		RpcNodeTimeout:   DefaultRpcNodeTimeout,
 		UserAgent:        DefaultUserAgent,
 		SortJsonResponse: DefaultSortJsonResponse,
 		Logging: LoggingConfig{

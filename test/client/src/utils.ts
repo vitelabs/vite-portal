@@ -21,6 +21,7 @@ export async function waitFor(conditionFn: () => Promise<boolean>, description: 
   const poll = (resolve: any) => {
     conditionFn().then((result) => {
       if (result) {
+        console.log(" OK");
         resolve();
       } else {
         process.stdout.write('.');

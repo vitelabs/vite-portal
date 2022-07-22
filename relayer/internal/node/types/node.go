@@ -10,3 +10,9 @@ type Node struct {
 func (n *Node) IsValid() bool {
 	return n != nil && n.Id != "" && n.Chain != "" && n.IpAddress != ""
 }
+
+type GetNodesParams struct {
+	Chain  string `json:"chain"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
+}

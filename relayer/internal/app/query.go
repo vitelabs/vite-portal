@@ -6,12 +6,12 @@ import (
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 )
 
-func (app *RelayerCoreApp) QueryChains() []string {
+func (app *RelayerCoreApp) GetChains() []string {
 	res := app.nodeService.GetChains()
 	return res
 }
 
-func (app *RelayerCoreApp) QueryNodes(p nodetypes.QueryNodesParams) (res generics.GenericPage[types.Node], err error) {
+func (app *RelayerCoreApp) GetNodes(p nodetypes.GetNodesParams) (res generics.GenericPage[types.Node], err error) {
 	p.Offset, p.Limit = checkPagination(p.Offset, p.Limit)
 	return app.nodeService.GetNodes(p.Chain, p.Offset, p.Limit)
 }

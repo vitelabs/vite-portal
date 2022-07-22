@@ -8,12 +8,12 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/mathutil"
 )
 
-func (k Service) GetChains() []string {
-	return k.store.GetChains()
+func (s Service) GetChains() []string {
+	return s.store.GetChains()
 }
 
-func (k Service) GetNodes(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
-	total := k.store.Count(chain)
+func (s Service) GetNodes(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
+	total := s.store.Count(chain)
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset
 	result.Limit = limit
@@ -25,7 +25,7 @@ func (k Service) GetNodes(chain string, offset, limit int) (generics.GenericPage
 	count := mathutil.Min(result.Offset+result.Limit, total)
 	current := 0
 	for i := result.Offset; i < count; i++ {
-		item, found := k.store.GetByIndex(chain, i)
+		item, found := s.store.GetByIndex(chain, i)
 		if !found {
 			return *generics.NewGenericPage[types.Node](), errors.New("inconsistent state")
 		}
@@ -33,6 +33,10 @@ func (k Service) GetNodes(chain string, offset, limit int) (generics.GenericPage
 		current++
 	}
 	return result, nil
+}
+
+func (s Service) GetNode(id string) (n types.Node, found bool) {
+	return s.store.GetById(id)
 }
 
 func paginate(page, limit int, nodes []types.Node, MaxNodes int) generics.GenericPage[types.Node] {

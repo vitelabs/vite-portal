@@ -57,6 +57,20 @@ func TestGet(t *testing.T) {
 	assert.NotEqual(t, node.IpAddress, n.IpAddress)
 }
 
+func TestGetById(t *testing.T) {
+	node := newTestNode()
+	s := NewMemoryStore()
+
+	n, found := s.GetById(node.Id)
+	assert.Empty(t, n)
+	assert.False(t, found)
+	require.NoError(t, s.Upsert(*node))
+
+	n, found = s.GetById(node.Id)
+	assert.NotEmpty(t, n)
+	assert.True(t, found)
+}
+
 func TestCount(t *testing.T) {
 	node := newTestNode()
 	s := NewMemoryStore()

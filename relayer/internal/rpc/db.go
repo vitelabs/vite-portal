@@ -26,10 +26,26 @@ func GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	WriteResponse(w, res)
 }
 
-func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-
+func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	id := p.ByName("id")
+	if id == "" {
+		WriteErrorResponse(w, http.StatusBadRequest, "invalid identifier")
+		return
+	}
+	res, found := app.CoreApp.GetNode(id)
+	if !found {
+		WriteErrorResponse(w, http.StatusNotFound, "node does not exist")
+		return
+	}
+	WriteResponse(w, res)
 }
 
+// PutNode enables the orchestrator to add or update a node
+func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	// TODO: auth
+}
+
+// DeleteNode enables the orchestrator to delete a node
 func DeleteNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	
+	// TODO: auth
 }

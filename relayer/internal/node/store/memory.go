@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/vitelabs/vite-portal/internal/collections"
 	"github.com/vitelabs/vite-portal/internal/logger"
@@ -10,11 +11,15 @@ import (
 )
 
 type MemoryStore struct {
-	db map[string]collections.NameObjectCollectionI
+	idMap map[string]string
+	db    map[string]collections.NameObjectCollectionI
+	lock  sync.RWMutex
 }
 
 func NewMemoryStore() *MemoryStore {
-	s := &MemoryStore{}
+	s := &MemoryStore{
+		lock: sync.RWMutex{},
+	}
 	s.Clear()
 	return s
 }
@@ -52,19 +57,26 @@ func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
 }
 
 func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
-		// Assign default return values
-		n = *new(types.Node)
-		found = false
+	// Assign default return values
+	n = *new(types.Node)
+	found = false
 
-		node := s.db[chain].GetByIndex(index)
-		if node == nil {
-			return
-		}
-	
-		return node.(types.Node), true
+	node := s.db[chain].GetByIndex(index)
+	if node == nil {
+		return
+	}
+
+	return node.(types.Node), true
+}
+
+func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
+	return s.Get(s.idMap[id], id)
 }
 
 func (s *MemoryStore) Upsert(n types.Node) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	err := validateNode(n)
 	if err != nil {
 		return err
@@ -73,20 +85,28 @@ func (s *MemoryStore) Upsert(n types.Node) error {
 	c := s.initChain(n.Chain)
 
 	c.Add(n.Id, n)
+	s.idMap[n.Id] = n.Chain
 
 	return nil
 }
 
 func (s *MemoryStore) UpsertMany(n []types.Node) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	return nil
 }
 
 func (s *MemoryStore) Remove(chain string, id string) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	if chain == "" || id == "" || s.db[chain] == nil {
 		return nil
 	}
 
 	s.db[chain].Remove(id)
+	delete(s.idMap, id)
 
 	return nil
 }
@@ -100,6 +120,10 @@ func (s *MemoryStore) Count(chain string) int {
 }
 
 func (s *MemoryStore) Clear() {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.idMap = map[string]string{}
 	s.db = map[string]collections.NameObjectCollectionI{}
 }
 

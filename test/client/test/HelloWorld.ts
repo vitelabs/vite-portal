@@ -1,21 +1,10 @@
-import { describe } from "mocha"
+import { it } from "mocha"
 import { expect } from "chai"
 import * as vite from "@vite/vuilder"
 import { TestCommon } from "./common"
 
-describe('test HelloWorld', () => {
-  let common: TestCommon
-
-  before(async function () {
-    common = new TestCommon()
-    await common.startAsync()
-  })
-
-  after(async function () {
-    await common.stopAsync()
-  })
-
-  it('test contract', async () => {
+export function testHelloWorld(common: TestCommon) {
+  it('test HelloWorld contract', async function () {
     // compile
     const compiledContracts = await vite.compile('HelloWorld.solpp')
     expect(compiledContracts).to.have.property('HelloWorld')
@@ -42,4 +31,4 @@ describe('test HelloWorld', () => {
     expect(result).to.be.an('array').with.lengthOf(1)
     expect(result![0]).to.be.equal('456')
   })
-})
+}

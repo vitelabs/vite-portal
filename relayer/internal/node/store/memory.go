@@ -1,12 +1,9 @@
 package store
 
 import (
-	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/vitelabs/vite-portal/internal/collections"
-	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/node/types"
 )
 
@@ -77,7 +74,7 @@ func (s *MemoryStore) Upsert(n types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	err := validateNode(n)
+	err := n.Validate()
 	if err != nil {
 		return err
 	}
@@ -137,13 +134,4 @@ func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectio
 	}
 
 	return s.db[chain]
-}
-
-func validateNode(n types.Node) error {
-	if !n.IsValid() {
-		err := errors.New("Trying to insert invalid node")
-		logger.Logger().Error().Err(err).Str("node", fmt.Sprintf("%#v", n))
-		return err
-	}
-	return nil
 }

@@ -1,15 +1,22 @@
 package service
 
-import "github.com/vitelabs/vite-portal/internal/node/types"
+import (
+	"github.com/vitelabs/vite-portal/internal/node/types"
+)
 
-func (k Service) PutNode(n types.Node) error {
-	return k.store.Upsert(n)
+func (s Service) PutNode(n types.Node) error {
+	err := n.Validate()
+	if err != nil {
+		return err
+	}
+
+	return s.store.Upsert(n)
 }
 
-func (k Service) DeleteNode(id string) error {
-	n, found := k.store.GetById(id)
+func (s Service) DeleteNode(id string) error {
+	n, found := s.store.GetById(id)
 	if !found {
 		return nil
 	}
-	return k.store.Remove(n.Chain, n.Id)
+	return s.store.Remove(n.Chain, n.Id)
 }

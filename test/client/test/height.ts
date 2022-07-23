@@ -1,19 +1,8 @@
-import { describe } from "mocha"
+import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
 
-describe('test height', () => {
-  let common: TestCommon
-
-  before(async function () {
-    common = new TestCommon()
-    await common.startAsync()
-  })
-
-  after(async function () {
-    await common.stopAsync()
-  })
-
+export function testHeight(common: TestCommon) {
   it('test getSnapshotChainHeight', async function () {
     const method = "ledger_getSnapshotChainHeight"
     const promises: Promise<any>[] = [
@@ -28,4 +17,4 @@ describe('test height', () => {
     expect(Number(height)).to.be.greaterThanOrEqual(Number(result[0].result))
     expect(Number(height)).to.be.greaterThanOrEqual(Number(result[1].result))
   })
-})
+};

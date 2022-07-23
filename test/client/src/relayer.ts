@@ -20,6 +20,9 @@ export class Relayer {
     this.provider = axios.create({
       baseURL: url,
       timeout: 1000,
+      validateStatus: function () {
+        return true;
+      }
     });
   }
 
@@ -58,4 +61,31 @@ export class Relayer {
     this.stopped = true;
     console.log("[VitePortal] Stopped.");
   }
+
+  getNodes = async (): Promise<GenericPage<NodeEntity>> => {
+    const response = await this.provider.get("/api/v1/db/nodes")
+    return response.data
+  }
+
+  getNode = (id: string) => {
+    return this.provider.get(`/api/v1/db/nodes/${id}`)
+  }
+
+  putNode = (node: NodeEntity) => {
+    return this.provider.put(`/api/v1/db/nodes/${node.id}`, node)
+  }
+}
+
+export type NodeEntity = {
+  id: string
+  chain: string
+  ipAddress: string
+  rewardAddress?: string
+}
+
+export type GenericPage<T> = {
+  entries: T[]
+  limit: number
+  offset: number
+  total: number
 }

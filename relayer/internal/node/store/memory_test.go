@@ -121,7 +121,7 @@ func TestUpsertInvalid(t *testing.T) {
 			s := NewMemoryStore()
 			err := s.Upsert(*tc.node)
 			require.Error(t, err)
-			require.Equal(t, "Trying to insert invalid node", err.Error())
+			require.Equal(t, "node is invalid", err.Error())
 		})
 	}
 }

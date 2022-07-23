@@ -20,6 +20,10 @@ func (app *RelayerCoreApp) GetNode(id string) (res types.Node, found bool) {
 	return app.nodeService.GetNode(id)
 }
 
+func (app *RelayerCoreApp) PutNode(n nodetypes.Node) error {
+	return app.nodeService.PutNode(n)
+}
+
 func checkPagination(offset, limit int) (int, int) {
 	if offset < 0 {
 		offset = 0

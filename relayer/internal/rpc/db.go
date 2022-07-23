@@ -43,6 +43,16 @@ func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 // PutNode enables the orchestrator to add or update a node
 func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	// TODO: auth
+	var node = nodetypes.Node{}
+	if err := ExtractModel(w, r, p, &node); err != nil {
+		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := app.CoreApp.PutNode(node); err != nil {
+		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	WriteResponse(w, nil)
 }
 
 // DeleteNode enables the orchestrator to delete a node

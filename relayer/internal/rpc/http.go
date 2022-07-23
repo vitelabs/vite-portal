@@ -152,14 +152,17 @@ func ExtractModelFromBody(body []byte, model interface{}) error {
 	return nil
 }
 
-func ExtractParams(w http.ResponseWriter, r *http.Request, p httprouter.Params, model interface{}) error {
-	if len(p) == 0 {
+func ExtractQuery(w http.ResponseWriter, r *http.Request, p httprouter.Params, model interface{}) error {
+	q := r.URL.Query()
+	if len(q) == 0 {
 		return nil
 	}
+
 	m := map[string]interface{}{}
-	for _, v := range p {
-		m[v.Key] = v.Value
+	for k, v := range q {
+		m[k] = v[0]
 	}
+
 	b, err := jsonutil.ToByte(m)
 	if err != nil {
 		return err

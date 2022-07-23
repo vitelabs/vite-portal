@@ -2,9 +2,10 @@ package rpc
 
 import (
 	"errors"
+	"net/http"
+	"net/url"
 	"testing"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/require"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 )
@@ -45,9 +46,11 @@ func TestExtractModelFromBody(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := ExtractModelFromBody([]byte(tc.body), &tc.model)
-			if err != nil || tc.expectedError != nil {
+			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, err.Error(), tc.expectedError.Error())
+			} else {
+				require.NoError(t, err)
 			}
 			require.Equal(t, tc.expected, tc.model)
 		})
@@ -57,22 +60,24 @@ func TestExtractModelFromBody(t *testing.T) {
 func TestExtractParams(t *testing.T) {
 	tests := []struct {
 		name          string
-		params        httprouter.Params
+		request       http.Request
 		model         nodetypes.GetNodesParams
 		expected      nodetypes.GetNodesParams
 		expectedError error
 	}{
 		{
-			name:          "Test nil params",
-			params:        nil,
+			name: "Test nil query",
+			request: http.Request{
+				URL: parseUrl(t, ""),
+			},
 			model:         nodetypes.GetNodesParams{},
 			expected:      nodetypes.GetNodesParams{},
 			expectedError: nil,
 		},
 		{
-			name: "Test invalid params",
-			params: httprouter.Params{
-				httprouter.Param{Key: "asdf", Value: "1234"},
+			name: "Test invalid query",
+			request: http.Request{
+				URL: parseUrl(t, "http://localhost/v1?test=1234"),
 			},
 			model:         nodetypes.GetNodesParams{},
 			expected:      nodetypes.GetNodesParams{},
@@ -80,8 +85,8 @@ func TestExtractParams(t *testing.T) {
 		},
 		{
 			name: "Test chain only",
-			params: httprouter.Params{
-				httprouter.Param{Key: "chain", Value: "chain1"},
+			request: http.Request{
+				URL: parseUrl(t, "http://localhost/v1?chain=chain1"),
 			},
 			model: nodetypes.GetNodesParams{},
 			expected: nodetypes.GetNodesParams{
@@ -91,13 +96,25 @@ func TestExtractParams(t *testing.T) {
 		},
 		{
 			name: "Test 2 chainz",
-			params: httprouter.Params{
-				httprouter.Param{Key: "chain", Value: "chain1"},
-				httprouter.Param{Key: "chain", Value: "chain2"},
+			request: http.Request{
+				URL: parseUrl(t, "http://localhost/v1?chain=chain1&chain=chain2"),
 			},
 			model: nodetypes.GetNodesParams{},
 			expected: nodetypes.GetNodesParams{
-				Chain: "chain2",
+				Chain: "chain1",
+			},
+			expectedError: nil,
+		},
+		{
+			name: "Test full",
+			request: http.Request{
+				URL: parseUrl(t, "http://localhost/v1?chain=chain1&offset=10&limit=5"),
+			},
+			model: nodetypes.GetNodesParams{},
+			expected: nodetypes.GetNodesParams{
+				Chain:  "chain1",
+				Offset: 10,
+				Limit:  5,
 			},
 			expectedError: nil,
 		},
@@ -105,12 +122,20 @@ func TestExtractParams(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := ExtractParams(nil, nil, tc.params, &tc.model)
-			if err != nil || tc.expectedError != nil {
+			err := ExtractQuery(nil, &tc.request, nil, &tc.model)
+			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, err.Error(), tc.expectedError.Error())
+			} else {
+				require.NoError(t, err)
 			}
 			require.Equal(t, tc.expected, tc.model)
 		})
 	}
+}
+
+func parseUrl(t *testing.T, raw string) *url.URL {
+	p, err := url.Parse(raw)
+	require.NoError(t, err)
+	return p
 }

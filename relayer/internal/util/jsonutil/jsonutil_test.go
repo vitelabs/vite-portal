@@ -66,9 +66,11 @@ func TestFromByteMultiple(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := FromByte([]byte(tc.body), &tc.model)
-			if err != nil || tc.expectedError != nil {
+			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, err.Error(), tc.expectedError.Error())
+			} else {
+				require.NoError(t, err)
 			}
 			assert.Equal(t, tc.expected, tc.model)
 		})

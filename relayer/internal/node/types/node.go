@@ -11,7 +11,7 @@ type Node struct {
 	Id            string `json:"id"`
 	Chain         string `json:"chain"`
 	IpAddress     string `json:"ipAddress"`
-	RewardAddress string `json:"rewardAddress"`
+	RewardAddress string `json:"rewardAddress,omitempty"`
 }
 
 func (n *Node) IsValid() bool {
@@ -29,6 +29,6 @@ func (n *Node) Validate() error {
 
 type GetNodesParams struct {
 	Chain  string `json:"chain"`
-	Offset int    `json:"offset"`
-	Limit  int    `json:"limit"`
+	Offset int    `json:"offset,string,omitempty"`
+	Limit  int    `json:"limit,string,omitempty"`
 }

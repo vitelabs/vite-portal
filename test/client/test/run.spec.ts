@@ -16,6 +16,6 @@ describe('run tests', () => {
   })
 
   testHeight(common)
-  //testHelloWorld(common)
+  testHelloWorld(common)
   testNodes(common)
 })

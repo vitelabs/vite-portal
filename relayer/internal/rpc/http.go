@@ -139,7 +139,7 @@ func ExtractModel(w http.ResponseWriter, r *http.Request, p httprouter.Params, m
 	if err != nil {
 		return err
 	}
-	return ExtractModelFromBody(body, model)
+	return ExtractModelFromBody(body, &model)
 }
 
 func ExtractModelFromBody(body []byte, model interface{}) error {
@@ -150,4 +150,19 @@ func ExtractModelFromBody(body []byte, model interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func ExtractParams(w http.ResponseWriter, r *http.Request, p httprouter.Params, model interface{}) error {
+	if len(p) == 0 {
+		return nil
+	}
+	m := map[string]interface{}{}
+	for _, v := range p {
+		m[v.Key] = v.Value
+	}
+	b, err := jsonutil.ToByte(m)
+	if err != nil {
+		return err
+	}
+	return ExtractModelFromBody(b, &model)
 }

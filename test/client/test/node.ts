@@ -20,19 +20,20 @@ export function testNodes(common: TestCommon) {
   })
 
   it('test insert node', async function () {
-    const nodesBefore = await common.relayer.getNodes()
+    const chain = "chain1"
+    const nodesBefore = await common.relayer.getNodes(chain)
     expect(nodesBefore.total).to.be.greaterThanOrEqual(0)
 
     const nodeId = "1234"
     const getNodeBefore = await common.relayer.getNode(nodeId)
     expect(getNodeBefore.status).to.be.equal(404)
 
-    const node = createNode(nodeId, "chain1", "0.0.0.0")
+    const node = createNode(nodeId, chain, "0.0.0.0")
     const putResult = await common.relayer.putNode(node)
     expect(putResult.status).to.be.equal(200)
 
-    const nodesAfter = await common.relayer.getNodes()
-    expect(nodesAfter.total).to.be.greaterThan(nodesBefore.total)
+    const nodesAfter = await common.relayer.getNodes(chain)
+    expect(nodesAfter.total).to.be.equal(nodesBefore.total + 1)
 
     const getNodeAfter = await common.relayer.getNode(nodeId)
     expect(getNodeAfter.status).to.be.equal(200)

@@ -62,8 +62,8 @@ export class Relayer {
     console.log("[VitePortal] Stopped.");
   }
 
-  getNodes = async (): Promise<GenericPage<NodeEntity>> => {
-    const response = await this.provider.get("/api/v1/db/nodes")
+  getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<NodeEntity>> => {
+    const response = await this.provider.get(`/api/v1/db/nodes?chain=${chain}`)
     return response.data
   }
 

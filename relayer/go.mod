@@ -3,6 +3,7 @@ module github.com/vitelabs/vite-portal
 go 1.18
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0

@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import path from "path";
 import axios, { AxiosInstance } from "axios";
-import * as utils from "./utils";
+import { CommonUtil } from "./utils";
 
 const defaultBinPath = path.join(path.dirname(__dirname), "bin");
 
@@ -37,7 +37,7 @@ export class Relayer {
       }
     );
 
-    await utils.waitFor(this.isUp, "Wait for VitePortal", 1000);
+    await CommonUtil.waitFor(this.isUp, "Wait for VitePortal", 1000);
     console.log("[VitePortal] Started.");
   }
 
@@ -63,7 +63,12 @@ export class Relayer {
   }
 
   getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<NodeEntity>> => {
-    const response = await this.provider.get(`/api/v1/db/nodes?chain=${chain}`)
+    const params = new URLSearchParams({
+      chain
+    })
+    !!offset && params.append("offset", offset.toString())
+    !!limit && params.append("limit", limit.toString())
+    const response = await this.provider.get(`/api/v1/db/nodes?${params.toString()}`)
     return response.data
   }
 
@@ -73,6 +78,10 @@ export class Relayer {
 
   putNode = (node: NodeEntity) => {
     return this.provider.put(`/api/v1/db/nodes/${node.id}`, node)
+  }
+
+  deleteNode = (id: string) => {
+    return this.provider.delete(`/api/v1/db/nodes/${id}`)
   }
 }
 

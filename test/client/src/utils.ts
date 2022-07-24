@@ -1,36 +1,44 @@
-export function isString(value: any): boolean {
-  return typeof value === 'string' || value instanceof String;
-}
+import { v4 as uuidv4 } from "uuid";
 
-export function isNullOrWhitespace(value: any): boolean {
-  if (!isString(value)) {
-    return true;
-  } else {
-    return value === null || value === undefined || value.trim() === '';
+export abstract class CommonUtil {
+  public static isString(value: any): boolean {
+    return typeof value === 'string' || value instanceof String;
   }
-}
 
-export function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+  public static isNullOrWhitespace(value: any): boolean {
+    if (!CommonUtil.isString(value)) {
+      return true;
+    } else {
+      return value === null || value === undefined || value.trim() === '';
+    }
+  }
 
-export async function waitFor(conditionFn: () => Promise<boolean>, description: string = '', pollInterval: number = 1000) {
-  process.stdout.write(description);
-  const poll = (resolve: any) => {
-    conditionFn().then((result) => {
-      if (result) {
-        console.log(" OK");
-        resolve();
-      } else {
-        process.stdout.write('.');
-        setTimeout(() => poll(resolve), pollInterval);
-      }
-    }).catch(() => {
-      process.stdout.write('.');
-      setTimeout(() => poll(resolve), pollInterval);
+  public static sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
     });
   }
-  return new Promise(poll);
+
+  public static waitFor(conditionFn: () => Promise<boolean>, description: string = '', pollInterval: number = 1000) {
+    process.stdout.write(description);
+    const poll = (resolve: any) => {
+      conditionFn().then((result) => {
+        if (result) {
+          console.log(" OK");
+          resolve();
+        } else {
+          process.stdout.write('.');
+          setTimeout(() => poll(resolve), pollInterval);
+        }
+      }).catch(() => {
+        process.stdout.write('.');
+        setTimeout(() => poll(resolve), pollInterval);
+      });
+    }
+    return new Promise(poll);
+  }
+
+  public static uuid(): string {
+    return uuidv4();
+  }
 }

@@ -58,4 +58,14 @@ func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 // DeleteNode enables the orchestrator to delete a node
 func DeleteNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	// TODO: auth
+	id := p.ByName("id")
+	if id == "" {
+		WriteErrorResponse(w, http.StatusBadRequest, "invalid identifier")
+		return
+	}
+	if err := app.CoreApp.DeleteNode(id); err != nil {
+		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	WriteResponse(w, nil)
 }

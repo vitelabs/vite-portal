@@ -9,12 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@vite/vuilder": "^0.1.0-alpha.16",
+    "axios": "^0.27.2",
+    "uuid": "^8.3.2"
+  },
   "devDependencies": {
     "@types/chai": "^4.3.1",
     "@types/chai-string": "^1.4.2",
     "@types/node": "^18.0.6",
-    "@vite/vuilder": "^0.1.0-alpha.16",
-    "axios": "^0.27.2",
+    "@types/uuid": "^8.3.4",
     "chai": "^4.3.6",
     "chai-string": "^1.5.0",
     "ts-node": "^10.9.1",

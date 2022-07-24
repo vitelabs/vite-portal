@@ -24,6 +24,10 @@ func (app *RelayerCoreApp) PutNode(n nodetypes.Node) error {
 	return app.nodeService.PutNode(n)
 }
 
+func (app *RelayerCoreApp) DeleteNode(id string) error {
+	return app.nodeService.DeleteNode(id)
+}
+
 func checkPagination(offset, limit int) (int, int) {
 	if offset < 0 {
 		offset = 0

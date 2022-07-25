@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	"github.com/vitelabs/vite-portal/internal/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
@@ -29,17 +28,6 @@ type Payload struct {
 // The response to a relay request
 type RelayResponse struct {
 	Response string
-}
-
-// The response object used in dispatching
-type DispatchResponse struct {
-	Session DispatchSession `json:"session"`
-}
-
-type DispatchSession struct {
-	Header SessionHeader `json:"header"`
-	// Key SessionKey `json:"key"`
-	Nodes []nodetypes.Node `json:"nodes"`
 }
 
 // Execute attempts to do a request on the specified node

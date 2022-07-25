@@ -68,7 +68,7 @@ func TestFromByteMultiple(t *testing.T) {
 			err := FromByte([]byte(tc.body), &tc.model)
 			if tc.expectedError != nil {
 				require.Error(t, err)
-				require.Equal(t, err.Error(), tc.expectedError.Error())
+				require.Equal(t, tc.expectedError.Error(), err.Error())
 			} else {
 				require.NoError(t, err)
 			}

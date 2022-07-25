@@ -11,11 +11,13 @@ const DefaultCodeNamespace roottypes.CodeNamespace = ModuleName
 
 const (
 	CodeHttpExecutionError = iota + 1
+	CodeInsufficientNodesError
 	codeTypeLimit          // This will be the last CodeType + 1
 )
 
 var CodeTypeErrors = map[roottypes.CodeType]error{
 	CodeHttpExecutionError: errors.New("error executing the http request: "),
+	CodeInsufficientNodesError: errors.New("insufficient nodes available to create a session"),
 }
 
 func GetCodeError(code roottypes.CodeType) error {

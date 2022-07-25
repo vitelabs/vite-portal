@@ -125,7 +125,7 @@ func TestExtractParams(t *testing.T) {
 			err := ExtractQuery(nil, &tc.request, nil, &tc.model)
 			if tc.expectedError != nil {
 				require.Error(t, err)
-				require.Equal(t, err.Error(), tc.expectedError.Error())
+				require.Equal(t, tc.expectedError.Error(), err.Error())
 			} else {
 				require.NoError(t, err)
 			}

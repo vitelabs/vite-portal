@@ -46,6 +46,7 @@ type Error interface {
 	Code() CodeType
 	Error() string
 	ErrorFormatted() string
+	InnerError() string
 	Data() interface{}
 	WithDefaultCodeNamespace(CodeNamespace) Error
 }
@@ -77,7 +78,7 @@ func newError(ns CodeNamespace, code CodeType, format string, args ...interface{
 type rootError struct {
 	ns         CodeNamespace
 	code       CodeType
-	data       interface{}
+	data       FmtError
 	stacktrace []runtimeutil.StacktraceItem
 }
 
@@ -102,6 +103,10 @@ Namespace: %s
 Code: %d
 Message: %#v
 `, err.ns, err.code, err)
+}
+
+func (err *rootError) InnerError() string {
+	return err.data.Error()
 }
 
 func (err *rootError) Data() interface{} {

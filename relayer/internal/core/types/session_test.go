@@ -68,6 +68,13 @@ func TestNewSessionNodes(t *testing.T) {
 			expected:         24,
 			expectedError:    nil,
 		},
+		{
+			name:             "Test sessionNodeCount=100 and nodeCount=24",
+			sessionNodeCount: 100,
+			nodeCount:        24,
+			expected:         24,
+			expectedError:    nil,
+		},
 	}
 
 	for _, tc := range tests {

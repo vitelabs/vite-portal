@@ -11,12 +11,18 @@ const DefaultCodeNamespace roottypes.CodeNamespace = ModuleName
 
 const (
 	CodeHttpExecutionError = iota + 1
+	CodeInvalidChain
+	CodeInvalidIpAddress
+	CodeInvalidRequestTime
 	CodeInsufficientNodesError
 	codeTypeLimit          // This will be the last CodeType + 1
 )
 
 var CodeTypeErrors = map[roottypes.CodeType]error{
 	CodeHttpExecutionError: errors.New("error executing the http request: "),
+	CodeInvalidChain: errors.New("invalid chain: "),
+	CodeInvalidIpAddress: errors.New("invalid ip address: "),
+	CodeInvalidRequestTime: errors.New("invalid request time: "),
 	CodeInsufficientNodesError: errors.New("insufficient nodes available to create a session"),
 }
 

@@ -28,6 +28,10 @@ func InitApp(debug bool) error {
 	if err != nil {
 		return err
 	}
+	err = InitCache(types.GlobalConfig.MaxSessionCacheEntries)
+	if err != nil {
+		return err
+	}
 	o, err := InitOrchestrator()
 	if err != nil {
 		return err

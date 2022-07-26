@@ -3,13 +3,14 @@ package types
 var GlobalConfig Config
 
 const (
-	DefaultConfigVersion               = "v0.1"
+	DefaultConfigVersion               = "v0.2"
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
 	DefaultUserAgent                   = ""
 	DefaultSortJsonResponse            = false
+	DefaultMaxSessionCacheEntries      = 100
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -34,6 +35,8 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// Whether the JSON response from nodes should be sorted
 	SortJsonResponse bool `json:"sortJsonResponse"`
+	// The maximum session entries in the cache
+	MaxSessionCacheEntries int `json:"maxSessionCacheEntries"`
 	// Logging related configurtion
 	Logging LoggingConfig `json:"logging"`
 }
@@ -57,13 +60,14 @@ type LoggingConfig struct {
 
 func NewDefaultConfig() Config {
 	c := Config{
-		Version:          DefaultConfigVersion,
-		Debug:            DefaultDebug,
-		RpcHttpPort:      DefaultRpcHttpPort,
-		RpcTimeout:       DefaultRpcTimeout,
-		RpcNodeTimeout:   DefaultRpcNodeTimeout,
-		UserAgent:        DefaultUserAgent,
-		SortJsonResponse: DefaultSortJsonResponse,
+		Version:                DefaultConfigVersion,
+		Debug:                  DefaultDebug,
+		RpcHttpPort:            DefaultRpcHttpPort,
+		RpcTimeout:             DefaultRpcTimeout,
+		RpcNodeTimeout:         DefaultRpcNodeTimeout,
+		UserAgent:              DefaultUserAgent,
+		SortJsonResponse:       DefaultSortJsonResponse,
+		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
 		Logging: LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/vitelabs/vite-portal/internal/logger"
@@ -31,7 +32,14 @@ type SessionHeader struct {
 
 // NewSession creates a new session from seed data
 func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) (Session, types.Error) {
-	return Session{}, nil
+	sessionNodes, err := NewSessionNodes(s, header.Chain, nodeCount)
+	if err != nil {
+		return Session{}, err
+	}
+	return Session{
+		Header: header,
+		Nodes: sessionNodes,
+	}, nil
 }
 
 // NewSessionNodes creates nodes for the session
@@ -54,4 +62,21 @@ func NewSessionNodes(s nodeinterfaces.ServiceI, chain string, nodeCount int) ([]
 		index++
 	}
 	return sessionNodes, nil
+}
+
+// ValidateHeader validates the header of the session
+func (sh SessionHeader) ValidateHeader() types.Error {
+	// verify the chain
+	if sh.Chain == "" {
+		return NewError(DefaultCodeNamespace, CodeInvalidChain, errors.New("empty"))
+	}
+	// verify the ip address
+	if sh.IpAddress == "" {
+			return NewError(DefaultCodeNamespace, CodeInvalidIpAddress, errors.New("empty"))
+		}
+	// verify the request time
+	if sh.RequestTime < 1 {
+		return NewError(DefaultCodeNamespace, CodeInvalidRequestTime, errors.New(fmt.Sprintf("%d", sh.RequestTime)))
+	}
+	return nil
 }

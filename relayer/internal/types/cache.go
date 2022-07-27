@@ -7,10 +7,6 @@ import (
 	"github.com/hashicorp/golang-lru/simplelru"
 )
 
-var (
-	GlobalSessionCache *Cache
-)
-
 // Cache is a thread-safe LRU cache with a fixed capacity.
 type Cache struct {
 	lru      simplelru.LRUCache

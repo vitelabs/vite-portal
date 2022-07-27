@@ -9,7 +9,7 @@ import (
 )
 
 // HandleDispatch handles the session information for a client request
-func (s Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.DispatchResponse, roottypes.Error) {
+func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.DispatchResponse, roottypes.Error) {
 	header.Timestamp = time.Now().UnixMilli()
 	err := header.ValidateHeader()
 	if err != nil {
@@ -24,7 +24,7 @@ func (s Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Disp
 	// get actual nodes, compare count and update session if needed
 	if a := s.getActualNodes(session); len(session.Nodes) != len(a) {
 		session.Nodes = a
-		coretypes.SetSession(session)
+		s.Cache.SetSession(session)
 	}
 
 	currentNodeCount := s.NodeService.GetNodeCount(header.Chain)
@@ -32,7 +32,7 @@ func (s Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Disp
 	// make sure session has sufficient nodes
 	if currentNodeCount > minNodeCount && minNodeCount > len(session.Nodes) || len(session.Nodes) == 0 {
 		// delete current session and create new
-		coretypes.DeleteSession(header)
+		s.Cache.DeleteSession(header)
 		session, err = s.getSession(header)
 		if err != nil {
 			return nil, err
@@ -44,9 +44,9 @@ func (s Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Disp
 	}, nil
 }
 
-func (s Service) getSession(header coretypes.SessionHeader) (coretypes.Session, roottypes.Error) {
+func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session, roottypes.Error) {
 	// check cache
-	session, found := coretypes.GetSession(header, roottypes.GlobalConfig.MaxSessionDuration)
+	session, found := s.Cache.GetSession(header, roottypes.GlobalConfig.MaxSessionDuration)
 	if !found {
 		// create new session
 		session, err := coretypes.NewSession(s.NodeService, header, roottypes.GlobalConfig.SessionNodeCount)
@@ -54,12 +54,12 @@ func (s Service) getSession(header coretypes.SessionHeader) (coretypes.Session, 
 			return coretypes.Session{}, err
 		}
 		// add to cache
-		coretypes.SetSession(session)
+		s.Cache.SetSession(session)
 	}
 	return session, nil
 }
 
-func (s Service) getActualNodes(session coretypes.Session) []nodetypes.Node {
+func (s *Service) getActualNodes(session coretypes.Session) []nodetypes.Node {
 	var actualNodes []nodetypes.Node
 	for _, v := range session.Nodes {
 		n, found := s.NodeService.GetNode(v.Id)

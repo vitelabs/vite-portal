@@ -21,7 +21,7 @@ type RelayerCoreApp struct {
 func NewRelayerCoreApp(o orchestrator.ClientI, c *Context) *RelayerCoreApp {
 	app := &RelayerCoreApp{}
 	app.nodeService = nodeservice.NewService(c.nodeStore)
-	app.coreService = service.NewService(app.nodeService)
+	app.coreService = service.NewService(&c.cacheStore, app.nodeService)
 	return app
 }
 

@@ -1,32 +1,32 @@
-package types
+package store
 
 import (
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/util/idutil"
 )
 
-func TestCache(t *testing.T) {
+func TestCacheStore(t *testing.T) {
 	sessionMaxDuration := int64(1000)
 	capacity := 10
-	roottypes.GlobalSessionCache = roottypes.NewCache(capacity)
+	store := NewCacheStore(capacity)
 
 	s := createSession()
-	existing, found := GetSession(s.Header, sessionMaxDuration)
+	existing, found := store.GetSession(s.Header, sessionMaxDuration)
 	require.False(t, found)
 	require.Empty(t, existing)
 
-	SetSession(s)
-	existing, found = GetSession(s.Header, sessionMaxDuration)
+	store.SetSession(s)
+	existing, found = store.GetSession(s.Header, sessionMaxDuration)
 	require.True(t, found)
 	require.NotEmpty(t, existing)
 	require.Equal(t, s.Header.Chain, existing.Header.Chain)
 
-	ClearSessions()
-	existing, found = GetSession(s.Header, sessionMaxDuration)
+	store.ClearSessions()
+	existing, found = store.GetSession(s.Header, sessionMaxDuration)
 	require.False(t, found)
 	require.Empty(t, existing)
 }
@@ -34,15 +34,15 @@ func TestCache(t *testing.T) {
 func TestExpired(t *testing.T) {
 	sessionMaxDuration := int64(50)
 	capacity := 10
-	roottypes.GlobalSessionCache = roottypes.NewCache(capacity)
+	store := NewCacheStore(capacity)
 
 	s := createSession()
-	existing, found := GetSession(s.Header, sessionMaxDuration)
+	existing, found := store.GetSession(s.Header, sessionMaxDuration)
 	require.False(t, found)
 	require.Empty(t, existing)
 
-	SetSession(s)
-	existing, found = GetSession(s.Header, sessionMaxDuration)
+	store.SetSession(s)
+	existing, found = store.GetSession(s.Header, sessionMaxDuration)
 	require.True(t, found)
 	require.NotEmpty(t, existing)
 	require.Equal(t, s.Header.Chain, existing.Header.Chain)
@@ -51,15 +51,15 @@ func TestExpired(t *testing.T) {
 	time.Sleep(time.Duration(sessionMaxDuration) * time.Millisecond + time.Millisecond)
 	require.Greater(t, time.Now().UnixMilli() - sessionMaxDuration, s.Timestamp)
 
-	existing, found = GetSession(s.Header, sessionMaxDuration)
+	existing, found = store.GetSession(s.Header, sessionMaxDuration)
 	require.False(t, found)
 	require.Empty(t, existing)
 }
 
-func createSession() Session {
-	return Session{
+func createSession() types.Session {
+	return types.Session{
 		Timestamp: time.Now().UnixMilli(),
-		Header: SessionHeader{
+		Header: types.SessionHeader{
 			IpAddress: idutil.NewGuid(),
 			Chain:     "chain1",
 		},

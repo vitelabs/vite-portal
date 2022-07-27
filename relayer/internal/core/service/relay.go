@@ -7,7 +7,7 @@ import (
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes
-func (s Service) HandleRelay(relay coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
+func (s *Service) HandleRelay(relay coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
 	response, err := relay.Execute()
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("could not execute relay")

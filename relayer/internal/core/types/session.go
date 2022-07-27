@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/vitelabs/vite-portal/internal/logger"
 	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
@@ -18,16 +19,16 @@ type DispatchResponse struct {
 }
 
 type Session struct {
-	Header SessionHeader `json:"header"`
-	// Key SessionKey `json:"key"`
-	Nodes []nodetypes.Node `json:"nodes"`
+	Timestamp int64            `json:"timestamp"`
+	Header    SessionHeader    `json:"header"`
+	Nodes     []nodetypes.Node `json:"nodes"`
 }
 
 // SessionHeader defines the header for session information
 type SessionHeader struct {
-	IpAddress   string `json:"ipAddress"`
-	Chain       string `json:"chain"`
-	RequestTime int64  `json:"requestTime"`
+	IpAddress string `json:"ipAddress"`
+	Chain     string `json:"chain"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 // NewSession creates a new session from seed data
@@ -37,8 +38,9 @@ func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) 
 		return Session{}, err
 	}
 	return Session{
-		Header: header,
-		Nodes: sessionNodes,
+		Timestamp: time.Now().UnixMilli(),
+		Header:    header,
+		Nodes:     sessionNodes,
 	}, nil
 }
 
@@ -72,11 +74,11 @@ func (sh SessionHeader) ValidateHeader() types.Error {
 	}
 	// verify the ip address
 	if sh.IpAddress == "" {
-			return NewError(DefaultCodeNamespace, CodeInvalidIpAddress, errors.New("empty"))
-		}
-	// verify the request time
-	if sh.RequestTime < 1 {
-		return NewError(DefaultCodeNamespace, CodeInvalidRequestTime, errors.New(fmt.Sprintf("%d", sh.RequestTime)))
+		return NewError(DefaultCodeNamespace, CodeInvalidIpAddress, errors.New("empty"))
+	}
+	// verify the timestamp
+	if sh.Timestamp < 1 {
+		return NewError(DefaultCodeNamespace, CodeInvalidTimestamp, errors.New(fmt.Sprintf("%d", sh.Timestamp)))
 	}
 	return nil
 }

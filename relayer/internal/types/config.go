@@ -10,7 +10,10 @@ const (
 	DefaultRpcNodeTimeout              = 5000
 	DefaultUserAgent                   = ""
 	DefaultSortJsonResponse            = false
+	DefaultConsensusNodeCount          = 5
+	DefaultSessionNodeCount            = 24
 	DefaultMaxSessionCacheEntries      = 100
+	DefaultMaxSessionDuration          = 60000000
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -35,8 +38,14 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// Whether the JSON response from nodes should be sorted
 	SortJsonResponse bool `json:"sortJsonResponse"`
+	// The number of nodes a request will be forwarded to
+	ConsensusNodeCount int `json:"consensusNodeCount"`
+	// The number of nodes a relay request will be matched within a session
+	SessionNodeCount int `json:"sessionNodeCount"`
 	// The maximum session entries in the cache
 	MaxSessionCacheEntries int `json:"maxSessionCacheEntries"`
+	// The maximum session duration in milliseconds
+	MaxSessionDuration int64 `json:"maxSessionDuration"`
 	// Logging related configurtion
 	Logging LoggingConfig `json:"logging"`
 }
@@ -67,7 +76,10 @@ func NewDefaultConfig() Config {
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
 		UserAgent:              DefaultUserAgent,
 		SortJsonResponse:       DefaultSortJsonResponse,
+		ConsensusNodeCount:     DefaultConsensusNodeCount,
+		SessionNodeCount:       DefaultSessionNodeCount,
 		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
+		MaxSessionDuration:     DefaultMaxSessionDuration,
 		Logging: LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

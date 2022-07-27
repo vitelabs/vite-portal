@@ -32,3 +32,15 @@ type GetNodesParams struct {
 	Offset int    `json:"offset,string,omitempty"`
 	Limit  int    `json:"limit,string,omitempty"`
 }
+
+type NodeActivity int
+
+const (
+	Put    NodeActivity = 0
+	Delete NodeActivity = 1
+)
+
+type NodeActivityEntry struct {
+	Put    int64
+	Delete int64
+}

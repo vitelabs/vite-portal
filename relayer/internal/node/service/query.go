@@ -8,15 +8,15 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/mathutil"
 )
 
-func (s Service) GetChains() []string {
+func (s *Service) GetChains() []string {
 	return s.store.GetChains()
 }
 
-func (s Service) GetNodeCount(chain string) int {
+func (s *Service) GetNodeCount(chain string) int {
 	return s.store.Count(chain)
 }
 
-func (s Service) GetNodes(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
+func (s *Service) GetNodes(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
 	total := s.store.Count(chain)
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset
@@ -39,11 +39,11 @@ func (s Service) GetNodes(chain string, offset, limit int) (generics.GenericPage
 	return result, nil
 }
 
-func (s Service) GetNode(id string) (n types.Node, found bool) {
+func (s *Service) GetNode(id string) (n types.Node, found bool) {
 	return s.store.GetById(id)
 }
 
-func (s Service) GetNodeByIndex(chain string, index int) (n types.Node, found bool) {
+func (s *Service) GetNodeByIndex(chain string, index int) (n types.Node, found bool) {
 	return s.store.GetByIndex(chain, index)
 }
 

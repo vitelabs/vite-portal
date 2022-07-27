@@ -40,6 +40,33 @@ func TestPutNodeInvalid(t *testing.T) {
 			err := service.PutNode(*tc.node)
 			require.Error(t, err)
 			require.Equal(t, "node is invalid", err.Error())
+			require.Equal(t, int64(0), service.LastActivityTimestamp(tc.node.Chain, types.Put))
+			require.Equal(t, int64(0), service.LastActivityTimestamp(tc.node.Chain, types.Delete))
 		})
 	}
+}
+
+func TestLastActivityTimestamp(t *testing.T) {
+	store := nodestore.NewMemoryStore()
+	service := NewService(store)
+	chain1 := "chain1"
+	require.Equal(t, int64(0), service.LastActivityTimestamp(chain1, types.Put))
+	require.Equal(t, int64(0), service.LastActivityTimestamp(chain1, types.Delete))
+
+	node := types.Node{
+		Id: "1",
+		Chain: chain1,
+		IpAddress: "0.0.0.0",
+		RewardAddress: "vite_",
+	}
+
+	err := service.PutNode(node)
+	require.NoError(t, err)
+	require.Greater(t, service.LastActivityTimestamp(chain1, types.Put), int64(0))
+	require.Equal(t, int64(0), service.LastActivityTimestamp(chain1, types.Delete))
+
+	err = service.DeleteNode(node.Id)
+	require.NoError(t, err)
+	require.Greater(t, service.LastActivityTimestamp(chain1, types.Put), int64(0))
+	require.Greater(t, service.LastActivityTimestamp(chain1, types.Delete), int64(0))
 }

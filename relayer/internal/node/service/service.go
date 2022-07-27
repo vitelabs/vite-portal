@@ -10,8 +10,8 @@ type Service struct {
 }
 
 // NewService creates new instances of the nodes module service
-func NewService(store interfaces.StoreI) Service {
-	return Service{
+func NewService(store interfaces.StoreI) *Service {
+	return &Service{
 		store: store,
 	}
 }

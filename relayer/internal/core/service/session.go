@@ -68,5 +68,8 @@ func (s *Service) getActualNodes(session coretypes.Session) []nodetypes.Node {
 		}
 		actualNodes = append(actualNodes, n)
 	}
+	if len(actualNodes) == 0 {
+		return []nodetypes.Node{}
+	}
 	return actualNodes
 }

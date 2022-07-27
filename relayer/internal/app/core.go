@@ -14,7 +14,7 @@ import (
 )
 
 type RelayerCoreApp struct {
-	coreService service.Service
+	coreService *service.Service
 	nodeService nodeinterfaces.ServiceI
 }
 

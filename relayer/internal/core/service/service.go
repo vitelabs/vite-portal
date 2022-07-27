@@ -12,8 +12,8 @@ type Service struct {
 }
 
 // NewService creates new instances of the core module service
-func NewService(cache *store.CacheStore, nodeService nodeinterfaces.ServiceI) Service {
-	return Service{
+func NewService(cache *store.CacheStore, nodeService nodeinterfaces.ServiceI) *Service {
+	return &Service{
 		Cache: cache,
 		NodeService: nodeService,
 	}

@@ -48,7 +48,7 @@ var startCmd = &cobra.Command{
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartHttpRpc(app.CoreApp.Config, profile)
+		go rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, app.CoreApp.Config.RpcTimeout, debug, profile)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

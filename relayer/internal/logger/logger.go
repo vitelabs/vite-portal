@@ -14,13 +14,17 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/runtimeutil"
 )
 
-var logger zerolog.Logger
+var (
+	logger zerolog.Logger
+	debugEnabled bool
+)
 
 func init() {
 	Init(false)
 }
 
 func Init(debug bool) {
+	debugEnabled = debug
 	// Default level is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if debug {
@@ -44,6 +48,10 @@ func Configure(cfg *types.Config) {
 	mw := zerolog.MultiLevelWriter(writers...)
 
 	logger = zerolog.New(mw).With().Timestamp().Logger()
+}
+
+func DebugEnabled() bool {
+	return debugEnabled
 }
 
 func Logger() *zerolog.Logger {

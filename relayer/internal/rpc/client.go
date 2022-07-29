@@ -15,7 +15,7 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	if cors(&w, r) {
 		return
 	}
-	if config.Debug {
+	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("request", fmt.Sprintf("%#v", r)).Msg("relay request")
 	}
 	relay, err1 := extractRelay(w, r, p)
@@ -29,12 +29,12 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	res, err2 := app.CoreApp.HandleRelay(relay)
 	if err2 != nil {
 		response := types.RpcRelayErrorResponse{
-			Error:    err2,
+			Error: err2,
 		}
 		WriteResponseWithCode(w, response, http.StatusBadRequest)
 		return
 	}
-	if config.Debug {
+	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("response", fmt.Sprintf("%#v", res)).Msg("relay response")
 	}
 	WriteJsonResponse(w, res)
@@ -49,7 +49,6 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 	err2 := ExtractModelFromBody(body, relay)
 	if err2 != nil || relay.Payload.Method == "" {
 		relay = coretypes.Relay{
-			Config: config,
 			Payload: coretypes.Payload{
 				Data:    string(body),
 				Method:  r.Method,

@@ -31,7 +31,7 @@ func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *Re
 }
 
 func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
-	if app.Config.Debug {
+	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
 	res, err := app.coreService.HandleRelay(r)

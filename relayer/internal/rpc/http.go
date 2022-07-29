@@ -9,14 +9,9 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/types"
 	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
-)
-
-var (
-	config coretypes.RelayConfig
 )
 
 type route struct {
@@ -26,14 +21,7 @@ type route struct {
 	HandlerFunc httprouter.Handle
 }
 
-func StartHttpRpc(cfg types.Config, profile bool) {
-	config = coretypes.RelayConfig{
-		Debug:            cfg.Debug,
-		UserAgent:        cfg.UserAgent,
-		RpcNodeTimeout:   cfg.RpcNodeTimeout,
-		SortJsonResponse: cfg.SortJsonResponse,
-	}
-
+func StartHttpRpc(port int32, timeout int64, debug, profile bool) {
 	routes := []route{
 		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: Name},
 		{Name: "AppName", Method: "GET", Path: "/api", HandlerFunc: Name},
@@ -46,7 +34,7 @@ func StartHttpRpc(cfg types.Config, profile bool) {
 		{Name: "DeleteNode", Method: "DELETE", Path: "/api/v1/db/nodes/:id", HandlerFunc: DeleteNode},
 	}
 
-	if config.Debug {
+	if debug {
 		routes = append(routes, route{Name: "DebugTest", Method: "GET", Path: "/debug/test", HandlerFunc: debugTest})
 	}
 
@@ -58,8 +46,8 @@ func StartHttpRpc(cfg types.Config, profile bool) {
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
 		WriteTimeout:      15 * time.Second,
-		Addr:              ":" + strconv.Itoa(int(cfg.RpcHttpPort)),
-		Handler:           http.TimeoutHandler(router(routes), time.Duration(config.RpcNodeTimeout)*time.Millisecond, "Server Timeout Handling Request"),
+		Addr:              ":" + strconv.Itoa(int(port)),
+		Handler:           http.TimeoutHandler(router(routes), time.Duration(timeout)*time.Millisecond, "Server Timeout Handling Request"),
 	}
 
 	err := srv.ListenAndServe()
@@ -140,7 +128,7 @@ func ExtractBody(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) ([
 	if err := r.Body.Close(); err != nil {
 		return nil, err
 	}
-	if config.Debug {
+	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("body", string(body)).Msg("request body")
 	}
 	return body, nil

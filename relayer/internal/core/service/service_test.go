@@ -9,19 +9,25 @@ import (
 )
 
 type testContext struct {
+	config      roottypes.Config
 	cache       *corestore.CacheStore
 	nodeStore   *nodestore.MemoryStore
 	nodeService *nodeservice.Service
 	service     *Service
 }
 
-func newTestContext() *testContext {
+func newDefaultTestContext() *testContext {
 	config := roottypes.NewDefaultConfig()
-	cache := corestore.NewCacheStore(1000)
+	return newTestContext(config)
+}
+
+func newTestContext(config roottypes.Config) *testContext {
+	cache := corestore.NewCacheStore(config.MaxSessionCacheEntries)
 	store := nodestore.NewMemoryStore()
 	nodesvc := nodeservice.NewService(store)
 	svc := NewService(config, cache, nodesvc)
 	return &testContext{
+		config:      config,
 		cache:       cache,
 		nodeStore:   store,
 		nodeService: nodesvc,
@@ -31,8 +37,8 @@ func newTestContext() *testContext {
 
 func newTestNode(id string, chain string) nodetypes.Node {
 	return nodetypes.Node{
-		Id:    id,
-		Chain: chain,
+		Id:        id,
+		Chain:     chain,
 		IpAddress: "0.0.0.0",
 	}
 }

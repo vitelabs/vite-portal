@@ -30,7 +30,7 @@ func TestHandleDispatch_Error(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ctx := newTestContext()
+			ctx := newDefaultTestContext()
 			r, err := ctx.service.HandleDispatch(tc.header)
 			if tc.expectedError != nil {
 				require.Error(t, err)
@@ -46,12 +46,26 @@ func TestHandleDispatch_Error(t *testing.T) {
 func TestHandleDispatch_SingleNode(t *testing.T) {
 	chain := "chain1"
 	h := newSessionHeader(chain)
-	ctx := newTestContext()
+	ctx := newDefaultTestContext()
 	ctx.nodeService.PutNode(newNode(chain))
 	r, err := ctx.service.HandleDispatch(h)
 	require.NoError(t, err)
 	require.NotEmpty(t, r)
 	require.Equal(t, 1, len(r.Session.Nodes))
+}
+
+func TestHandleDispatch(t *testing.T) {
+	chain := "chain1"
+	h := newSessionHeader(chain)
+	ctx := newDefaultTestContext()
+	for i := 0; i < 2*ctx.config.SessionNodeCount; i++ {
+		ctx.nodeService.PutNode(newNode(chain))
+		ctx.nodeService.PutNode(newNode("chain2"))
+	}
+	r, err := ctx.service.HandleDispatch(h)
+	require.NoError(t, err)
+	require.NotEmpty(t, r)
+	require.Equal(t, ctx.config.SessionNodeCount, len(r.Session.Nodes))
 }
 
 func TestGetActualNodes_Empty(t *testing.T) {
@@ -82,7 +96,7 @@ func TestGetActualNodes_Empty(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ctx := newTestContext()
+			ctx := newDefaultTestContext()
 			r := ctx.service.getActualNodes(tc.session)
 			require.Equal(t, 0, len(r))
 		})
@@ -136,7 +150,7 @@ func TestGetActualNodes(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ctx := newTestContext()
+			ctx := newDefaultTestContext()
 			for _, v := range tc.nodes {
 				err := ctx.nodeService.PutNode(v)
 				require.NoError(t, err)

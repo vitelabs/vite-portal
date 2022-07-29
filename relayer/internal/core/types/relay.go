@@ -8,13 +8,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vitelabs/vite-portal/internal/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
 
 // A read/write request to be relayed
 type Relay struct {
-	Payload Payload `json:"payload"` // The data payload of the request
+	Config  RelayConfig
+	Payload Payload
+}
+
+type RelayConfig struct {
+	Debug            bool
+	UserAgent        string
+	RpcNodeTimeout   int64
+	SortJsonResponse bool
 }
 
 // The data being sent to the external node
@@ -38,7 +45,7 @@ func (r Relay) Execute() (string, roottypes.Error) {
 	if len(r.Payload.Path) > 0 {
 		url = url + "/" + strings.Trim(r.Payload.Path, "/")
 	}
-	res, err := executeHttpRequest(r.Payload.Data, url, types.GlobalConfig.UserAgent, r.Payload.Method, r.Payload.Headers)
+	res, err := executeHttpRequest(&r.Config, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
 	if err != nil {
 		// TODO: track metrics
 		return res, NewError(DefaultCodeNamespace, CodeHttpExecutionError, err)
@@ -47,14 +54,14 @@ func (r Relay) Execute() (string, roottypes.Error) {
 }
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
-func executeHttpRequest(payload, url, userAgent string, method string, headers map[string][]string) (string, error) {
+func executeHttpRequest(cfg *RelayConfig, payload, url, method string, headers map[string][]string) (string, error) {
 	// generate the request
 	req, err := http.NewRequest(method, url, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return "", err
 	}
-	if userAgent != "" {
-		req.Header.Set("User-Agent", userAgent)
+	if cfg.UserAgent != "" {
+		req.Header.Set("User-Agent", cfg.UserAgent)
 	}
 	// TODO: set basic auth instead of IP whitelisting
 	// req.SetBasicAuth(username, password)
@@ -68,7 +75,7 @@ func executeHttpRequest(payload, url, userAgent string, method string, headers m
 		}
 	}
 	// execute the request
-	resp, err := (&http.Client{Timeout: time.Duration(types.GlobalConfig.RpcNodeTimeout) * time.Millisecond}).Do(req)
+	resp, err := (&http.Client{Timeout: time.Duration(cfg.RpcNodeTimeout) * time.Millisecond}).Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -78,7 +85,7 @@ func executeHttpRequest(payload, url, userAgent string, method string, headers m
 	}
 	defer resp.Body.Close()
 	res := string(body)
-	if types.GlobalConfig.SortJsonResponse {
+	if cfg.SortJsonResponse {
 		res = sortJsonResponse(res)
 	}
 	return res, nil

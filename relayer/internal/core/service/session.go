@@ -25,15 +25,15 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 	if s.haveNodesChanged(session) {
 		actualNodes := s.getActualNodes(session)
 		session.Nodes = actualNodes
-		s.Cache.SetSession(session)
+		s.cache.SetSession(session)
 	}
 
-	currentNodeCount := s.NodeService.GetNodeCount(header.Chain)
-	minNodeCount := roottypes.GlobalConfig.ConsensusNodeCount
+	currentNodeCount := s.nodeService.GetNodeCount(header.Chain)
+	minNodeCount := s.config.ConsensusNodeCount
 	// make sure session has sufficient nodes
 	if currentNodeCount > minNodeCount && minNodeCount > len(session.Nodes) || len(session.Nodes) == 0 {
 		// delete current session and create new
-		s.Cache.DeleteSession(header)
+		s.cache.DeleteSession(header)
 		session, err = s.getSession(header)
 		if err != nil {
 			return nil, err
@@ -46,22 +46,22 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 }
 
 func (s *Service) haveNodesChanged(session coretypes.Session) bool {
-	hasDeletedNodes := s.NodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Delete) > session.Timestamp
-	hasUpdatedNodes := s.NodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Put) > session.Timestamp
+	hasDeletedNodes := s.nodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Delete) > session.Timestamp
+	hasUpdatedNodes := s.nodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Put) > session.Timestamp
 	return hasDeletedNodes || hasUpdatedNodes
 }
 
 func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session, roottypes.Error) {
 	// check cache
-	session, found := s.Cache.GetSession(header, roottypes.GlobalConfig.MaxSessionDuration)
+	session, found := s.cache.GetSession(header, s.config.MaxSessionDuration)
 	if !found {
 		// create new session
-		newSession, err := coretypes.NewSession(s.NodeService, header, roottypes.GlobalConfig.SessionNodeCount)
+		newSession, err := coretypes.NewSession(s.nodeService, header, s.config.SessionNodeCount)
 		if err != nil {
 			return coretypes.Session{}, err
 		}
 		// add to cache
-		s.Cache.SetSession(newSession)
+		s.cache.SetSession(newSession)
 		session = newSession
 	}
 	return session, nil
@@ -70,7 +70,7 @@ func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session,
 func (s *Service) getActualNodes(session coretypes.Session) []nodetypes.Node {
 	var actualNodes []nodetypes.Node
 	for _, v := range session.Nodes {
-		n, found := s.NodeService.GetNode(v.Id)
+		n, found := s.nodeService.GetNode(v.Id)
 		if !found || n.Chain != session.Header.Chain {
 			continue
 		}

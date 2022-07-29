@@ -12,15 +12,15 @@ type Context struct {
 	nodeStore nodeinterfaces.StoreI
 }
 
-func NewContext() *Context {
+func NewContext(config types.Config) *Context {
 	c := &Context{
-		cacheStore: *corestore.NewCacheStore(types.GlobalConfig.MaxSessionCacheEntries),
+		cacheStore: *corestore.NewCacheStore(config.MaxSessionCacheEntries),
 		nodeStore: nodestore.NewMemoryStore(),
 	}
 	return c
 }
 
-func InitContext() (*Context, error) {
-	c := NewContext()
+func InitContext(config types.Config) (*Context, error) {
+	c := NewContext(config)
 	return c, nil
 }

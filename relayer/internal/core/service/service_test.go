@@ -5,6 +5,7 @@ import (
 	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
 	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
+	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
 
 type testContext struct {
@@ -15,10 +16,11 @@ type testContext struct {
 }
 
 func newTestContext() *testContext {
+	config := roottypes.NewDefaultConfig()
 	cache := corestore.NewCacheStore(1000)
 	store := nodestore.NewMemoryStore()
 	nodesvc := nodeservice.NewService(store)
-	svc := NewService(cache, nodesvc)
+	svc := NewService(config, cache, nodesvc)
 	return &testContext{
 		cache:       cache,
 		nodeStore:   store,

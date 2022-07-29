@@ -18,13 +18,12 @@ const (
 )
 
 var (
-	context *Context
 	CoreApp *RelayerCoreApp
 )
 
 func InitApp(debug bool) error {
 	logger.Init(debug)
-	err := InitConfig(debug)
+	cfg, err := InitConfig(debug)
 	if err != nil {
 		return err
 	}
@@ -32,16 +31,15 @@ func InitApp(debug bool) error {
 	if err != nil {
 		return err
 	}
-	c, err := InitContext()
+	c, err := InitContext(cfg)
 	if err != nil {
 		return err
 	}
-	context = c
-	CoreApp = NewRelayerCoreApp(o, c)
+	CoreApp = NewRelayerCoreApp(cfg, o, c)
 	return nil
 }
 
-func InitConfig(debug bool) error {
+func InitConfig(debug bool) (types.Config, error) {
 	c := types.NewDefaultConfig()
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("DefaultConfig")
 
@@ -54,12 +52,15 @@ func InitConfig(debug bool) error {
 
 	// 3. Configure logger
 	logger.Configure(&c)
+	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("GlobalConfig")
 
-	// 4. Set global configuration
-	types.GlobalConfig = c
-	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(types.GlobalConfig)).Msg("GlobalConfig")
+	// 4. Validate
+	err := c.Validate()
+	if err != nil {
+		return types.Config{}, err
+	}
 
-	return c.Validate()
+	return c, nil
 }
 
 func loadConfigFromFile(c *types.Config) {
@@ -103,5 +104,5 @@ func writeConfigFile(name string, c *types.Config) {
 
 func Shutdown() {
 	logger.Logger().Info().Msg("Shutdown called")
-	context.nodeStore.Close()
+	CoreApp.context.nodeStore.Close()
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/vitelabs/vite-portal/internal/app"
 	"github.com/vitelabs/vite-portal/internal/cmd"
 	"github.com/vitelabs/vite-portal/internal/rpc"
-	"github.com/vitelabs/vite-portal/internal/types"
 )
 
 var (
@@ -49,7 +48,7 @@ var startCmd = &cobra.Command{
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartHttpRpc(types.GlobalConfig.RpcHttpPort, types.GlobalConfig.RpcTimeout, debug, profile)
+		go rpc.StartHttpRpc(app.CoreApp.Config, profile)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

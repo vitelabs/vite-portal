@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-var GlobalConfig Config
-
 const (
 	DefaultConfigVersion               = "v0.2"
 	DefaultDebug                       = false

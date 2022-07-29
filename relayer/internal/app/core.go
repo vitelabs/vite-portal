@@ -14,19 +14,24 @@ import (
 )
 
 type RelayerCoreApp struct {
+	Config      types.Config
+	context     *Context
 	coreService *service.Service
 	nodeService nodeinterfaces.ServiceI
 }
 
-func NewRelayerCoreApp(o orchestrator.ClientI, c *Context) *RelayerCoreApp {
-	app := &RelayerCoreApp{}
+func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *RelayerCoreApp {
+	app := &RelayerCoreApp{
+		Config:  cfg,
+		context: c,
+	}
 	app.nodeService = nodeservice.NewService(c.nodeStore)
-	app.coreService = service.NewService(&c.cacheStore, app.nodeService)
+	app.coreService = service.NewService(cfg, &c.cacheStore, app.nodeService)
 	return app
 }
 
 func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
-	if types.GlobalConfig.Debug {
+	if app.Config.Debug {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
 	res, err := app.coreService.HandleRelay(r)

@@ -21,9 +21,10 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 		return nil, err
 	}
 
-	// get actual nodes, compare count and update session if needed
-	if a := s.getActualNodes(session); len(session.Nodes) != len(a) {
-		session.Nodes = a
+	// check if nodes have been deleted or updated since last time using the session
+	if s.haveNodesChanged(session) {
+		actualNodes := s.getActualNodes(session)
+		session.Nodes = actualNodes
 		s.Cache.SetSession(session)
 	}
 
@@ -44,17 +45,24 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 	}, nil
 }
 
+func (s *Service) haveNodesChanged(session coretypes.Session) bool {
+	hasDeletedNodes := s.NodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Delete) > session.Timestamp
+	hasUpdatedNodes := s.NodeService.LastActivityTimestamp(session.Header.Chain, nodetypes.Put) > session.Timestamp
+	return hasDeletedNodes || hasUpdatedNodes
+}
+
 func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session, roottypes.Error) {
 	// check cache
 	session, found := s.Cache.GetSession(header, roottypes.GlobalConfig.MaxSessionDuration)
 	if !found {
 		// create new session
-		session, err := coretypes.NewSession(s.NodeService, header, roottypes.GlobalConfig.SessionNodeCount)
+		newSession, err := coretypes.NewSession(s.NodeService, header, roottypes.GlobalConfig.SessionNodeCount)
 		if err != nil {
 			return coretypes.Session{}, err
 		}
 		// add to cache
-		s.Cache.SetSession(session)
+		s.Cache.SetSession(newSession)
+		session = newSession
 	}
 	return session, nil
 }

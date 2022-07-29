@@ -70,15 +70,15 @@ func NewSessionNodes(s nodeinterfaces.ServiceI, chain string, nodeCount int) ([]
 func (sh SessionHeader) ValidateHeader() types.Error {
 	// verify the chain
 	if sh.Chain == "" {
-		return NewError(DefaultCodeNamespace, CodeInvalidChain, errors.New("empty"))
+		return NewError(DefaultCodeNamespace, CodeInvalidChainError, errors.New("empty"))
 	}
 	// verify the ip address
 	if sh.IpAddress == "" {
-		return NewError(DefaultCodeNamespace, CodeInvalidIpAddress, errors.New("empty"))
+		return NewError(DefaultCodeNamespace, CodeInvalidIpAddressError, errors.New("empty"))
 	}
 	// verify the timestamp
 	if sh.Timestamp < 1 {
-		return NewError(DefaultCodeNamespace, CodeInvalidTimestamp, errors.New(fmt.Sprintf("%d", sh.Timestamp)))
+		return NewError(DefaultCodeNamespace, CodeInvalidTimestampError, errors.New(fmt.Sprintf("%d", sh.Timestamp)))
 	}
 	return nil
 }

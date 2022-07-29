@@ -13,6 +13,7 @@ type ServiceI interface {
 	GetNodeByIndex(chain string, index int) (n types.Node, found bool)
 	PutNode(n types.Node) error
 	DeleteNode(id string) error
+	LastActivityTimestamp(chain string, a types.NodeActivity) int64
 }
 
 type StoreI interface {

@@ -59,7 +59,7 @@ func InitConfig(debug bool) error {
 	types.GlobalConfig = c
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(types.GlobalConfig)).Msg("GlobalConfig")
 
-	return nil
+	return c.Validate()
 }
 
 func loadConfigFromFile(c *types.Config) {

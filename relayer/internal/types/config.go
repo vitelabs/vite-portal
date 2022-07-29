@@ -1,5 +1,10 @@
 package types
 
+import (
+	"errors"
+	"fmt"
+)
+
 var GlobalConfig Config
 
 const (
@@ -91,4 +96,12 @@ func NewDefaultConfig() Config {
 		},
 	}
 	return c
+}
+
+func (c * Config) Validate() error {
+	prefix := "Config error: "
+	if c.SessionNodeCount <= 0 {
+		return errors.New(fmt.Sprintf("%s SessionNodeCount must be greater than 0", prefix))
+	}
+	return nil
 }

@@ -60,6 +60,5 @@ func (s *CacheStore) ClearSessions() {
 }
 
 func getSessionKey(header types.SessionHeader) string {
-	// TODO: calc hash of ipaddr + chain
-	return header.IpAddress
+	return header.HashString()
 }

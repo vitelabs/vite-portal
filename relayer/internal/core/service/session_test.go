@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
@@ -166,7 +165,6 @@ func newSessionHeader(chain string) coretypes.SessionHeader {
 	return coretypes.SessionHeader{
 		Chain:     chain,
 		IpAddress: idutil.NewGuid(),
-		Timestamp: time.Now().UnixMilli(),
 	}
 }
 

@@ -1,8 +1,6 @@
 package service
 
 import (
-	"time"
-
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
@@ -10,7 +8,6 @@ import (
 
 // HandleDispatch handles the session information for a client request
 func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.DispatchResponse, roottypes.Error) {
-	header.Timestamp = time.Now().UnixMilli()
 	err := header.ValidateHeader()
 	if err != nil {
 		return nil, err

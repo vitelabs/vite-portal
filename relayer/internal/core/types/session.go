@@ -1,6 +1,8 @@
 package types
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"time"
@@ -10,6 +12,7 @@ import (
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	"github.com/vitelabs/vite-portal/internal/types"
 	"github.com/vitelabs/vite-portal/internal/util/cryptoutil"
+	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
 	"github.com/vitelabs/vite-portal/internal/util/mathutil"
 )
 
@@ -19,6 +22,7 @@ type DispatchResponse struct {
 }
 
 type Session struct {
+	Key       string           `json:"key"`
 	Timestamp int64            `json:"timestamp"`
 	Header    SessionHeader    `json:"header"`
 	Nodes     []nodetypes.Node `json:"nodes"`
@@ -28,7 +32,6 @@ type Session struct {
 type SessionHeader struct {
 	IpAddress string `json:"ipAddress"`
 	Chain     string `json:"chain"`
-	Timestamp int64  `json:"timestamp"`
 }
 
 // NewSession creates a new session from seed data
@@ -38,6 +41,7 @@ func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) 
 		return Session{}, err
 	}
 	return Session{
+		Key:       header.HashString(),
 		Timestamp: time.Now().UnixMilli(),
 		Header:    header,
 		Nodes:     sessionNodes,
@@ -76,9 +80,22 @@ func (sh SessionHeader) ValidateHeader() types.Error {
 	if sh.IpAddress == "" {
 		return NewError(DefaultCodeNamespace, CodeInvalidIpAddressError, errors.New("empty"))
 	}
-	// verify the timestamp
-	if sh.Timestamp < 1 {
-		return NewError(DefaultCodeNamespace, CodeInvalidTimestampError, errors.New(fmt.Sprintf("%d", sh.Timestamp)))
-	}
 	return nil
+}
+
+func (sh SessionHeader) Hash() []byte {
+	res := md5.Sum(sh.Bytes())
+	return res[:]
+}
+
+func (sh SessionHeader) HashString() string {
+	return hex.EncodeToString(sh.Hash())
+}
+
+func (sh SessionHeader) Bytes() []byte {
+	res, err := jsonutil.ToByte(sh)
+	if err != nil {
+		logger.Logger().Fatal().Err(err).Msg("an error occurred trying to convert the session key into bytes")
+	}
+	return res
 }

@@ -57,11 +57,13 @@ func TestExpired(t *testing.T) {
 }
 
 func createSession() types.Session {
+	header := types.SessionHeader{
+		IpAddress: idutil.NewGuid(),
+		Chain:     "chain1",
+	}
 	return types.Session{
+		Key: header.HashString(),
 		Timestamp: time.Now().UnixMilli(),
-		Header: types.SessionHeader{
-			IpAddress: idutil.NewGuid(),
-			Chain:     "chain1",
-		},
+		Header: header,
 	}
 }

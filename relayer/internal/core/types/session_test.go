@@ -11,6 +11,38 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
+func TestNewSessionKey(t *testing.T) {
+	tests := []struct {
+		name      string
+		chain     string
+		ipAddress string
+		expected  string
+	}{
+		{
+			name:      "Test 1",
+			chain:     "",
+			ipAddress: "",
+			expected:  "3545e7f0086f5fa7183af60c8e54778f",
+		},
+		{
+			name:      "Test 2",
+			chain:     "chain1",
+			ipAddress: "0.0.0.0",
+			expected:  "cb8b30cecd1857c59530f8bda15fab91",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			header := SessionHeader{
+				Chain: tc.chain,
+				IpAddress: tc.ipAddress,
+			}
+			assert.Equal(t, tc.expected, header.HashString())
+		})
+	}
+}
+
 func TestNewSessionNodes(t *testing.T) {
 	tests := []struct {
 		name             string

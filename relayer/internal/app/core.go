@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"github.com/vitelabs/vite-portal/internal/core/service"
+	coreservice "github.com/vitelabs/vite-portal/internal/core/service"
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/types"
@@ -16,7 +16,7 @@ import (
 type RelayerCoreApp struct {
 	Config      types.Config
 	context     *Context
-	coreService *service.Service
+	coreService *coreservice.Service
 	nodeService nodeinterfaces.ServiceI
 }
 
@@ -26,7 +26,7 @@ func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *Re
 		context: c,
 	}
 	app.nodeService = nodeservice.NewService(c.nodeStore)
-	app.coreService = service.NewService(cfg, &c.cacheStore, app.nodeService)
+	app.coreService = coreservice.NewService(cfg, &c.cacheStore, app.nodeService)
 	return app
 }
 
@@ -50,7 +50,7 @@ func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
 	}
 	v := r.Payload.Headers[app.Config.HeaderTrueClientIp]
 	if len(v) == 0 || v[0] == "" {
-		r.ClientIp = "0.0.0.0"
+		r.ClientIp = types.DefaultIpAddress
 	} else {
 		r.ClientIp = v[0]
 	}

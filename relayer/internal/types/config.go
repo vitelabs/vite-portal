@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	DefaultConfigVersion               = "v0.2"
+	DefaultConfigVersion               = "v0.3"
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
 	DefaultRpcTimeout                  = 10000
@@ -17,6 +17,7 @@ const (
 	DefaultSessionNodeCount            = 24
 	DefaultMaxSessionCacheEntries      = 100
 	DefaultMaxSessionDuration          = 60000000
+	DefaultHeaderTrueClientIp          = "True-Client-Ip"
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -49,6 +50,8 @@ type Config struct {
 	MaxSessionCacheEntries int `json:"maxSessionCacheEntries"`
 	// The maximum session duration in milliseconds
 	MaxSessionDuration int64 `json:"maxSessionDuration"`
+	// The true IP address of the client
+	HeaderTrueClientIp string `json:"headerTrueClientIp"`
 	// Logging related configurtion
 	Logging LoggingConfig `json:"logging"`
 }
@@ -83,6 +86,7 @@ func NewDefaultConfig() Config {
 		SessionNodeCount:       DefaultSessionNodeCount,
 		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
 		MaxSessionDuration:     DefaultMaxSessionDuration,
+		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
 		Logging: LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,
@@ -96,7 +100,7 @@ func NewDefaultConfig() Config {
 	return c
 }
 
-func (c * Config) Validate() error {
+func (c *Config) Validate() error {
 	prefix := "Config error: "
 	if c.SessionNodeCount <= 0 {
 		return errors.New(fmt.Sprintf("%s SessionNodeCount must be greater than 0", prefix))

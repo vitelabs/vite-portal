@@ -2,7 +2,9 @@ package types
 
 // A read/write request to be relayed
 type Relay struct {
-	Payload Payload
+	Chain    string  `json:"chain"`
+	ClientIp string  `json:"clientIp"`
+	Payload  Payload `json:"payload"`
 }
 
 // The data being sent to the external node
@@ -15,5 +17,6 @@ type Payload struct {
 
 // The response to a relay request
 type RelayResponse struct {
-	Response string
+	SessionKey string `json:"sessionKey"`
+	Response   string `json:"response"`
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/idutil"
 )
 
-func TestHandleDispatch_Error(t *testing.T) {
+func TestHandleSession_Error(t *testing.T) {
 	tests := []struct {
 		name          string
 		header        coretypes.SessionHeader
@@ -24,13 +24,13 @@ func TestHandleDispatch_Error(t *testing.T) {
 		{
 			name:          "Test no nodes",
 			header:        newSessionHeader("chain1"),
-			expectedError: errors.New("insufficient nodes available to create a session"),
+			expectedError: errors.New("invalid chain: no nodes"),
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := newDefaultTestContext()
-			r, err := ctx.service.HandleDispatch(tc.header)
+			r, err := ctx.service.HandleSession(tc.header)
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.expectedError.Error(), err.InnerError())
@@ -42,18 +42,18 @@ func TestHandleDispatch_Error(t *testing.T) {
 	}
 }
 
-func TestHandleDispatch_SingleNode(t *testing.T) {
+func TestHandleSession_SingleNode(t *testing.T) {
 	chain := "chain1"
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
 	ctx.nodeService.PutNode(newNode(chain))
-	r, err := ctx.service.HandleDispatch(h)
+	r, err := ctx.service.HandleSession(h)
 	require.NoError(t, err)
 	require.NotEmpty(t, r)
-	require.Equal(t, 1, len(r.Session.Nodes))
+	require.Equal(t, 1, len(r.Nodes))
 }
 
-func TestHandleDispatch(t *testing.T) {
+func TestHandleSession(t *testing.T) {
 	chain := "chain1"
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
@@ -61,10 +61,10 @@ func TestHandleDispatch(t *testing.T) {
 		ctx.nodeService.PutNode(newNode(chain))
 		ctx.nodeService.PutNode(newNode("chain2"))
 	}
-	r, err := ctx.service.HandleDispatch(h)
+	r, err := ctx.service.HandleSession(h)
 	require.NoError(t, err)
 	require.NotEmpty(t, r)
-	require.Equal(t, ctx.config.SessionNodeCount, len(r.Session.Nodes))
+	require.Equal(t, ctx.config.SessionNodeCount, len(r.Nodes))
 }
 
 func TestGetActualNodes_Empty(t *testing.T) {

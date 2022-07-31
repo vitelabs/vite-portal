@@ -34,9 +34,24 @@ func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
+	app.setClientIp(&r)
+	// TODO: extract chain (if empty -> set first from GetChains)
 	res, err := app.coreService.HandleRelay(r)
 	if err != nil {
 		return "", err
 	}
 	return res.Response, nil
+}
+
+func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
+	// Check if already set
+	if r.ClientIp != "" {
+		return
+	}
+	v := r.Payload.Headers[app.Config.HeaderTrueClientIp]
+	if len(v) == 0 || v[0] == "" {
+		r.ClientIp = "0.0.0.0"
+	} else {
+		r.ClientIp = v[0]
+	}
 }

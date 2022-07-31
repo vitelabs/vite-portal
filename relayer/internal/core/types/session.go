@@ -16,11 +16,7 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/mathutil"
 )
 
-// The response object used in dispatching
-type DispatchResponse struct {
-	Session Session `json:"session"`
-}
-
+// Session randomly groups one client with a set of nodes and is valid for a limited timeframe
 type Session struct {
 	Key       string           `json:"key"`
 	Timestamp int64            `json:"timestamp"`
@@ -34,7 +30,7 @@ type SessionHeader struct {
 	Chain     string `json:"chain"`
 }
 
-// NewSession creates a new session from seed data
+// NewSession creates a new session
 func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) (Session, types.Error) {
 	sessionNodes, err := NewSessionNodes(s, header.Chain, nodeCount)
 	if err != nil {
@@ -83,15 +79,18 @@ func (sh SessionHeader) ValidateHeader() types.Error {
 	return nil
 }
 
+// Hash generates the cryptographic hash representation of the session header
 func (sh SessionHeader) Hash() []byte {
 	res := md5.Sum(sh.Bytes())
 	return res[:]
 }
 
+// HashString generates the hex string representation of the cryptographic hash
 func (sh SessionHeader) HashString() string {
 	return hex.EncodeToString(sh.Hash())
 }
 
+// Bytes generates the bytes representation of the session header
 func (sh SessionHeader) Bytes() []byte {
 	res, err := jsonutil.ToByte(sh)
 	if err != nil {

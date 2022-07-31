@@ -1,16 +1,22 @@
 package service
 
 import (
+	"errors"
+
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
 )
 
-// HandleDispatch handles the session information for a client request
-func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.DispatchResponse, roottypes.Error) {
+// HandleSession handles the session information for a client request
+func (s *Service) HandleSession(header coretypes.SessionHeader) (*coretypes.Session, roottypes.Error) {
 	err := header.ValidateHeader()
 	if err != nil {
 		return nil, err
+	}
+	nodeCount := s.nodeService.GetNodeCount(header.Chain)
+	if nodeCount == 0 {
+		return nil, coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeInvalidChainError, errors.New("no nodes"))
 	}
 
 	session, err := s.getSession(header)
@@ -25,10 +31,9 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 		s.cache.SetSession(session)
 	}
 
-	currentNodeCount := s.nodeService.GetNodeCount(header.Chain)
 	minNodeCount := s.config.ConsensusNodeCount
 	// make sure session has sufficient nodes
-	if currentNodeCount > minNodeCount && minNodeCount > len(session.Nodes) || len(session.Nodes) == 0 {
+	if nodeCount > minNodeCount && minNodeCount > len(session.Nodes) || len(session.Nodes) == 0 {
 		// delete current session and create new
 		s.cache.DeleteSession(header)
 		session, err = s.getSession(header)
@@ -37,9 +42,7 @@ func (s *Service) HandleDispatch(header coretypes.SessionHeader) (*coretypes.Dis
 		}
 	}
 
-	return &coretypes.DispatchResponse{
-		Session: session,
-	}, nil
+	return &session, nil
 }
 
 func (s *Service) haveNodesChanged(session coretypes.Session) bool {

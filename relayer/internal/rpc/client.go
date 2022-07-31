@@ -47,11 +47,12 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 		return relay, err1
 	}
 	err2 := ExtractModelFromBody(body, relay)
-	if err2 != nil || relay.Payload.Method == "" {
+	// If model could not be extracted from body -> set default
+	if err2 != nil || relay.Chain == "" {
 		relay = coretypes.Relay{
 			Payload: coretypes.Payload{
 				Data:    string(body),
-				Method:  r.Method,
+				Method:  "POST",
 				Path:    "",
 				Headers: r.Header,
 			},

@@ -15,6 +15,10 @@ export class RpcClient {
       id: 1,
       method,
       params
+    }, {
+      headers: {
+        "True-Client-IP": "1.2.3.4"
+      }
     });
     return response.data
   }

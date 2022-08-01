@@ -2,6 +2,7 @@ package types
 
 // A read/write request to be relayed
 type Relay struct {
+	Host     string  `json:"host"`
 	Chain    string  `json:"chain"`
 	ClientIp string  `json:"clientIp"`
 	Payload  Payload `json:"payload"`

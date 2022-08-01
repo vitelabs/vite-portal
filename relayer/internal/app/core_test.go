@@ -48,6 +48,22 @@ func TestSetChain(t *testing.T) {
 			chains:   []string{"chain1", "chain2"},
 			expected: "chain2",
 		},
+		{
+			name: "Test host",
+			relay: types.Relay{
+				Host: "test.localhost",
+			},
+			chains:   []string{"chain1", "chain2"},
+			expected: "chain2",
+		},
+		{
+			name: "Test invalid host",
+			relay: types.Relay{
+				Host: "test1234",
+			},
+			chains:   []string{"chain1", "chain2"},
+			expected: "chain1",
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -124,6 +140,9 @@ func TestSetClientIp(t *testing.T) {
 
 func newRelayerCoreApp() *RelayerCoreApp {
 	config := roottypes.NewDefaultConfig()
+	config.HostToChainMap = map[string]string{
+		"test.localhost": "chain2",
+	}
 	o, _ := NewOrchestrator()
 	c := NewContext(config)
 	return NewRelayerCoreApp(config, o, c)

@@ -47,8 +47,11 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 		return relay, err1
 	}
 	err2 := ExtractModelFromBody(body, relay)
+	if err2 != nil {
+		return relay, err2
+	}
 	// If model could not be extracted from body -> set default
-	if err2 != nil || relay.Chain == "" {
+	if relay.Chain == "" {
 		relay = coretypes.Relay{
 			Payload: coretypes.Payload{
 				Data:    string(body),
@@ -57,7 +60,9 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 				Headers: r.Header,
 			},
 		}
-		return relay, err2
+	}
+	if relay.Host == "" {
+		relay.Host = r.Host
 	}
 	return relay, nil
 }

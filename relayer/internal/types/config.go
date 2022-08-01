@@ -52,6 +52,8 @@ type Config struct {
 	MaxSessionDuration int64 `json:"maxSessionDuration"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// The entries to map a host to the respective chain
+	HostToChainMap map[string]string `json:"hostToChainMap"`
 	// Logging related configurtion
 	Logging LoggingConfig `json:"logging"`
 }
@@ -87,6 +89,7 @@ func NewDefaultConfig() Config {
 		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
 		MaxSessionDuration:     DefaultMaxSessionDuration,
 		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		HostToChainMap:         map[string]string{},
 		Logging: LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

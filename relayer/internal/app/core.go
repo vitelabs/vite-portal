@@ -33,39 +33,19 @@ func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *Re
 }
 
 func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
-	if logger.DebugEnabled() {
-		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
-	}
+	app.setClientIp(&r)
 	err := app.setChain(&r)
 	if err != nil {
 		return "", err
 	}
-	app.setClientIp(&r)
+	if logger.DebugEnabled() {
+		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
+	}
 	res, err := app.coreService.HandleRelay(r)
 	if err != nil {
 		return "", err
 	}
 	return res.Response, nil
-}
-
-func (app *RelayerCoreApp) setChain(r *coretypes.Relay) error {
-	chains := app.nodeService.GetChains()
-	if len(chains) == 0 {
-		return errors.New("chains are empty")
-	}
-	defaultError := func (chain string) error {
-		return errors.New(fmt.Sprintf("the chain '%s' is not supported", chain))
-	}
-	// Check if already set
-	if r.Chain != "" {
-		if !sliceutil.Contains(chains, r.Chain) {
-			return defaultError(r.Chain)
-		}
-		return nil
-	}
-	// Set default chain
-	r.Chain = chains[0]
-	return nil
 }
 
 func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
@@ -79,4 +59,27 @@ func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
 	} else {
 		r.ClientIp = v[0]
 	}
+}
+
+func (app *RelayerCoreApp) setChain(r *coretypes.Relay) error {
+	chains := app.nodeService.GetChains()
+	if len(chains) == 0 {
+		return errors.New("chains are empty")
+	}
+	defaultError := func(chain string) error {
+		return errors.New(fmt.Sprintf("the chain '%s' is not supported", chain))
+	}
+	if r.Chain == "" {
+		r.Chain = app.Config.HostToChainMap[r.Host]
+	}
+	// Check if chain exists
+	if r.Chain != "" {
+		if !sliceutil.Contains(chains, r.Chain) {
+			return defaultError(r.Chain)
+		}
+		return nil
+	}
+	// Set default chain
+	r.Chain = chains[0]
+	return nil
 }

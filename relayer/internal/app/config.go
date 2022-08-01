@@ -44,7 +44,7 @@ func InitConfig(debug bool) (types.Config, error) {
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("DefaultConfig")
 
 	// 1. Load config file
-	loadConfigFromFile(&c)
+	loadConfigFromFile(defaultConfigFileName, &c)
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("After loading config file")
 
 	// 2. Apply flags, overwrite the loaded file configuration
@@ -63,10 +63,9 @@ func InitConfig(debug bool) (types.Config, error) {
 	return c, nil
 }
 
-func loadConfigFromFile(c *types.Config) {
+func loadConfigFromFile(filename string, c *types.Config) {
 	var jsonFile *os.File
 	defer jsonFile.Close()
-	filename := defaultConfigFileName
 	// if file does not exist -> create, otherwise open and compare version
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		writeConfigFile(filename, c)
@@ -80,11 +79,10 @@ func loadConfigFromFile(c *types.Config) {
 	if err != nil {
 		logger.Logger().Fatal().Err(err).Msg("cannot read config file")
 	}
-	loaded := &types.Config{}
-	jsonutil.FromByteOrExit(b, &loaded)
-	if loaded.Version != types.DefaultConfigVersion {
+	jsonutil.FromByteOrExit(b, &c)
+	if c.Version != types.DefaultConfigVersion {
 		// config schema versions do not match -> write backup
-		writeConfigFile(fmt.Sprintf("%s_%d", filename, time.Now().UnixMilli()), loaded)
+		writeConfigFile(fmt.Sprintf("%s_%d", filename, time.Now().UnixMilli()), c)
 		// write new config with default values
 		writeConfigFile(filename, c)
 	}

@@ -8,6 +8,7 @@ import (
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	"github.com/vitelabs/vite-portal/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
 func TestHandleSession_Error(t *testing.T) {
@@ -46,7 +47,7 @@ func TestHandleSession_SingleNode(t *testing.T) {
 	chain := "chain1"
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
-	ctx.nodeService.PutNode(newNode(chain))
+	ctx.nodeService.PutNode(testutil.NewNode(chain))
 	r, err := ctx.service.HandleSession(h)
 	require.NoError(t, err)
 	require.NotEmpty(t, r)
@@ -58,8 +59,8 @@ func TestHandleSession(t *testing.T) {
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
 	for i := 0; i < 2*ctx.config.SessionNodeCount; i++ {
-		ctx.nodeService.PutNode(newNode(chain))
-		ctx.nodeService.PutNode(newNode("chain2"))
+		ctx.nodeService.PutNode(testutil.NewNode(chain))
+		ctx.nodeService.PutNode(testutil.NewNode("chain2"))
 	}
 	r, err := ctx.service.HandleSession(h)
 	require.NoError(t, err)
@@ -165,14 +166,5 @@ func newSessionHeader(chain string) coretypes.SessionHeader {
 	return coretypes.SessionHeader{
 		Chain:     chain,
 		IpAddress: idutil.NewGuid(),
-	}
-}
-
-func newNode(chain string) nodetypes.Node {
-	return nodetypes.Node{
-		Id: idutil.NewGuid(),
-		Chain: chain,
-		IpAddress: "0.0.0.0",
-		RewardAddress: "vite_",
 	}
 }

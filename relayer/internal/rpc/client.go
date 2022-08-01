@@ -21,7 +21,7 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	relay, err1 := extractRelay(w, r, p)
 	if err1 != nil {
 		response := types.RpcRelayErrorResponse{
-			Error: err1,
+			Error: err1.Error(),
 		}
 		WriteResponseWithCode(w, response, http.StatusBadRequest)
 		return
@@ -29,7 +29,7 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	res, err2 := app.CoreApp.HandleRelay(relay)
 	if err2 != nil {
 		response := types.RpcRelayErrorResponse{
-			Error: err2,
+			Error: err2.Error(),
 		}
 		WriteResponseWithCode(w, response, http.StatusBadRequest)
 		return

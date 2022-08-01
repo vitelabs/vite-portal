@@ -1,18 +1,69 @@
 package app
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/internal/core/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
-func newRelayerCoreApp() *RelayerCoreApp {
-	config := roottypes.NewDefaultConfig()
-	o, _ := NewOrchestrator()
-	c := NewContext(config)
-	return NewRelayerCoreApp(config, o, c)
+func TestSetChain(t *testing.T) {
+	tests := []struct {
+		name          string
+		relay         types.Relay
+		chains        []string
+		expected      string
+		expectedError error
+	}{
+		{
+			name:          "Test emtpy chains",
+			relay:         types.Relay{},
+			chains:        []string{},
+			expected:      "",
+			expectedError: errors.New("chains are empty"),
+		},
+		{
+			name: "Test unsupported",
+			relay: types.Relay{
+				Chain: "chain2",
+			},
+			chains:        []string{"chain1"},
+			expected:      "",
+			expectedError: errors.New("the chain 'chain2' is not supported"),
+		},
+		{
+			name:     "Test default",
+			relay:    types.Relay{},
+			chains:   []string{"chain1", "chain2"},
+			expected: "chain1",
+		},
+		{
+			name: "Test chain2",
+			relay: types.Relay{
+				Chain: "chain2",
+			},
+			chains:   []string{"chain1", "chain2"},
+			expected: "chain2",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			coreApp := newRelayerCoreApp()
+			insertChains(coreApp, tc.chains)
+			err := coreApp.setChain(&tc.relay)
+			if tc.expectedError != nil {
+				require.Error(t, err)
+				require.Equal(t, tc.expectedError.Error(), err.Error())
+				require.Empty(t, tc.expected)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expected, tc.relay.Chain)
+			}
+		})
+	}
 }
 
 func TestSetClientIp(t *testing.T) {
@@ -68,5 +119,18 @@ func TestSetClientIp(t *testing.T) {
 			require.NotEmpty(t, tc.relay.ClientIp)
 			require.Equal(t, tc.expected, tc.relay.ClientIp)
 		})
+	}
+}
+
+func newRelayerCoreApp() *RelayerCoreApp {
+	config := roottypes.NewDefaultConfig()
+	o, _ := NewOrchestrator()
+	c := NewContext(config)
+	return NewRelayerCoreApp(config, o, c)
+}
+
+func insertChains(coreApp *RelayerCoreApp, chains []string) {
+	for _, c := range chains {
+		coreApp.nodeService.PutNode(testutil.NewNode(c))
 	}
 }

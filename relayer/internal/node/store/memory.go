@@ -105,6 +105,10 @@ func (s *MemoryStore) Remove(chain string, id string) error {
 	s.db[chain].Remove(id)
 	delete(s.idMap, id)
 
+	if s.Count(chain) == 0 {
+		delete(s.db, chain)
+	}
+
 	return nil
 }
 

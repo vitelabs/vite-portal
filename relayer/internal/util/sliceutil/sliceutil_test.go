@@ -6,8 +6,51 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testEntry struct {
-	value string
+func TestContains(t *testing.T) {
+	tests := []struct {
+		name string
+		s []string
+		e string
+		expected bool
+	}{
+		{
+			name: "Test empty s and e",
+			s: []string{},
+			e: "",
+			expected: false,
+		},
+		{
+			name: "Test empty s",
+			s: []string{},
+			e: "test",
+			expected: false,
+		},
+		{
+			name: "Test no match",
+			s: []string{"test1"},
+			e: "test",
+			expected: false,
+		},
+		{
+			name: "Test case sensitive",
+			s: []string{"test"},
+			e: "TEST",
+			expected: false,
+		},
+		{
+			name: "Test default",
+			s: []string{"test1", "test2"},
+			e: "test2",
+			expected: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := Contains(tc.s, tc.e)
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
 }
 
 func TestRemoveAt(t *testing.T) {

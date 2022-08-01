@@ -131,19 +131,24 @@ func TestRemove(t *testing.T) {
 	s := NewMemoryStore()
 
 	assert.Equal(t, 0, s.Count(node1.Chain))
+	assert.Equal(t, 0, len(s.GetChains()))
 	require.NoError(t, s.Upsert(*node1))
 	assert.Equal(t, 1, s.Count(node1.Chain))
+	assert.Equal(t, 1, len(s.GetChains()))
 
 	node2 := newTestNode()
 	node2.Id = "2"
 
 	require.NoError(t, s.Upsert(*node2))
 	assert.Equal(t, 2, s.Count(node2.Chain))
+	assert.Equal(t, 1, len(s.GetChains()))
 
 	s.Remove(node1.Chain, node1.Id)
 	assert.Equal(t, 1, s.Count(node1.Chain))
+	assert.Equal(t, 1, len(s.GetChains()))
 	s.Remove(node2.Chain, node2.Id)
 	assert.Equal(t, 0, s.Count(node2.Chain))
+	assert.Equal(t, 0, len(s.GetChains()))
 }
 
 func TestClear(t *testing.T) {

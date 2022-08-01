@@ -3,6 +3,8 @@ import config from "./vite.config.json"
 import { startRelayer } from "../src/vite"
 import { RpcClient } from "../src/client"
 import { Relayer } from "../src/relayer"
+import { NodeEntity } from "../src/relayer"
+import { CommonUtil } from "../src/utils"
 
 export class TestCommon {
   relayerUrl: string
@@ -28,5 +30,22 @@ export class TestCommon {
 
   stopAsync = async () => {
     await this.relayer.stop()
+  }
+
+  createRandomNode = (chain: string): NodeEntity => {
+    return {
+      id: CommonUtil.uuid(),
+      chain,
+      ipAddress: "0.0.0.0"
+    }
+  }
+
+  insertNodeAsync = async (chain: string): Promise<NodeEntity> => {
+    const node = this.createRandomNode(chain)
+    const result = await this.relayer.putNode(node)
+    if (result.status != 200) {
+      throw new Error("node could not be inserted")
+    }
+    return node
   }
 }

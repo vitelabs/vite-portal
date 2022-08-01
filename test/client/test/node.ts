@@ -26,7 +26,7 @@ export function testNodes(common: TestCommon) {
     const nodesBefore = await common.relayer.getNodes(chain)
     expect(nodesBefore.total).to.be.equal(0)
 
-    const node = createRandomNode(chain)
+    const node = common.createRandomNode(chain)
     const getNodeBefore = await common.relayer.getNode(node.id)
     expect(getNodeBefore.status).to.be.equal(404)
 
@@ -67,7 +67,7 @@ export function testNodes(common: TestCommon) {
 
     const nodes: NodeEntity[] = []
     for (let index = 0; index < 10; index++) {
-      const node = createRandomNode(chain)
+      const node = common.createRandomNode(chain)
       nodes.push(node)
       const putResult = await common.relayer.putNode(node)
       expect(putResult.status).to.be.equal(200)
@@ -94,11 +94,3 @@ export function testNodes(common: TestCommon) {
     expect(page2.entries[0].id).to.equal(nodes[6].id)
   })
 };
-
-const createRandomNode = (chain: string): NodeEntity => {
-  return {
-    id: CommonUtil.uuid(),
-    chain,
-    ipAddress: "0.0.0.0"
-  }
-}

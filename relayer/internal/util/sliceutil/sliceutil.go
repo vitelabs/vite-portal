@@ -1,5 +1,15 @@
 package sliceutil
 
+// Contains reports whether e is present in s.
+func Contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
+
 // RemoveAt removes the element at the specified index without preserving order.
 func RemoveAt[T any](s []T, i int) []T {
 	// Source: https://github.com/golang/go/wiki/SliceTricks#delete-without-preserving-order

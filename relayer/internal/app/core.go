@@ -1,12 +1,14 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 
 	coreservice "github.com/vitelabs/vite-portal/internal/core/service"
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/logger"
 	"github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/util/sliceutil"
 
 	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
 	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
@@ -34,13 +36,36 @@ func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
+	err := app.setChain(&r)
+	if err != nil {
+		return "", err
+	}
 	app.setClientIp(&r)
-	// TODO: extract chain (if empty -> set first from GetChains)
 	res, err := app.coreService.HandleRelay(r)
 	if err != nil {
 		return "", err
 	}
 	return res.Response, nil
+}
+
+func (app *RelayerCoreApp) setChain(r *coretypes.Relay) error {
+	chains := app.nodeService.GetChains()
+	if len(chains) == 0 {
+		return errors.New("chains are empty")
+	}
+	defaultError := func (chain string) error {
+		return errors.New(fmt.Sprintf("the chain '%s' is not supported", chain))
+	}
+	// Check if already set
+	if r.Chain != "" {
+		if !sliceutil.Contains(chains, r.Chain) {
+			return defaultError(r.Chain)
+		}
+		return nil
+	}
+	// Set default chain
+	r.Chain = chains[0]
+	return nil
 }
 
 func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {

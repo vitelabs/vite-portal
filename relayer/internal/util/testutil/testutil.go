@@ -20,3 +20,12 @@ func PutNodes(t *testing.T, s nodeinterfaces.ServiceI, chain string, count int) 
 		require.NoError(t, err)
 	}
 }
+
+func NewNode(chain string) nodetypes.Node {
+	return nodetypes.Node{
+		Id: idutil.NewGuid(),
+		Chain: chain,
+		IpAddress: roottypes.DefaultIpAddress,
+		RewardAddress: "vite_",
+	}
+}

@@ -6,5 +6,5 @@ type RpcError struct {
 }
 
 type RpcRelayErrorResponse struct {
-	Error error `json:"error"`
+	Error string `json:"error"`
 }

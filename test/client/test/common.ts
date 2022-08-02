@@ -9,7 +9,7 @@ import { CommonUtil } from "../src/utils"
 export class TestCommon {
   relayerUrl: string
   providerUrl: string
-  nodeUrl: string
+  nodeHttpUrl: string
   relayer!: Relayer
   provider: any
   deployer: any
@@ -18,7 +18,7 @@ export class TestCommon {
   constructor() {
     this.relayerUrl = "http://127.0.0.1:56331"
     this.providerUrl = this.relayerUrl + "/api/v1/client/relay"
-    this.nodeUrl = "http://127.0.0.1:23456"
+    this.nodeHttpUrl = config.networks.local.http
   }
 
   startAsync = async () => {

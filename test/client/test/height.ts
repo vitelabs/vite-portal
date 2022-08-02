@@ -18,7 +18,7 @@ export function testHeight(common: TestCommon) {
   it('test getSnapshotChainHeight', async function () {
     const method = "ledger_getSnapshotChainHeight"
     const promises: Promise<any>[] = [
-      common.client.send(common.nodeUrl, method),
+      common.client.send(common.nodeHttpUrl, method),
       common.client.send(common.providerUrl, method)
     ]
     const result = await Promise.all(promises)

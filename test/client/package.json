@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "./bin/update_node_config.sh",
     "test": "npx vuilder test --config test/vite.node.json"
   },
   "keywords": [],

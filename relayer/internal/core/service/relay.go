@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -16,14 +17,14 @@ import (
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes
-func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
+func (s *Service) HandleRelay(ctx context.Context, r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
 	// TODO: get node HTTP RPC url
 	nodeHttpRpcUrl := "http://127.0.0.1:23456"
 	url := strings.Trim(nodeHttpRpcUrl, "/")
 	if len(r.Payload.Path) > 0 {
 		url = url + "/" + strings.Trim(r.Payload.Path, "/")
 	}
-	response, err := s.executeHttpRequest(r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
+	response, err := s.executeHttpRequest(ctx, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("could not execute relay")
 		return nil, coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeHttpExecutionError, err)
@@ -56,9 +57,9 @@ func (s *Service) getConsensusNodes(r coretypes.Relay) ([]nodetypes.Node, rootty
 }
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
-func (s *Service) executeHttpRequest(payload, url, method string, headers map[string][]string) (string, error) {
+func (s *Service) executeHttpRequest(ctx context.Context, payload, url, method string, headers map[string][]string) (string, error) {
 	// generate the request
-	req, err := http.NewRequest(method, url, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return "", err
 	}

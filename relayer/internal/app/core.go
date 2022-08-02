@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -32,7 +33,7 @@ func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *Re
 	return app
 }
 
-func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
+func (app *RelayerCoreApp) HandleRelay(ctx context.Context, r coretypes.Relay) (string, error) {
 	app.setClientIp(&r)
 	err := app.setChain(&r)
 	if err != nil {
@@ -41,7 +42,7 @@ func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
-	res, err := app.coreService.HandleRelay(r)
+	res, err := app.coreService.HandleRelay(ctx, r)
 	if err != nil {
 		return "", err
 	}

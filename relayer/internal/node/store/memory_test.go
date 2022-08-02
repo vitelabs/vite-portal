@@ -6,43 +6,35 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
-func newTestNode() *types.Node {
-	return &types.Node{
-		Id: "1",
-		Chain: "chain1",
-		IpAddress: "0.0.0.0",
-		RewardAddress: "vite_1",
-	}
-}
-
 func TestGetChains(t *testing.T) {
-	node := newTestNode()
+	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	c := s.GetChains()
 	assert.Empty(t, c)
 	assert.Equal(t, 0, len(c))
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 
 	c = s.GetChains()
 	assert.Equal(t, 1, len(c))
 	node.Chain = "chain2"
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 
 	c = s.GetChains()
 	assert.Equal(t, 2, len(c))
 }
 
 func TestGet(t *testing.T) {
-	node := newTestNode()
+	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	n, found := s.Get(node.Chain, node.Id)
 	assert.Empty(t, n)
 	assert.False(t, found)
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 
 	n, found = s.Get(node.Chain, node.Id)
 	assert.NotEmpty(t, n)
@@ -50,21 +42,21 @@ func TestGet(t *testing.T) {
 
 	assert.Equal(t, node.Id, n.Id)
 	assert.Equal(t, node.Chain, n.Chain)
-	assert.Equal(t, node.IpAddress, n.IpAddress)
-	assert.Equal(t, node.RewardAddress, n.RewardAddress)
+	assert.Equal(t, node.RpcHttpUrl, n.RpcHttpUrl)
+	assert.Equal(t, node.RpcWsUrl, n.RpcWsUrl)
 
-	node.IpAddress = "1.1.1.1"
-	assert.NotEqual(t, node.IpAddress, n.IpAddress)
+	node.RpcHttpUrl = "1234"
+	assert.NotEqual(t, node.RpcHttpUrl, n.RpcHttpUrl)
 }
 
 func TestGetById(t *testing.T) {
-	node := newTestNode()
+	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	n, found := s.GetById(node.Id)
 	assert.Empty(t, n)
 	assert.False(t, found)
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 
 	n, found = s.GetById(node.Id)
 	assert.NotEmpty(t, n)
@@ -72,7 +64,7 @@ func TestGetById(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
-	node := newTestNode()
+	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	assert.Equal(t, 0, s.Count(""))
@@ -82,11 +74,11 @@ func TestCount(t *testing.T) {
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 0, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 1, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 1, s.Count(node.Chain))
 }
@@ -127,19 +119,18 @@ func TestUpsertInvalid(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	node1 := newTestNode()
+	node1 := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	assert.Equal(t, 0, s.Count(node1.Chain))
 	assert.Equal(t, 0, len(s.GetChains()))
-	require.NoError(t, s.Upsert(*node1))
+	require.NoError(t, s.Upsert(node1))
 	assert.Equal(t, 1, s.Count(node1.Chain))
 	assert.Equal(t, 1, len(s.GetChains()))
 
-	node2 := newTestNode()
-	node2.Id = "2"
+	node2 := testutil.NewNode("chain1")
 
-	require.NoError(t, s.Upsert(*node2))
+	require.NoError(t, s.Upsert(node2))
 	assert.Equal(t, 2, s.Count(node2.Chain))
 	assert.Equal(t, 1, len(s.GetChains()))
 
@@ -152,18 +143,18 @@ func TestRemove(t *testing.T) {
 }
 
 func TestClear(t *testing.T) {
-	node := newTestNode()
+	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
 	s.Clear()
 	assert.Equal(t, 0, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 	assert.Equal(t, 1, s.Count(node.Chain))
 
 	node.Id = "2"
 
-	require.NoError(t, s.Upsert(*node))
+	require.NoError(t, s.Upsert(node))
 	assert.Equal(t, 2, s.Count(node.Chain))
 
 	s.Clear()

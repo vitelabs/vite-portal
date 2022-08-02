@@ -6,6 +6,7 @@ import (
 	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
 type testContext struct {
@@ -36,9 +37,7 @@ func newTestContext(config roottypes.Config) *testContext {
 }
 
 func newTestNode(id string, chain string) nodetypes.Node {
-	return nodetypes.Node{
-		Id:        id,
-		Chain:     chain,
-		IpAddress: "0.0.0.0",
-	}
+	node := testutil.NewNode(chain)
+	node.Id = id
+	return node
 }

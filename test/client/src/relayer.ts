@@ -88,8 +88,8 @@ export class Relayer {
 export type NodeEntity = {
   id: string
   chain: string
-  ipAddress: string
-  rewardAddress?: string
+  rpcHttpUrl: string
+  rpcWsUrl: string
 }
 
 export type GenericPage<T> = {

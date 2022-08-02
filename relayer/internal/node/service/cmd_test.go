@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
 	"github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
 func TestPutNodeInvalid(t *testing.T) {
@@ -53,12 +54,7 @@ func TestLastActivityTimestamp(t *testing.T) {
 	require.Equal(t, int64(0), service.LastActivityTimestamp(chain1, types.Put))
 	require.Equal(t, int64(0), service.LastActivityTimestamp(chain1, types.Delete))
 
-	node := types.Node{
-		Id: "1",
-		Chain: chain1,
-		IpAddress: "0.0.0.0",
-		RewardAddress: "vite_",
-	}
+	node := testutil.NewNode(chain1)
 
 	err := service.PutNode(node)
 	require.NoError(t, err)

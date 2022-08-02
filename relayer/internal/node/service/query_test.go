@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/internal/util/testutil"
 )
 
 func TestGetNodes_Empty(t *testing.T) {
@@ -31,12 +31,8 @@ func TestGetNodes(t *testing.T) {
 	limit := 2
 
 	for i := 0; i < total; i++ {
-		node := nodetypes.Node{
-			Id: fmt.Sprintf("%d", i),
-			Chain: chain,
-			IpAddress: "0.0.0.0",
-			RewardAddress: "vite_1",
-		}
+		node := testutil.NewNode(chain)
+		node.Id = fmt.Sprintf("%d", i)
 		service.store.Upsert(node)
 	}
 

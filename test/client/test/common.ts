@@ -36,7 +36,8 @@ export class TestCommon {
     return {
       id: CommonUtil.uuid(),
       chain,
-      ipAddress: "0.0.0.0"
+      rpcHttpUrl: "http://127.0.0.1:23456",
+      rpcWsUrl: "ws://127.0.0.1:23457"
     }
   }
 

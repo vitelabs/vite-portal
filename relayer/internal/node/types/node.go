@@ -8,14 +8,14 @@ import (
 )
 
 type Node struct {
-	Id            string `json:"id"`
-	Chain         string `json:"chain"`
-	IpAddress     string `json:"ipAddress"`
-	RewardAddress string `json:"rewardAddress,omitempty"`
+	Id         string `json:"id"`
+	Chain      string `json:"chain"`
+	RpcHttpUrl string `json:"rpcHttpUrl"`
+	RpcWsUrl   string `json:"rpcWsUrl"`
 }
 
 func (n *Node) IsValid() bool {
-	return n != nil && n.Id != "" && n.Chain != "" && n.IpAddress != ""
+	return n != nil && n.Id != "" && n.Chain != "" && n.RpcHttpUrl != "" && n.RpcWsUrl != ""
 }
 
 func (n *Node) Validate() error {

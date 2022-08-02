@@ -41,8 +41,8 @@ export function testNodes(common: TestCommon) {
     const nodeAfter: NodeEntity = getNodeAfter.data
     expect(node.id).to.be.equal(nodeAfter.id)
     expect(node.chain).to.be.equal(nodeAfter.chain)
-    expect(node.ipAddress).to.be.equal(nodeAfter.ipAddress)
-    expect(node.rewardAddress).to.be.equal(nodeAfter.rewardAddress)
+    expect(node.rpcHttpUrl).to.be.equal(nodeAfter.rpcHttpUrl)
+    expect(node.rpcWsUrl).to.be.equal(nodeAfter.rpcWsUrl)
 
     const deleteResult = await common.relayer.deleteNode(node.id)
     expect(deleteResult.status).to.be.equal(200)

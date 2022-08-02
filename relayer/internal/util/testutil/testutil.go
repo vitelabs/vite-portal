@@ -12,11 +12,7 @@ import (
 
 func PutNodes(t *testing.T, s nodeinterfaces.ServiceI, chain string, count int) {
 	for i := 0; i < count; i++ {
-		err := s.PutNode(nodetypes.Node{
-			Id:        idutil.NewGuid(),
-			Chain:     chain,
-			IpAddress: roottypes.DefaultIpAddress,
-		})
+		err := s.PutNode(NewNode(chain))
 		require.NoError(t, err)
 	}
 }
@@ -25,7 +21,7 @@ func NewNode(chain string) nodetypes.Node {
 	return nodetypes.Node{
 		Id: idutil.NewGuid(),
 		Chain: chain,
-		IpAddress: roottypes.DefaultIpAddress,
-		RewardAddress: "vite_",
+		RpcHttpUrl: roottypes.DefaultRpcHttpUrl,
+		RpcWsUrl: roottypes.DefaultRpcWsUrl,
 	}
 }

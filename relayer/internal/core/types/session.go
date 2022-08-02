@@ -10,7 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/internal/logger"
 	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
 	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
-	"github.com/vitelabs/vite-portal/internal/types"
+	roottypes "github.com/vitelabs/vite-portal/internal/types"
 	"github.com/vitelabs/vite-portal/internal/util/cryptoutil"
 	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
 	"github.com/vitelabs/vite-portal/internal/util/mathutil"
@@ -31,7 +31,7 @@ type SessionHeader struct {
 }
 
 // NewSession creates a new session
-func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) (Session, types.Error) {
+func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) (Session, roottypes.Error) {
 	sessionNodes, err := NewSessionNodes(s, header.Chain, nodeCount)
 	if err != nil {
 		return Session{}, err
@@ -45,7 +45,7 @@ func NewSession(s nodeinterfaces.ServiceI, header SessionHeader, nodeCount int) 
 }
 
 // NewSessionNodes creates nodes for the session
-func NewSessionNodes(s nodeinterfaces.ServiceI, chain string, nodeCount int) ([]nodetypes.Node, types.Error) {
+func NewSessionNodes(s nodeinterfaces.ServiceI, chain string, nodeCount int) ([]nodetypes.Node, roottypes.Error) {
 	currentNodeCount := s.GetNodeCount(chain)
 	if currentNodeCount <= 0 {
 		return nil, NewBasicError(DefaultCodeNamespace, CodeInsufficientNodesError)
@@ -66,8 +66,16 @@ func NewSessionNodes(s nodeinterfaces.ServiceI, chain string, nodeCount int) ([]
 	return sessionNodes, nil
 }
 
+// NewSessionHeader creates a new header of a session
+func NewSessionHeader(ip, chain string) SessionHeader {
+	return SessionHeader{
+		IpAddress: ip,
+		Chain: chain,
+	}
+}
+
 // ValidateHeader validates the header of the session
-func (sh SessionHeader) ValidateHeader() types.Error {
+func (sh SessionHeader) ValidateHeader() roottypes.Error {
 	// verify the chain
 	if sh.Chain == "" {
 		return NewError(DefaultCodeNamespace, CodeInvalidChainError, errors.New("empty"))

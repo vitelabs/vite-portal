@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vitelabs/vite-portal/internal/generics"
 	g "github.com/zyedidia/generic"
-	"github.com/zyedidia/generic/hashset"
 )
 
 func TestUniqueRandomIntCases(t *testing.T) {
@@ -65,19 +65,9 @@ func TestUniqueRandomIntCases(t *testing.T) {
 				r := UniqueRandomInt(tc.max, tc.n)
 				assert.Equal(t, tc.expected, len(r))
 				// assert random numbers are unique
-				s := HashsetOf(uint64(len(r)), g.Equals[int], g.HashInt, r...)
+				s := generics.HashsetOf(uint64(len(r)), g.Equals[int], g.HashInt, r...)
 				assert.Equal(t, tc.expected, s.Size())	
 			}
 		})
 	}
-}
-
-// TODO: replace with built-in "Of" when new generic version is released
-// https://github.com/zyedidia/generic/tree/master/hashset#func-of
-func HashsetOf[K comparable](capacity uint64, equals g.EqualsFn[K], hash g.HashFn[K], vals ...K) *hashset.Set[K] {
-	s := hashset.New(capacity, equals, hash)
-	for _, val := range vals {
-		s.Put(val)
-	}
-	return s
 }

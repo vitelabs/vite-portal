@@ -10,7 +10,9 @@ import (
 
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
 	"github.com/vitelabs/vite-portal/internal/logger"
+	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/internal/util/cryptoutil"
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes
@@ -31,6 +33,26 @@ func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, root
 	}
 	// TODO: track relay time and add to metrics
 	return res, nil
+}
+
+// getConsensusNodes returns random nodes used for consensus
+func (s *Service) getConsensusNodes(r coretypes.Relay) ([]nodetypes.Node, roottypes.Error) {
+	header := coretypes.NewSessionHeader(r.ClientIp, r.Chain)
+	session, err := s.HandleSession(header)
+	if err != nil {
+		return nil, err
+	}
+	if s.config.ConsensusNodeCount >= len(session.Nodes) {
+		return session.Nodes, nil
+	}
+	sessionNodes := make([]nodetypes.Node, s.config.ConsensusNodeCount)
+	rnd := cryptoutil.UniqueRandomInt(len(session.Nodes), s.config.ConsensusNodeCount)
+	index := 0
+	for _, v := range rnd {
+		sessionNodes[index] = session.Nodes[v]
+		index++
+	}
+	return sessionNodes, nil
 }
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint

@@ -34,10 +34,7 @@ func TestNewSessionKey(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			header := SessionHeader{
-				Chain: tc.chain,
-				IpAddress: tc.ipAddress,
-			}
+			header := NewSessionHeader(tc.ipAddress, tc.chain)
 			assert.Equal(t, tc.expected, header.HashString())
 		})
 	}

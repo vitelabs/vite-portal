@@ -1,6 +1,7 @@
 import { exec } from "child_process";
 import path from "path";
 import axios, { AxiosInstance } from "axios";
+import { NodeEntity, GenericPage } from "./types";
 import { CommonUtil } from "./utils";
 
 const defaultBinPath = path.join(path.dirname(__dirname), "bin");
@@ -83,18 +84,4 @@ export class Relayer {
   deleteNode = (id: string) => {
     return this.provider.delete(`/api/v1/db/nodes/${id}`)
   }
-}
-
-export type NodeEntity = {
-  id: string
-  chain: string
-  rpcHttpUrl: string
-  rpcWsUrl: string
-}
-
-export type GenericPage<T> = {
-  entries: T[]
-  limit: number
-  offset: number
-  total: number
 }

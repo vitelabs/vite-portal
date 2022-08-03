@@ -4,7 +4,7 @@ import { startRelayer } from "../src/vite"
 import { RpcClient } from "../src/client"
 import { DefaultMockNode, MockNode } from "../src/mock_node"
 import { Relayer } from "../src/relayer"
-import { NodeEntity } from "../src/relayer"
+import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
 export class TestCommon {

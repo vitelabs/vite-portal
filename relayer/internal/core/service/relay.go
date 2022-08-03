@@ -18,17 +18,12 @@ import (
 
 // HandleRelay handles a read/write request to one or multiple nodes
 func (s *Service) HandleRelay(ctx context.Context, r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
-	// TODO: get node HTTP RPC url
-	nodeHttpRpcUrl := "http://127.0.0.1:23456"
-	url := strings.Trim(nodeHttpRpcUrl, "/")
-	if len(r.Payload.Path) > 0 {
-		url = url + "/" + strings.Trim(r.Payload.Path, "/")
-	}
-	response, err := s.executeHttpRequest(ctx, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
+	nodes, err := s.getConsensusNodes(r)
 	if err != nil {
-		logger.Logger().Error().Err(err).Msg("could not execute relay")
-		return nil, coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeHttpExecutionError, err)
+		return nil, err
 	}
+	// TODO: send to multiple nodes
+	response, err := s.executeRelay(ctx, nodes[0].RpcHttpUrl, r)
 	res := &coretypes.RelayResponse{
 		Response: response,
 	}
@@ -54,6 +49,19 @@ func (s *Service) getConsensusNodes(r coretypes.Relay) ([]nodetypes.Node, rootty
 		index++
 	}
 	return sessionNodes, nil
+}
+
+func (s *Service) executeRelay(ctx context.Context, nodeHttpRpcUrl string, r coretypes.Relay) (string, roottypes.Error) {
+	url := strings.Trim(nodeHttpRpcUrl, "/")
+	if len(r.Payload.Path) > 0 {
+		url = url + "/" + strings.Trim(r.Payload.Path, "/")
+	}
+	response, err := s.executeHttpRequest(ctx, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
+	if err != nil {
+		logger.Logger().Error().Err(err).Msg("could not execute relay")
+		return "", coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeHttpExecutionError, err)
+	}
+	return response, nil
 }
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint

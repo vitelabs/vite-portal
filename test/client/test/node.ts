@@ -2,7 +2,7 @@ import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
 import { TestContants } from "./constants"
-import { NodeEntity } from "../src/relayer"
+import { NodeEntity } from "../src/types";
 import { CommonUtil } from "../src/utils"
 
 export function testNodes(common: TestCommon) {
@@ -92,5 +92,10 @@ export function testNodes(common: TestCommon) {
     expect(page2.limit).to.be.equal(TestContants.DefaultPageLimit)
     expect(page2.offset).to.be.equal(page1.entries.length)
     expect(page2.entries[0].id).to.equal(nodes[6].id)
+
+    for (const node of nodes) {
+      const deleteResult = await common.relayer.deleteNode(node.id)
+      expect(deleteResult.status).to.be.equal(200)
+    }
   })
 };

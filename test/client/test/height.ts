@@ -21,12 +21,12 @@ export function testHeight(common: TestCommon) {
       common.client.send(common.nodeHttpUrl, method),
       common.client.send(common.providerUrl, method)
     ]
-    const result = await Promise.all(promises)
-    console.log("original:", result[0], "relayed:", result[1])
-    expect(result[0].result).to.be.equal(result[1].result)
+    const results = await Promise.all(promises)
+    console.log("original:", results[0].data, "relayed:", results[1].data)
+    expect(results[0].data.result).to.be.equal(results[1].data.result)
     const height = await common.provider.request(method)
     expect(Number(height)).to.be.greaterThan(0)
-    expect(Number(height)).to.be.greaterThanOrEqual(Number(result[0].result))
-    expect(Number(height)).to.be.greaterThanOrEqual(Number(result[1].result))
+    expect(Number(height)).to.be.greaterThanOrEqual(Number(results[0].data.result))
+    expect(Number(height)).to.be.greaterThanOrEqual(Number(results[1].data.result))
   })
 };

@@ -2,6 +2,7 @@ import { describe } from "mocha"
 import { TestCommon } from "./common"
 import { testHeight } from "./height"
 import { testHelloWorld } from "./HelloWorld"
+import { testMockNodes } from "./mock_node"
 import { testNodes } from "./node"
 
 describe('run tests', () => {
@@ -18,4 +19,5 @@ describe('run tests', () => {
   testHeight(common)
   testHelloWorld(common)
   testNodes(common)
+  testMockNodes(common)
 })

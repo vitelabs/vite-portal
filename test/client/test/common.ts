@@ -2,6 +2,7 @@ import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
 import { startRelayer } from "../src/vite"
 import { RpcClient } from "../src/client"
+import { DefaultMockNode, MockNode } from "../src/mock_node"
 import { Relayer } from "../src/relayer"
 import { NodeEntity } from "../src/relayer"
 import { CommonUtil } from "../src/utils"
@@ -14,11 +15,13 @@ export class TestCommon {
   provider: any
   deployer: any
   client!: RpcClient
+  defaultMockNode: MockNode
 
   constructor() {
     this.relayerUrl = "http://127.0.0.1:56331"
     this.providerUrl = this.relayerUrl + "/api/v1/client/relay"
     this.nodeHttpUrl = config.networks.local.http
+    this.defaultMockNode = new DefaultMockNode()
   }
 
   startAsync = async () => {
@@ -26,10 +29,12 @@ export class TestCommon {
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
     this.client = new RpcClient()
+    this.defaultMockNode.start(23460)
   }
 
   stopAsync = async () => {
     await this.relayer.stop()
+    this.defaultMockNode.stop()
   }
 
   createRandomNode = (chain: string): NodeEntity => {

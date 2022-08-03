@@ -9,11 +9,37 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${fileDirname}",
+      "program": "${workspaceFolder}/relayer/cmd/relayer",
       "args": [
         "start",
         "--debug"
       ]
-    }
+    },
+    {
+      "name": "Launch go",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${fileDirname}",
+      "args": [
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha all",
+      "program": "${workspaceFolder}/test/client/node_modules/mocha/bin/mocha",
+      "args": [
+        "./test/*.spec.ts",
+        "--require",
+        "ts-node/register",
+        "--timeout",
+        "999999",
+        "--colors",
+        "--resolveJsonModule",
+      ],
+      "cwd": "${workspaceFolder}/test/client/",
+      "console": "integratedTerminal",
+    },
   ]
 }

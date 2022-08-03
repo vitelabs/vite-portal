@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
@@ -17,18 +19,45 @@ import (
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes
-func (s *Service) HandleRelay(ctx context.Context, r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
+func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
 	nodes, err := s.getConsensusNodes(r)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: send to multiple nodes
-	response, err := s.executeRelay(ctx, nodes[0].RpcHttpUrl, r)
-	res := &coretypes.RelayResponse{
-		Response: response,
+	err1 := errors.New("relay timed out")
+	c := make(chan string, len(nodes))
+	ctx, cancelFn := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(s.config.RpcNodeTimeout))
+	defer cancelFn()
+	var processed uint32
+	// Relay to multiple nodes and return the fastest response
+	for _, n := range nodes {
+		go func(n nodetypes.Node) {
+			response, err := s.executeRelay(ctx, n.RpcHttpUrl, r)
+			atomic.AddUint32(&processed, 1)
+			if err != nil {
+				if int(processed) >= len(nodes) {
+					err1 = errors.New("relay failed")
+					// No more nodes left -> cancel the relay
+					cancelFn()
+				}
+				return
+			}
+			c <- response
+		}(n)
 	}
-	// TODO: track relay time and add to metrics
-	return res, nil
+	for {
+		select {
+		case response := <- c:
+			res := &coretypes.RelayResponse{
+				Response: response,
+			}
+			// TODO: track relay time and add to metrics
+			return res, nil
+		case <-ctx.Done():
+			logger.Logger().Error().Err(err1).Msg("relay cancelled")
+			return &coretypes.RelayResponse{}, coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeHttpExecutionError, err1)
+		}
+	}
 }
 
 // getConsensusNodes returns random nodes used for consensus

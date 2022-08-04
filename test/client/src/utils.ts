@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { expect } from "chai"
 
 export abstract class CommonUtil {
   public static isString(value: any): boolean {
@@ -40,5 +41,20 @@ export abstract class CommonUtil {
 
   public static uuid(): string {
     return uuidv4();
+  }
+
+  public static expectThrowsAsync = async (method: () => Promise<any>, errorMessage?: string) => {
+    let error: any
+    try {
+      await method()
+    }
+    catch (err) {
+      error = err
+    }
+    expect(error).to.not.be.undefined
+    if (errorMessage) {
+      expect(error.message).to.equal(errorMessage)
+    }
+    return error
   }
 }

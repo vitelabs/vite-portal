@@ -18,12 +18,7 @@ export function testHeight(common: TestCommon) {
 
     it('test unsupported method', async function () {
       const method = "test_method_1234"
-      let result: any
-      try {
-        await common.provider.request(method)
-      } catch (error: any) {
-        result = error
-      }
+      const result = await CommonUtil.expectThrowsAsync(() => common.provider.request(method))
       expect(result.error.code).to.be.equal(-32601)
       expect(result.error.message).to.be.equal("The method test_method_1234_ does not exist/is not available")
     })

@@ -7,9 +7,11 @@ export abstract class MockNode {
   name?: string
   port?: number
   server?: http.Server
+  requests: any[]
 
   constructor() {
     this.app = express()
+    this.requests = []
   }
 
   url = () => {
@@ -45,11 +47,40 @@ export class DefaultMockNode extends MockNode {
     this.port = port
 
     this.app.get('/', (req, res) => {
+      this.requests.push(req)
       res.json(DefaultMockNode.DEFAULT_RESPONSE)
     })
 
     this.app.post('/', (req, res) => {
+      this.requests.push(req)
       res.json(DefaultMockNode.DEFAULT_RESPONSE)
+    })
+
+    this.server = this.app.listen(port, () => {
+      console.log(`[${this.name}] is listening on port ${port}.`)
+    })
+  }
+}
+
+export class TimeoutMockNode extends MockNode {
+  constructor() {
+    super()
+    this.name = "TimeoutMockNode"
+  }
+
+  start = (port: number) => {
+    if (this.server) {
+      return
+    }
+
+    this.port = port
+
+    this.app.get('/', (req, res) => {
+      this.requests.push(req)
+    })
+
+    this.app.post('/', (req, res) => {
+      this.requests.push(req)
     })
 
     this.server = this.app.listen(port, () => {

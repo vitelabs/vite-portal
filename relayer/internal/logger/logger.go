@@ -67,7 +67,7 @@ func Logger() *zerolog.Logger {
 }
 
 func newConsoleWriter() io.Writer {
-	return zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
+	return zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 }
 
 func newRollingFile(config *types.Config) io.Writer {

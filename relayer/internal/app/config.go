@@ -63,15 +63,15 @@ func InitConfig(debug bool) (types.Config, error) {
 	return c, nil
 }
 
-func loadConfigFromFile(filename string, c *types.Config) {
+func loadConfigFromFile(name string, c *types.Config) {
 	var jsonFile *os.File
 	defer jsonFile.Close()
 	// if file does not exist -> create, otherwise open and compare version
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		writeConfigFile(filename, c)
+	if _, err := os.Stat(name); os.IsNotExist(err) {
+		writeConfigFile(name, c)
 		return
 	}
-	jsonFile, err := os.OpenFile(filename, os.O_RDONLY, os.ModePerm)
+	jsonFile, err := os.OpenFile(name, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		logger.Logger().Fatal().Err(err).Msg("cannot open config json file")
 	}
@@ -79,19 +79,23 @@ func loadConfigFromFile(filename string, c *types.Config) {
 	if err != nil {
 		logger.Logger().Fatal().Err(err).Msg("cannot read config file")
 	}
-	jsonutil.FromByteOrExit(b, &c)
-	if c.Version != types.DefaultConfigVersion {
+	loaded := &types.Config{}
+	jsonutil.FromByteOrExit(b, &loaded)
+	if loaded.Version != types.DefaultConfigVersion {
 		// config schema versions do not match -> write backup
-		writeConfigFile(fmt.Sprintf("%s_%d", filename, time.Now().UnixMilli()), c)
+		writeConfigFile(fmt.Sprintf("%s_%d", name, time.Now().UnixMilli()), loaded)
 		// write new config with default values
-		writeConfigFile(filename, c)
+		writeConfigFile(name, c)
+		return
 	}
+	// config schema versions do match -> set config
+	jsonutil.FromByteOrExit(b, &c)
 }
 
 func writeConfigFile(name string, c *types.Config) {
-	jsonFile, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	jsonFile, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
-		logger.Logger().Fatal().Err(err).Msg("canot open/create config json file")
+		logger.Logger().Fatal().Err(err).Msg("cannot open/create config json file")
 	}
 	b := jsonutil.ToByteIndentOrExit(c)
 	_, err = jsonFile.Write(b)

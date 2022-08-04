@@ -1,0 +1,26 @@
+{
+    "version": "v0.3",
+    "debug": false,
+    "rpcHttpPort": 56331,
+    "rpcTimeout": 10000,
+    "rpcNodeTimeout": 2000,
+    "userAgent": "",
+    "sortJsonResponse": false,
+    "consensusNodeCount": 5,
+    "sessionNodeCount": 24,
+    "maxSessionCacheEntries": 100,
+    "maxSessionDuration": 60000000,
+    "headerTrueClientIp": "True-Client-Ip",
+    "hostToChainMap": {
+        "http://127.0.0.1:23460": "mockchain"
+    },
+    "logging": {
+        "consoleOutputEnabled": true,
+        "fileOutputEnabled": true,
+        "directory": "logs",
+        "filename": "relayer.log",
+        "maxSize": 100,
+        "maxBackups": 10,
+        "maxAge": 28
+    }
+}

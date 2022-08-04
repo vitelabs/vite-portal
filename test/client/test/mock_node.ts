@@ -6,14 +6,14 @@ import { CommonUtil } from "../src/utils"
 
 export function testMockNodes(common: TestCommon) {
   it('test DefaultMockNode client.send', async function () {
-    const url = common.defaultMockNode.url()
+    const url = common.defaultMockNode.entity.rpcHttpUrl
     const result = await common.client.send(url, "test_method")
     expect(result.status).to.be.equal(200)
     expect(result.data.result).to.be.equal(DefaultMockNode.DEFAULT_RESPONSE.result)
   })
 
   it('test DefaultMockNode provider.request', async function () {
-    const url = common.defaultMockNode.url()
+    const url = common.defaultMockNode.entity.rpcHttpUrl
     const node = common.createRandomNode("mockchain")
     node.rpcHttpUrl = url
     const putResult = await common.relayer.putNode(node)
@@ -25,12 +25,12 @@ export function testMockNodes(common: TestCommon) {
   })
 
   it('test TimeoutMockNode client.send', async function () {
-    const url = common.timeoutMockNode.url()
+    const url = common.timeoutMockNode.entity.rpcHttpUrl
     await CommonUtil.expectThrowsAsync(() => common.client.send(url, "test_method"), "timeout of 1000ms exceeded")
   })
 
   it('test TimeoutMockNode provider.request', async function () {
-    const url = common.timeoutMockNode.url()
+    const url = common.timeoutMockNode.entity.rpcHttpUrl
     const node = common.createRandomNode("mockchain")
     node.rpcHttpUrl = url
     const putResult = await common.relayer.putNode(node)

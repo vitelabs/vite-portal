@@ -1,29 +1,40 @@
 import express from "express"
 import * as http from "http"
-import { JsonRpcResponse } from "./types";
+import { JsonRpcResponse, NodeEntity } from "./types";
+import { CommonUtil } from "./utils";
 
 export abstract class MockNode {
   app: express.Express
   name?: string
-  port?: number
+  chain: string
+  port: number
   server?: http.Server
   requests: any[]
+  entity: NodeEntity
 
-  constructor() {
+  constructor(chain: string, port: number) {
     this.app = express()
+    this.chain = chain
+    this.port = port
     this.requests = []
+    this.entity = {
+      id: CommonUtil.uuid(),
+      chain: chain,
+      rpcHttpUrl: `http://127.0.0.1:${this.port}`,
+      rpcWsUrl: `ws://127.0.0.1:${this.port}`
+    }
   }
 
-  url = () => {
-    return `http://127.0.0.1:${this.port}`
-  }
-
-  abstract start(port: number): void
+  abstract start(): void
 
   stop = () => {
     this.server?.close(() => {
       console.log(`[${this.name}] on port ${this.port} has been closed.`)
     })
+  }
+
+  clear = () => {
+    this.requests = []
   }
 }
 
@@ -34,17 +45,15 @@ export class DefaultMockNode extends MockNode {
     result: "This is a test response!"
   }
 
-  constructor() {
-    super()
+  constructor(chain: string, port: number) {
+    super(chain, port)
     this.name = "DefaultMockNode"
   }
 
-  start = (port: number) => {
+  start = () => {
     if (this.server) {
       return
     }
-
-    this.port = port
 
     this.app.get('/', (req, res) => {
       this.requests.push(req)
@@ -56,24 +65,22 @@ export class DefaultMockNode extends MockNode {
       res.json(DefaultMockNode.DEFAULT_RESPONSE)
     })
 
-    this.server = this.app.listen(port, () => {
-      console.log(`[${this.name}] is listening on port ${port}.`)
+    this.server = this.app.listen(this.port, () => {
+      console.log(`[${this.name}] is listening on port ${this.port}.`)
     })
   }
 }
 
 export class TimeoutMockNode extends MockNode {
-  constructor() {
-    super()
+  constructor(chain: string, port: number) {
+    super(chain, port)
     this.name = "TimeoutMockNode"
   }
 
-  start = (port: number) => {
+  start = () => {
     if (this.server) {
       return
     }
-
-    this.port = port
 
     this.app.get('/', (req, res) => {
       this.requests.push(req)
@@ -83,8 +90,8 @@ export class TimeoutMockNode extends MockNode {
       this.requests.push(req)
     })
 
-    this.server = this.app.listen(port, () => {
-      console.log(`[${this.name}] is listening on port ${port}.`)
+    this.server = this.app.listen(this.port, () => {
+      console.log(`[${this.name}] is listening on port ${this.port}.`)
     })
   }
 }

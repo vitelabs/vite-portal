@@ -15,11 +15,11 @@ import (
 func TestGetConsensusNodes_Error(t *testing.T) {
 	chain := "chain1"
 	ctx := newDefaultTestContext()
-	r := coretypes.Relay{
-		Chain:    chain,
-		ClientIp: idutil.NewGuid(),
+	h := coretypes.SessionHeader{
+		IpAddress: idutil.NewGuid(),
+		Chain:     chain,
 	}
-	nodes, err := ctx.service.getConsensusNodes(r)
+	nodes, err := ctx.service.getConsensusNodes(h)
 	require.Error(t, err)
 	require.Empty(t, nodes)
 }
@@ -53,11 +53,11 @@ func TestGetConsensusNodes(t *testing.T) {
 			for i := 0; i < tc.nodes; i++ {
 				ctx.nodeService.PutNode(testutil.NewNode(chain))
 			}
-			r := coretypes.Relay{
-				Chain:    chain,
-				ClientIp: idutil.NewGuid(),
+			h := coretypes.SessionHeader{
+				IpAddress: idutil.NewGuid(),
+				Chain:     chain,
 			}
-			nodes, err := ctx.service.getConsensusNodes(r)
+			nodes, err := ctx.service.getConsensusNodes(h)
 			require.NoError(t, err)
 			require.Equal(t, tc.expected, len(nodes))
 			// assert nodes are unique
@@ -66,9 +66,9 @@ func TestGetConsensusNodes(t *testing.T) {
 				ids = append(ids, nodes[i].Id)
 				ids = append(ids, nodes[i].Id)
 			}
-			require.Equal(t, 2*tc.expected, len(ids))	
+			require.Equal(t, 2*tc.expected, len(ids))
 			s := generics.HashsetOf(uint64(len(nodes)), g.Equals[string], g.HashString, ids...)
-			require.Equal(t, tc.expected, s.Size())	
+			require.Equal(t, tc.expected, s.Size())
 		})
 	}
 }

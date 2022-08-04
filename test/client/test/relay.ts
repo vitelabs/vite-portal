@@ -3,6 +3,7 @@ import { expect } from "chai"
 import { TestCommon } from "./common"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
+import { TestContants } from "./constants"
 
 export function testRelay(common: TestCommon) {
   describe("testRelay", () => {
@@ -32,7 +33,7 @@ export function testRelay(common: TestCommon) {
       const result = await common.provider.request(method)
       expect(result).to.not.be.undefined
       // check if all mock nodes received a request
-      await CommonUtil.sleep(100)
+      await CommonUtil.sleep(TestContants.DefaultRpcNodeTimeout + 200)
       expect(common.defaultMockNode.requests.length).to.be.equal(1)
       expect(common.timeoutMockNode.requests.length).to.be.equal(1)
     })

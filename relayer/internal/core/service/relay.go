@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -20,21 +21,31 @@ import (
 
 // HandleRelay handles a read/write request to one or multiple nodes
 func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, roottypes.Error) {
-	nodes, err := s.getConsensusNodes(r)
+	header := coretypes.NewSessionHeader(r.ClientIp, r.Chain)
+	err := header.ValidateHeader()
+	if err != nil {
+		return nil, err
+	}
+	nodes, err := s.getConsensusNodes(header)
 	if err != nil {
 		return nil, err
 	}
 	err1 := errors.New("relay timed out")
 	c := make(chan string, len(nodes))
 	ctx, cancelFn := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(s.config.RpcNodeTimeout))
-	defer cancelFn()
+	_ = cancelFn // Ignore `lostcancel` warning (https://github.com/golang/go/issues/29587)
 	var processed uint32
+	responses := make([]coretypes.NodeResponse, len(nodes))
 	// Relay to multiple nodes and return the fastest response
-	for _, n := range nodes {
-		go func(n nodetypes.Node) {
-			response, err := s.executeRelay(ctx, n.RpcHttpUrl, r)
+	for i, n := range nodes {
+		go func(index int, n nodetypes.Node) {
+			res := s.execute(ctx, n, r)
+			responses[index] = res
 			atomic.AddUint32(&processed, 1)
-			if err != nil {
+			if int(processed) >= len(nodes) {
+				go s.dispatchRelayResult(r, header.HashString(), responses)
+			}
+			if res.Error != "" {
 				if int(processed) >= len(nodes) {
 					err1 = errors.New("relay failed")
 					// No more nodes left -> cancel the relay
@@ -42,13 +53,14 @@ func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, root
 				}
 				return
 			}
-			c <- response
-		}(n)
+			c <- res.Response
+		}(i, n)
 	}
 	for {
 		select {
 		case response := <- c:
 			res := &coretypes.RelayResponse{
+				SessionKey: header.HashString(),
 				Response: response,
 			}
 			// TODO: track relay time and add to metrics
@@ -61,8 +73,7 @@ func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, root
 }
 
 // getConsensusNodes returns random nodes used for consensus
-func (s *Service) getConsensusNodes(r coretypes.Relay) ([]nodetypes.Node, roottypes.Error) {
-	header := coretypes.NewSessionHeader(r.ClientIp, r.Chain)
+func (s *Service) getConsensusNodes(header coretypes.SessionHeader) ([]nodetypes.Node, roottypes.Error) {
 	session, err := s.HandleSession(header)
 	if err != nil {
 		return nil, err
@@ -80,17 +91,22 @@ func (s *Service) getConsensusNodes(r coretypes.Relay) ([]nodetypes.Node, rootty
 	return sessionNodes, nil
 }
 
-func (s *Service) executeRelay(ctx context.Context, nodeHttpRpcUrl string, r coretypes.Relay) (string, roottypes.Error) {
-	url := strings.Trim(nodeHttpRpcUrl, "/")
+func (s *Service) execute(ctx context.Context, n nodetypes.Node, r coretypes.Relay) coretypes.NodeResponse {
+	url := strings.Trim(n.RpcHttpUrl, "/")
 	if len(r.Payload.Path) > 0 {
 		url = url + "/" + strings.Trim(r.Payload.Path, "/")
 	}
+	startTime := time.Now()
 	response, err := s.executeHttpRequest(ctx, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("could not execute relay")
-		return "", coretypes.NewError(coretypes.DefaultCodeNamespace, coretypes.CodeHttpExecutionError, err)
+	result := coretypes.NodeResponse{
+		NodeId: n.Id,
+		ResponseTime: time.Since(startTime).Milliseconds(),
+		Response: response,
 	}
-	return response, nil
+	if err != nil {
+		result.Error = err.Error()
+	}
+	return result
 }
 
 // executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
@@ -129,6 +145,19 @@ func (s *Service) executeHttpRequest(ctx context.Context, payload, url, method s
 		res = sortJsonResponse(res)
 	}
 	return res, nil
+}
+
+// dispatchRelayResult dispatches the relay result to the orchestrator or directly to Kafka
+func (s *Service) dispatchRelayResult(r coretypes.Relay, sessionKey string, responses []coretypes.NodeResponse) {
+	result := coretypes.RelayResult{
+		SessionKey: sessionKey,
+		Relay: r,
+		Responses: responses,
+	}
+	if s.config.Debug {
+		logger.Logger().Debug().Str("result", fmt.Sprintf("%#v", result)).Msg("relay result")
+	}
+	// TODO: send to orchestrator or Kafka
 }
 
 // sortJsonResponse sorts json from a relay response

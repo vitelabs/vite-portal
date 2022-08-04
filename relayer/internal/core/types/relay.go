@@ -16,6 +16,21 @@ type Payload struct {
 	Headers map[string][]string `json:"headers,omitempty"` // The HTTP headers
 }
 
+// The response of a single node
+type NodeResponse struct {
+	NodeId       string `json:"nodeId"`
+	ResponseTime int64  `json:"responseTime"`
+	Response     string `json:"response"`
+	Error        string  `json:"error"`
+}
+
+// The result of a relay request
+type RelayResult struct {
+	SessionKey string         `json:"sessionKey"`
+	Relay      Relay          `json:"relay"`
+	Responses  []NodeResponse `json:"responses"`
+}
+
 // The response to a relay request
 type RelayResponse struct {
 	SessionKey string `json:"sessionKey"`

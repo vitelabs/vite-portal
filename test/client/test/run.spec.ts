@@ -14,6 +14,7 @@ describe('run tests', () => {
   })
 
   beforeEach(function () {
+    common.httpMockCollector.clear()
     common.defaultMockNode.clear()
     common.timeoutMockNode.clear()
   })
@@ -23,6 +24,7 @@ describe('run tests', () => {
   })
 
   afterEach(function () {
+    common.httpMockCollector.clear()
     common.defaultMockNode.clear()
     common.timeoutMockNode.clear()
   })

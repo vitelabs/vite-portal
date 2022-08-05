@@ -165,9 +165,12 @@ func (s *Service) dispatchRelayResult(r coretypes.Relay, sessionKey string, resp
 	if s.config.Debug {
 		logger.Logger().Debug().Str("result", fmt.Sprintf("%#v", result)).Msg("relay result")
 	}
-	// TODO: send to orchestrator or Kafka
+	// TODO: send to Kafka
 	if s.httpCollector != nil {
-		s.httpCollector.DispatchRelayResult(result)
+		err := s.httpCollector.DispatchRelayResult(result)
+		if err != nil {
+			logger.Logger().Error().Err(err).Msg("HttpCollector.DispatchRelayResult failed")
+		}
 	}
 }
 

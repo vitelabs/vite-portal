@@ -52,6 +52,8 @@ type Config struct {
 	MaxSessionDuration int64 `json:"maxSessionDuration"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// The optional HttpCollector URL to which all relay results will be sent to
+	HttpCollectorUrl string `json:"httpCollectorUrl,omitempty"`
 	// The entries to map a host to the respective chain
 	HostToChainMap map[string]string `json:"hostToChainMap"`
 	// Logging related configurtion

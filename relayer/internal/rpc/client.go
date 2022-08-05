@@ -55,7 +55,7 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 		relay = coretypes.Relay{
 			Payload: coretypes.Payload{
 				Data:    string(body),
-				Method:  "POST",
+				Method:  http.MethodPost,
 				Path:    "",
 				Headers: r.Header,
 			},

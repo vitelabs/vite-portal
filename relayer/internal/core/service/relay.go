@@ -166,6 +166,9 @@ func (s *Service) dispatchRelayResult(r coretypes.Relay, sessionKey string, resp
 		logger.Logger().Debug().Str("result", fmt.Sprintf("%#v", result)).Msg("relay result")
 	}
 	// TODO: send to orchestrator or Kafka
+	if s.httpCollector != nil {
+		s.httpCollector.DispatchRelayResult(result)
+	}
 }
 
 // sortJsonResponse sorts json from a relay response

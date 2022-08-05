@@ -36,6 +36,7 @@ export function testRelay(common: TestCommon) {
       await CommonUtil.sleep(TestContants.DefaultRpcNodeTimeout + 200)
       expect(common.defaultMockNode.requests.length).to.be.equal(1)
       expect(common.timeoutMockNode.requests.length).to.be.equal(1)
+      // TODO: check if DeadlineExceeded and Cancelled are set correctly in dispatched relay result
     })
   })
 };

@@ -91,17 +91,25 @@ func (s *Service) getConsensusNodes(header coretypes.SessionHeader) ([]nodetypes
 	return sessionNodes, nil
 }
 
+// execute forwards the relay request and composes the node response
 func (s *Service) execute(ctx context.Context, n nodetypes.Node, r coretypes.Relay) coretypes.NodeResponse {
 	url := strings.Trim(n.RpcHttpUrl, "/")
 	if len(r.Payload.Path) > 0 {
 		url = url + "/" + strings.Trim(r.Payload.Path, "/")
 	}
 	startTime := time.Now()
-	response, err := s.executeHttpRequest(ctx, r.Payload.Data, url, r.Payload.Method, r.Payload.Headers)
+	response, err := s.executeHttpRequest(ctx, url, r.Payload)
 	result := coretypes.NodeResponse{
 		NodeId: n.Id,
 		ResponseTime: time.Since(startTime).Milliseconds(),
 		Response: response,
+	}
+	if ctx.Err() != nil {
+		if ctx.Err().Error() == "context deadline exceeded" {
+			result.DeadlineExceeded = true
+		} else {
+			result.Cancelled = true
+		}
 	}
 	if err != nil {
 		result.Error = err.Error()
@@ -109,10 +117,10 @@ func (s *Service) execute(ctx context.Context, n nodetypes.Node, r coretypes.Rel
 	return result
 }
 
-// executeHttpRequest takes in the raw json string and forwards it to the RPC endpoint
-func (s *Service) executeHttpRequest(ctx context.Context, payload, url, method string, headers map[string][]string) (string, error) {
+// executeHttpRequest forwards the relay request to the HTTP RPC endpoint
+func (s *Service) executeHttpRequest(ctx context.Context, url string, payload coretypes.Payload) (string, error) {
 	// generate the request
-	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequestWithContext(ctx, payload.Method, url, bytes.NewBuffer([]byte(payload.Data)))
 	if err != nil {
 		return "", err
 	}
@@ -121,10 +129,10 @@ func (s *Service) executeHttpRequest(ctx context.Context, payload, url, method s
 	}
 	// TODO: set basic auth instead of IP whitelisting
 	// req.SetBasicAuth(username, password)
-	if len(headers) == 0 {
+	if len(payload.Headers) == 0 {
 		req.Header.Set("Content-Type", "application/json")
 	} else {
-		for k, v := range headers {
+		for k, v := range payload.Headers {
 			for _, s := range v {
 				req.Header.Set(k, s)
 			}

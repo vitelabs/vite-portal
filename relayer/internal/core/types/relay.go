@@ -18,10 +18,12 @@ type Payload struct {
 
 // The response of a single node
 type NodeResponse struct {
-	NodeId       string `json:"nodeId"`
-	ResponseTime int64  `json:"responseTime"`
-	Response     string `json:"response"`
-	Error        string  `json:"error"`
+	NodeId           string `json:"nodeId"`
+	ResponseTime     int64  `json:"responseTime"`
+	Response         string `json:"response"`
+	DeadlineExceeded bool   `json:"deadlineExceeded"`
+	Cancelled        bool   `json:"cancelled"`
+	Error            string `json:"error"`
 }
 
 // The result of a relay request

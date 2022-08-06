@@ -102,7 +102,7 @@ func (s *Service) execute(ctx context.Context, n nodetypes.Node, r coretypes.Rel
 	result := coretypes.NodeResponse{
 		NodeId: n.Id,
 		ResponseTime: time.Since(startTime).Milliseconds(),
-		Response: response,
+		Response: strings.TrimSpace(response),
 	}
 	if ctx.Err() != nil {
 		if ctx.Err().Error() == "context deadline exceeded" {

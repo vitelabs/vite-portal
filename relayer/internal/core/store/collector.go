@@ -11,12 +11,14 @@ import (
 
 type HttpCollector struct {
 	url string
+	userAgent string
 	timeout int64
 }
 
-func NewHttpCollector(url string, timeout int64) *HttpCollector {
+func NewHttpCollector(url, userAgent string, timeout int64) *HttpCollector {
 	return &HttpCollector{
 		url: url,
+		userAgent: userAgent,
 		timeout: timeout,
 	}
 }
@@ -29,6 +31,9 @@ func (c *HttpCollector) DispatchRelayResult(result types.RelayResult) error {
 	req, err := http.NewRequest(http.MethodPost, c.url, bytes.NewBuffer(data))
 	if err != nil {
 		return err
+	}
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
 	}
 	req.Header.Set("Content-Type", "application/json")
 

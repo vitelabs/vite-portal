@@ -4,7 +4,7 @@
     "rpcHttpPort": 56331,
     "rpcTimeout": 10000,
     "rpcNodeTimeout": 2000,
-    "userAgent": "",
+    "userAgent": "test-relayer",
     "sortJsonResponse": false,
     "consensusNodeCount": 5,
     "sessionNodeCount": 24,

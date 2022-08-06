@@ -62,7 +62,7 @@ export abstract class CommonUtil {
     const start = Date.now()
     while (true) {
       if (Date.now() > start + timeout) {
-        break
+        throw new Error("timed out")
       }
       if (method()) {
         break

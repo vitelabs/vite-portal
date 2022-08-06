@@ -8,7 +8,7 @@ import (
 )
 
 func TestMockCollector(t *testing.T) {
-	c := NewHttpCollector("", 0)
+	c := NewHttpCollector("", "", 0)
 	err := c.DispatchRelayResult(types.RelayResult{})
 	require.Error(t, err)
 }

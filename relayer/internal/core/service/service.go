@@ -23,7 +23,7 @@ func NewService(config types.Config, cache *store.CacheStore, nodeService nodein
 		nodeService: nodeService,
 	}
 	if config.HttpCollectorUrl != "" {
-		svc.httpCollector = store.NewHttpCollector(config.HttpCollectorUrl, config.RpcNodeTimeout)
+		svc.httpCollector = store.NewHttpCollector(config.HttpCollectorUrl, config.UserAgent, config.RpcNodeTimeout)
 	}
 	return svc 
 }

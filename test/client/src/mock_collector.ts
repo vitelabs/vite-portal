@@ -10,6 +10,7 @@ export class HttpMockCollector {
 
   constructor(port: number) {
     this.app = express()
+    this.app.use(express.json())
     this.name = "HttpMockCollector"
     this.port = port
     this.results = []

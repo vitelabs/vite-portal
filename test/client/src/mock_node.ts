@@ -14,6 +14,7 @@ export abstract class MockNode {
 
   constructor(chain: string, port: number) {
     this.app = express()
+    this.app.use(express.json())
     this.chain = chain
     this.port = port
     this.requests = []

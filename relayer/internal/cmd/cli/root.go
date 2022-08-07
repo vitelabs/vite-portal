@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/internal/app"
 	"github.com/vitelabs/vite-portal/internal/cmd"
 	"github.com/vitelabs/vite-portal/internal/rpc"
+	"github.com/vitelabs/vite-portal/version"
 )
 
 var (
@@ -75,7 +76,7 @@ var versionCmd = &cobra.Command{
 	Short: "Get current version",
 	Long:  `Retrieves the version`,
 	Run: func(command *cobra.Command, args []string) {
-		fmt.Printf("AppVersion: %s\n", app.AppVersion)
+		fmt.Printf("Version: %s\n", version.RELAYER_BUILD_VERSION)
 	},
 }
 

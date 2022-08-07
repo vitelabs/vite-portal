@@ -1,0 +1,3 @@
+package version
+const RELAYER_COMMIT_VERSION = "b048571bc32089aab606bfb2571f47cf4208eaee"
+const RELAYER_BUILD_VERSION = "v0.0.1"

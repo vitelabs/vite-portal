@@ -13,7 +13,6 @@ import (
 
 const (
 	AppName               = "vite-portal-relayer"
-	AppVersion            = "0.0.1"
 	defaultConfigFileName = "relayer_config.json"
 )
 

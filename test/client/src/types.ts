@@ -1,7 +1,14 @@
+export type JsonRpcRequest = {
+  jsonrpc: string
+  id: number
+  method: string
+  params: any[]
+}
+
 export type JsonRpcResponse = {
-  jsonrpc?: string
-  id?: number
-  result?: string
+  jsonrpc: string
+  id: number
+  result: string
 }
 
 export type GenericPage<T> = {

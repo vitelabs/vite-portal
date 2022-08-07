@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -92,11 +93,21 @@ func WriteResponseWithCode(w http.ResponseWriter, data any, code int) {
 }
 
 func WriteJsonResponse(w http.ResponseWriter, data string) {
-	WriteJsonResponseWithCode(w, data, http.StatusOK)
+	HandleJsonResponseWithCode(w, data, http.StatusOK)
 }
 
-func WriteJsonResponseWithCode(w http.ResponseWriter, data string, code int) {
-	var raw map[string]interface{}
+func HandleJsonResponseWithCode(w http.ResponseWriter, data string, code int) {
+	// Handle batch response -> array
+	if strings.HasPrefix(data, "[") {
+		var raw []interface{}
+		WriteJsonResponseWithCode(w, data, code, raw)
+	} else {
+		var raw map[string]interface{}
+		WriteJsonResponseWithCode(w, data, code, raw)
+	}
+}
+
+func WriteJsonResponseWithCode[T []interface{} | map[string]interface{}](w http.ResponseWriter, data string, code int, raw T) {
 	if err := jsonutil.FromByte([]byte(data), &raw); err != nil {
 		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		logger.Logger().Error().Err(err).Msg("WriteJsonResponseWithCode failed")

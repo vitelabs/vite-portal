@@ -37,5 +37,23 @@ export function testHeight(common: TestCommon) {
       expect(Number(height)).to.be.greaterThanOrEqual(Number(results[0].data.result))
       expect(Number(height)).to.be.greaterThanOrEqual(Number(results[1].data.result))
     })
+
+    it('test getSnapshotChainHeight batch', async function () {
+      const method = "ledger_getSnapshotChainHeight"
+      const expected = await common.client.send(common.nodeHttpUrl, method)
+      expect(Number(expected.data.result)).to.be.greaterThan(0)
+      const batch = await common.provider.batch([{
+        methodName: method,
+        params: []
+      }, {
+        methodName: method,
+        params: []
+      }])
+      expect(batch.length).to.be.equal(2)
+      expect(Number(batch[0].result)).to.be.greaterThanOrEqual(Number(expected.data.result))
+      expect(batch[0].error).to.be.null
+      expect(Number(batch[1].result)).to.be.greaterThanOrEqual(Number(expected.data.result))
+      expect(batch[1].error).to.be.null
+    })
   })
 };

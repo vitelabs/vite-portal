@@ -1,5 +1,7 @@
 # portal-relayer
 
+Relayer is the core component of VitePortal and responsible for relaying data requests and responses to and from Vite full nodes.
+
 ## Getting Started
 ### Example usage
 
@@ -29,8 +31,12 @@ All build options will be located in `build/cmd/relayer` after running the follo
 ### Run
 
 `go run cmd/relayer/main.go`
+
 or
+
 `go run cmd/relayer/main.go start`
+
+The latter command makes use of `relayer_config.json` in the current directory or creates a new file. If the schema version does not match, the existing configuration file will be backed up and replaced with default values.
 
 ### Test
 
@@ -97,7 +103,7 @@ GET /api/v1/db/nodes
 
 ## Create or update a node <a name="put_node"></a>
 
-TODO: add authorization to limit access to orchestrator
+TODO: add authorization to restrict access to orchestrator
 
 ### Request
 
@@ -154,7 +160,7 @@ GET /api/v1/db/nodes/{id}
 
 ## Delete a node <a name="delete_node"></a>
 
-TODO: add authorization to limit access to orchestrator
+TODO: add authorization to restrict access to orchestrator
 
 ### Request
 
@@ -198,7 +204,7 @@ GET /api/v1/db/chains
 
 ## Relay request <a name="post_relay"></a> ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 
-The load balancer should forward all incoming HTTP requests to this endpoint.
+The load balancer should forward all incoming HTTP requests to this endpoint given that the relayer can be deployed multiple times and thus scales horizontally. It is assumed that the load balancer routes traffic to relayers based on a pre-defined routing algorithm (e.g. round robin).
 
 ### Request
 

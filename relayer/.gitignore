@@ -24,4 +24,5 @@ go.work
 build/
 logs/
 main
+/relayer_config.json
 cmd/relayer/relayer_config.json

@@ -129,7 +129,7 @@ func writeDefaultHeader(w http.ResponseWriter) {
 }
 
 func ExtractBody(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) ([]byte, error) {
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)) // 1048576 bytes = 1 megabyte
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, types.MaxRequestContentLength))
 	if err != nil {
 		return nil, err
 	}

@@ -9,20 +9,20 @@ import (
 )
 
 type testEntry struct {
-	Id    string `json:"id"`
+	Id    int    `json:"id"`
 	Chain string `json:"chain"`
 }
 
 func TestFromByte(t *testing.T) {
-	json := `{"id": "1234", "chain": "chain1"}`
+	json := `{"id": 12423434, "chain": "chain1"}`
 	expected := testEntry{
-		Id:    "1234",
+		Id:    12423434,
 		Chain: "chain1",
 	}
 	entry := testEntry{}
 	err := FromByte([]byte(json), &entry)
 	assert.NoError(t, err)
-	assert.Equal(t, "1234", entry.Id)
+	assert.Equal(t, 12423434, entry.Id)
 	assert.Equal(t, "chain1", entry.Chain)
 	assert.Equal(t, expected, entry)
 }
@@ -53,10 +53,10 @@ func TestFromByteMultiple(t *testing.T) {
 		},
 		{
 			name:  "Test entry",
-			body:  "{ \"id\": \"1234\", \"chain\": \"chain1\"}",
+			body:  "{ \"id\": 1234, \"chain\": \"chain1\"}",
 			model: testEntry{},
 			expected: testEntry{
-				Id:    "1234",
+				Id:    1234,
 				Chain: "chain1",
 			},
 			expectedError: nil,

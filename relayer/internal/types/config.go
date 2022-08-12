@@ -9,6 +9,7 @@ const (
 	DefaultConfigVersion               = "v0.3"
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
+	DefaultRpcWsPort                   = 56332
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
 	DefaultUserAgent                   = ""
@@ -34,6 +35,8 @@ type Config struct {
 	Debug bool `json:"debug"`
 	// Port number for the HTTP RPC
 	RpcHttpPort int32 `json:"rpcHttpPort"`
+	// Port number for the WebSocket RPC
+	RpcWsPort int32 `json:"rpcWsPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
 	// The time in milliseconds before a RPC request to a node times out
@@ -82,6 +85,7 @@ func NewDefaultConfig() Config {
 		Version:                DefaultConfigVersion,
 		Debug:                  DefaultDebug,
 		RpcHttpPort:            DefaultRpcHttpPort,
+		RpcWsPort:              DefaultRpcWsPort,
 		RpcTimeout:             DefaultRpcTimeout,
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
 		UserAgent:              DefaultUserAgent,

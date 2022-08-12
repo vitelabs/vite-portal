@@ -78,7 +78,7 @@ export class Relayer {
   }
 
   putNode = (node: NodeEntity) => {
-    return this.provider.put(`/api/v1/db/nodes/${node.id}`, node)
+    return this.provider.put(`/api/v1/db/nodes`, node)
   }
 
   deleteNode = (id: string) => {

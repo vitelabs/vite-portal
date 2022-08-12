@@ -31,7 +31,7 @@ func StartHttpRpc(port int32, timeout int64, debug, profile bool) {
 		{Name: "GetChains", Method: "GET", Path: "/api/v1/db/chains", HandlerFunc: GetChains},
 		{Name: "GetNodes", Method: "GET", Path: "/api/v1/db/nodes", HandlerFunc: GetNodes},
 		{Name: "GetNode", Method: "GET", Path: "/api/v1/db/nodes/:id", HandlerFunc: GetNode},
-		{Name: "PutNode", Method: "PUT", Path: "/api/v1/db/nodes/:id", HandlerFunc: PutNode},
+		{Name: "PutNode", Method: "PUT", Path: "/api/v1/db/nodes", HandlerFunc: PutNode},
 		{Name: "DeleteNode", Method: "DELETE", Path: "/api/v1/db/nodes/:id", HandlerFunc: DeleteNode},
 	}
 

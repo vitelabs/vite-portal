@@ -20,10 +20,10 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "portal-relayer",
-	Short: "portal-relayer relays data requests and responses to and from Vite full nodes.",
-	Long: `portal-relayer is the core component of VitePortal and responsible for relaying
-	data requests and responses to and from Vite full nodes.`,
+	Use:   fmt.Sprintf("%s", app.AppName),
+	Short: fmt.Sprintf("%s relays data requests and responses to and from Vite full nodes.", app.AppName),
+	Long: fmt.Sprintf(`%s is the core component of VitePortal and responsible for relaying
+	data requests and responses to and from Vite full nodes.`, app.AppName),
 }
 
 func Execute() {
@@ -37,13 +37,12 @@ func init() {
 	startCmd.Flags().BoolVar(&profile, "profile", false, "expose cpu & memory profiling")
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(versionCmd)
-	rootCmd.AddCommand(stopCmd)
 }
 
 var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: fmt.Sprintf("Starts %s daemon", app.AppName),
-	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from the assigned <datadir>`, app.AppName),
+	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, app.AppName, app.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
 		if err := app.InitApp(debug); err != nil {
 			cmd.Exit("start error", err)
@@ -77,14 +76,5 @@ var versionCmd = &cobra.Command{
 	Long:  `Retrieves the version`,
 	Run: func(command *cobra.Command, args []string) {
 		fmt.Printf("Version: %s\n", version.RELAYER_BUILD_VERSION)
-	},
-}
-
-var stopCmd = &cobra.Command{
-	Use:   "stop",
-	Short: fmt.Sprintf("Stops %s daemon", app.AppName),
-	Long:  fmt.Sprintf(`Stops the %s daemon`, app.AppName),
-	Run: func(command *cobra.Command, args []string) {
-		fmt.Printf("%s stopped\n", app.AppName)
 	},
 }

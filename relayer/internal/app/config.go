@@ -13,7 +13,7 @@ import (
 
 const (
 	AppName               = "vite-portal-relayer"
-	defaultConfigFileName = "relayer_config.json"
+	DefaultConfigFilename = "relayer_config.json"
 )
 
 var (
@@ -43,7 +43,7 @@ func InitConfig(debug bool) (types.Config, error) {
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("DefaultConfig")
 
 	// 1. Load config file
-	loadConfigFromFile(defaultConfigFileName, &c)
+	loadConfigFromFile(DefaultConfigFilename, &c)
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("After loading config file")
 
 	// 2. Apply flags, overwrite the loaded file configuration

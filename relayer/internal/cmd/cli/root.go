@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	debug   bool
-	profile bool
+	debug      bool
+	profile    bool
+	configPath string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -35,6 +36,7 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "sets log level to debug")
 	startCmd.Flags().BoolVar(&profile, "profile", false, "expose cpu & memory profiling")
+	startCmd.Flags().StringVar(&configPath, "config", "", "path to the configuration file")
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(versionCmd)
 }
@@ -44,11 +46,12 @@ var startCmd = &cobra.Command{
 	Short: fmt.Sprintf("Starts %s daemon", app.AppName),
 	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, app.AppName, app.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
-		if err := app.InitApp(debug); err != nil {
+		if err := app.InitApp(debug, configPath); err != nil {
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, app.CoreApp.Config.RpcTimeout, debug, profile)
+		go rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, app.CoreApp.Config.RpcTimeout, app.CoreApp.Config.Debug, profile)
+		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, app.CoreApp.Config.RpcTimeout)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

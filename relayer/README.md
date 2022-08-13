@@ -53,6 +53,34 @@ By running the following command all unit tests will be executed:
 
 Note: Consider deleting `relayer_config.json` and `logs` in `cmd/relayer` before debugging.
 
+## Docker
+
+### Build image
+
+```
+docker build --tag vitelabs/portal-relayer:test .
+```
+
+### Run image
+
+Before running the image you can create and modify the configuration file to be used by the relayer: `$HOME/.relayer/relayer_config.json`
+
+```
+docker run -v $HOME/.relayer/:/var/relayer/ -p 56331:56331 -p 56332:56332 --name portal-relayer --detach vitelabs/portal-relayer:test start --config /var/relayer/relayer_config.json
+```
+
+### Inspect container
+
+```
+docker exec -it portal-relayer /bin/bash
+```
+
+### Stop/remove container
+
+```
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-relayer:test --format="{{.ID}}")) || docker container prune --force
+```
+
 # API
 
 * [Get list of nodes](#get_nodes)

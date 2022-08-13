@@ -1,8 +1,8 @@
 package app
 
 import (
-	"fmt"
 	"os"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,18 +11,37 @@ import (
 )
 
 func TestConfigFile(t *testing.T) {
-	filename := fmt.Sprintf("%s.json", idutil.NewGuid())
+	p := path.Join("test", idutil.NewGuid(), DefaultConfigFilename)
+	dir := path.Dir(p)
+	defer os.RemoveAll(dir)
 	expected := types.NewDefaultConfig()
 	expected.HostToChainMap = map[string]string{
 		"buidl.vite.net": "vite_testnet",
 		"node.vite.net": "vite_mainnet",
 	}
-	writeConfigFile(filename, &expected)
+	writeConfigFile(p, &expected)
 	actual := types.NewDefaultConfig()
 	assert.Equal(t, 0, len(actual.HostToChainMap))
-	loadConfigFromFile(filename, &actual)
-	os.Remove(filename)
+	loadConfigFromFile(p, &actual)
+	files, _ := os.ReadDir(dir)
+	assert.Equal(t, 1, len(files))
 	assert.Equal(t, 2, len(actual.HostToChainMap))
-	assert.Equal(t, expected.HostToChainMap["buidl.vite.net"], "vite_testnet")
-	assert.Equal(t, expected.HostToChainMap["node.vite.net"], "vite_mainnet")
+	assert.Equal(t, actual.HostToChainMap["buidl.vite.net"], "vite_testnet")
+	assert.Equal(t, actual.HostToChainMap["node.vite.net"], "vite_mainnet")
+}
+
+func TestConfigFileBackup(t *testing.T) {
+	p := path.Join("test", idutil.NewGuid(), DefaultConfigFilename)
+	dir := path.Dir(p)
+	defer os.RemoveAll(dir)
+	config1 := types.NewDefaultConfig()
+	config1.Version = "0"
+	writeConfigFile(p, &config1)
+	files, _ := os.ReadDir(dir)
+	assert.Equal(t, 1, len(files))
+	config2 := types.NewDefaultConfig()
+	loadConfigFromFile(p, &config2)
+	assert.NotEqual(t, config1.Version, config2.Version)
+	files, _ = os.ReadDir(dir)
+	assert.Equal(t, 2, len(files))
 }

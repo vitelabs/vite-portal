@@ -49,7 +49,7 @@ docker exec -it vite-portal_r1_1 /bin/bash
 
 1. docker-compose build
 2. docker-compose up -d
-3. Insert node(s) -> <./relayer#put_node>
-4. Relay request -> <./relayer#post_relay>
+3. [Insert node(s)](./relayer#put_node) with the curl command
+4. [Relay request](./relayer#post_relay) with the curl command
 
 The current experimental deployment contains the relayer only. Afer developing [orchestrator](./orchestrator) the third step to insert nodes manually will not be needed anymore. In the planned/final deployment all nodes will automatically connect to the orchestrator if configured correctly and the orchestrator will broadcast newly added or updated nodes to all relayers.

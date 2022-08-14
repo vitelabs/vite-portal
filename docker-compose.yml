@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  r1:
+    restart: always
+    build: ./relayer
+    ports:
+      - 56331:56331
+      - 56332:56332
+    volumes:
+      - relayer_data:/root/.relayer
+      - ./relayer/bin:/root/relayer-bin
+    entrypoint: /bin/bash -c "cp -R /root/relayer-bin/r1 /root/.relayer && ./relayer start --config /root/.relayer/r1/relayer_config.json"
+volumes:
+  relayer_data:

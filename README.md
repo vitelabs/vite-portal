@@ -18,3 +18,23 @@ This monorepo is organized as follows:
 <h1 align="center">
 	<img src="assets/images/session.jpg" alt="Session handling">
 </h1>
+
+## Docker compose
+
+### Start
+
+```
+docker-compose up -d
+```
+
+### Stop
+
+```
+docker-compose down
+```
+
+### Inspect r1
+
+```
+docker exec -it vite-portal_r1_1 /bin/bash
+```

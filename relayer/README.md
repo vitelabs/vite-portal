@@ -38,6 +38,8 @@ or
 
 The latter command makes use of `relayer_config.json` in the current directory or creates a new file. If the schema version does not match, the existing configuration file will be backed up and replaced with default values.
 
+A description of the different configuration options can be found [here](./internal/types/config.go).
+
 ### Test
 
 By running the following command all unit tests will be executed:
@@ -64,6 +66,8 @@ docker build --tag vitelabs/portal-relayer:test .
 ### Run image
 
 Before running the image you can create and modify the configuration file to be used by the relayer: `$HOME/.relayer/relayer_config.json`
+
+A description of the different configuration options can be found [here](./internal/types/config.go).
 
 ```
 docker run -v $HOME/.relayer/:/var/relayer/ -p 56331:56331 -p 56332:56332 --name portal-relayer --detach vitelabs/portal-relayer:test start --config /var/relayer/relayer_config.json

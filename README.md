@@ -21,6 +21,12 @@ This monorepo is organized as follows:
 
 ## Docker compose
 
+### Build
+
+```
+docker-compose build
+```
+
 ### Start
 
 ```
@@ -38,3 +44,12 @@ docker-compose down
 ```
 docker exec -it vite-portal_r1_1 /bin/bash
 ```
+
+## Experimental deployment
+
+1. docker-compose build
+2. docker-compose up -d
+3. Insert node(s) -> <./relayer#put_node>
+4. Relay request -> <./relayer#post_relay>
+
+The current experimental deployment contains the relayer only. Afer developing [orchestrator](./orchestrator) the third step to insert nodes manually will not be needed anymore. In the planned/final deployment all nodes will automatically connect to the orchestrator if configured correctly and the orchestrator will broadcast newly added or updated nodes to all relayers.

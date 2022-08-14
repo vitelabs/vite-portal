@@ -2,6 +2,7 @@
     "version": "v0.3",
     "debug": false,
     "rpcHttpPort": 56331,
+    "rpcWsPort": 56332,
     "rpcTimeout": 10000,
     "rpcNodeTimeout": 5000,
     "userAgent": "",

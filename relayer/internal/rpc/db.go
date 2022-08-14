@@ -10,7 +10,7 @@ import (
 
 func GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	res := app.CoreApp.GetChains()
-	WriteResponse(w, res)
+	WriteJsonResponse(w, res)
 }
 
 func GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -23,7 +23,7 @@ func GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	if err != nil {
 		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 	}
-	WriteResponse(w, res)
+	WriteJsonResponse(w, res)
 }
 
 func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -37,7 +37,7 @@ func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		WriteErrorResponse(w, http.StatusNotFound, "node does not exist")
 		return
 	}
-	WriteResponse(w, res)
+	WriteJsonResponse(w, res)
 }
 
 // PutNode enables the orchestrator to add or update a node
@@ -52,7 +52,7 @@ func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	WriteResponse(w, nil)
+	WriteJsonResponse(w, nil)
 }
 
 // DeleteNode enables the orchestrator to delete a node
@@ -67,5 +67,5 @@ func DeleteNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	WriteResponse(w, nil)
+	WriteJsonResponse(w, nil)
 }

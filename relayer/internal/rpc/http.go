@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -73,47 +72,36 @@ func cors(w *http.ResponseWriter, r *http.Request) (isOptions bool) {
 	return ((*r).Method == "OPTIONS")
 }
 
-func WriteResponse(w http.ResponseWriter, data any) {
+func WriteResponse(w http.ResponseWriter, data string) {
 	WriteResponseWithCode(w, data, http.StatusOK)
 }
 
-func WriteResponseWithCode(w http.ResponseWriter, data any, code int) {
+func WriteResponseWithCode(w http.ResponseWriter, data string, code int) {
+	writeDefaultHeader(w)
+	w.WriteHeader(code)
+	_, err2 := w.Write([]byte(data))
+	if err2 != nil {
+		logger.Logger().Error().Err(err2).Msg("WriteResponseWithCode failed")
+	}
+}
+
+func WriteJsonResponse(w http.ResponseWriter, data any) {
+	WriteJsonResponseWithCode(w, data, http.StatusOK)
+}
+
+func WriteJsonResponseWithCode(w http.ResponseWriter, data any, code int) {
 	b, err1 := jsonutil.ToByte(data)
 	if err1 != nil {
 		WriteErrorResponse(w, http.StatusInternalServerError, err1.Error())
-		logger.Logger().Error().Err(err1).Msg("WriteResponseWithCode failed")
+		logger.Logger().Error().Err(err1).Msg("WriteJsonResponseWithCode failed")
 		return
 	}
 	writeDefaultHeader(w)
 	w.WriteHeader(code)
 	_, err2 := w.Write(b)
 	if err2 != nil {
-		logger.Logger().Error().Err(err2).Msg("WriteResponseWithCode failed")
+		logger.Logger().Error().Err(err2).Msg("WriteJsonResponseWithCode failed")
 	}
-}
-
-func WriteJsonResponse(w http.ResponseWriter, data string) {
-	HandleJsonResponseWithCode(w, data, http.StatusOK)
-}
-
-func HandleJsonResponseWithCode(w http.ResponseWriter, data string, code int) {
-	// Handle batch response -> array
-	if strings.HasPrefix(data, "[") {
-		var raw []interface{}
-		WriteJsonResponseWithCode(w, data, code, raw)
-	} else {
-		var raw map[string]interface{}
-		WriteJsonResponseWithCode(w, data, code, raw)
-	}
-}
-
-func WriteJsonResponseWithCode[T []interface{} | map[string]interface{}](w http.ResponseWriter, data string, code int, raw T) {
-	if err := jsonutil.FromByte([]byte(data), &raw); err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		logger.Logger().Error().Err(err).Msg("WriteJsonResponseWithCode failed")
-		return
-	}
-	WriteResponseWithCode(w, raw, code)
 }
 
 func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
@@ -121,7 +109,7 @@ func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
 		Code:    code,
 		Message: msg,
 	}
-	WriteResponseWithCode(w, err, code)
+	WriteJsonResponseWithCode(w, err, code)
 }
 
 func writeDefaultHeader(w http.ResponseWriter) {

@@ -27,5 +27,5 @@ func debugTest(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 func debugMemStats(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	WriteResponse(w, m)
+	WriteJsonResponse(w, m)
 }

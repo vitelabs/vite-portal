@@ -6,6 +6,7 @@ import { testMockNodes } from "./mock_node"
 import { testNodes } from "./node"
 import { testRaw } from "./raw"
 import { testRelay } from "./relay"
+import { testVersion } from "./version"
 
 describe('run tests', () => {
   let common = new TestCommon()
@@ -36,4 +37,5 @@ describe('run tests', () => {
   testMockNodes(common)
   testRaw(common)
   testRelay(common)
+  testVersion(common)
 })

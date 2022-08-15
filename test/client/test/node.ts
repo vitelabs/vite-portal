@@ -16,6 +16,7 @@ export function testNodes(common: TestCommon) {
 
   it('test get nonexistent node', async function () {
     const result = await common.relayer.getNode(CommonUtil.uuid())
+    expect("application/json; charset=UTF-8").to.be.equal(result.headers["content-type"])
     expect(result.status).to.be.equal(404)
     expect(result.data.code).to.be.equal(404)
     expect(result.data.message).to.be.equal("node does not exist")

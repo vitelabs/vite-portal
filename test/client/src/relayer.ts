@@ -73,6 +73,14 @@ export class Relayer {
     return response.data
   }
 
+  getName = () => {
+    return this.provider.get("/")
+  }
+
+  getVersion = () => {
+    return this.provider.get("/api/v1")
+  }
+
   getNode = (id: string) => {
     return this.provider.get(`/api/v1/db/nodes/${id}`)
   }

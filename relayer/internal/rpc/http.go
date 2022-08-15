@@ -14,6 +14,11 @@ import (
 	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
 )
 
+const (
+	ContentTypeTextPlain = "text/plain; charset=UTF-8"
+	ContentTypeJson      = "application/json; charset=UTF-8"
+)
+
 type route struct {
 	Name        string
 	Method      string
@@ -72,12 +77,12 @@ func cors(w *http.ResponseWriter, r *http.Request) (isOptions bool) {
 	return ((*r).Method == "OPTIONS")
 }
 
-func WriteResponse(w http.ResponseWriter, data string) {
-	WriteResponseWithCode(w, data, http.StatusOK)
+func WriteResponse(w http.ResponseWriter, data, contentType string) {
+	WriteResponseWithCode(w, data, contentType, http.StatusOK)
 }
 
-func WriteResponseWithCode(w http.ResponseWriter, data string, code int) {
-	writeDefaultHeader(w)
+func WriteResponseWithCode(w http.ResponseWriter, data, contentType string, code int) {
+	writeHeader(w, contentType)
 	w.WriteHeader(code)
 	_, err2 := w.Write([]byte(data))
 	if err2 != nil {
@@ -96,7 +101,7 @@ func WriteJsonResponseWithCode(w http.ResponseWriter, data any, code int) {
 		logger.Logger().Error().Err(err1).Msg("WriteJsonResponseWithCode failed")
 		return
 	}
-	writeDefaultHeader(w)
+	writeHeader(w, ContentTypeJson)
 	w.WriteHeader(code)
 	_, err2 := w.Write(b)
 	if err2 != nil {
@@ -112,8 +117,8 @@ func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
 	WriteJsonResponseWithCode(w, err, code)
 }
 
-func writeDefaultHeader(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+func writeHeader(w http.ResponseWriter, contentType string) {
+	w.Header().Set("Content-Type", contentType)
 }
 
 func ExtractBody(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) ([]byte, error) {

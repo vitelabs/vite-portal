@@ -9,9 +9,9 @@ import (
 )
 
 func Name(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	WriteResponse(w, app.AppName)
+	WriteResponse(w, app.AppName, ContentTypeTextPlain)
 }
 
 func Version(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-	WriteResponse(w, version.RELAYER_BUILD_VERSION)
+	WriteResponse(w, version.RELAYER_BUILD_VERSION, ContentTypeTextPlain)
 }

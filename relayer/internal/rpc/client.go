@@ -37,7 +37,7 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("response", fmt.Sprintf("%#v", res)).Msg("relay response")
 	}
-	WriteResponse(w, res)
+	WriteResponse(w, res, ContentTypeJson)
 }
 
 func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (coretypes.Relay, error) {

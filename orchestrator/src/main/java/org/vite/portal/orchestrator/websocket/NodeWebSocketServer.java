@@ -54,7 +54,7 @@ public class NodeWebSocketServer {
   private int peerNum;
   private JSONObject snapshot;
   private NodeInfo nodeInfo;
-  private WSMessageHandler wsMessageHandler;
+  private WsMessageHandler wsMessageHandler;
 
   public static CopyOnWriteArraySet<NodeWebSocketServer> getWebSockets() {
     return webSocketSet;
@@ -93,7 +93,7 @@ public class NodeWebSocketServer {
     // if (ips == null) {
     // ips = WSMessageHandlerImpl.getDBByName("ip");
     // }
-    wsMessageHandler = (WSMessageHandler) ApplicationContextUtils.getBean(WSMessageHandlerImpl.class);
+    wsMessageHandler = (WsMessageHandler) ApplicationContextUtils.getBean(WsMessageHandlerImpl.class);
     HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
     if (httpSession.getAttribute("ClientIP") != null) {
       this.remoteIp = (String) httpSession.getAttribute("ClientIP");

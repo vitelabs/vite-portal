@@ -1,5 +1,5 @@
 package org.vite.portal.orchestrator.websocket;
 
-public interface WSMessageHandler {
+public interface WsMessageHandler {
   void messageHandler(String msg, NodeWebSocketServer webSocketServer);
 }

@@ -1,0 +1,33 @@
+spring:
+    config:
+        activate:
+            on-profile: dev
+name: dev-YAML
+server:
+  port: 8080
+kafka:
+  servers:
+  awardTopic:
+  sslLocation:
+
+---
+spring:
+    config:
+        activate:
+            on-profile: test
+name: test-YAML
+kafka:
+  servers:
+  awardTopic:
+  sslLocation:
+
+---
+spring:
+    config:
+        activate:
+            on-profile: prod
+name: prod-YAML
+kafka:
+  servers:
+  awardTopic:
+  sslLocation:

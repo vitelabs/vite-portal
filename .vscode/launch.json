@@ -21,8 +21,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${fileDirname}",
-      "args": [
-      ]
+      "args": []
     },
     {
       "type": "node",
@@ -36,10 +35,17 @@
         "--timeout",
         "999999",
         "--colors",
-        "--resolveJsonModule",
+        "--resolveJsonModule"
       ],
       "cwd": "${workspaceFolder}/test/client/",
-      "console": "integratedTerminal",
+      "console": "integratedTerminal"
     },
+    {
+      "type": "java",
+      "name": "Launch Orchestrator",
+      "request": "launch",
+      "mainClass": "org.vite.portal.orchestrator.OrchestratorApplication",
+      "projectName": "orchestrator"
+    }
   ]
 }

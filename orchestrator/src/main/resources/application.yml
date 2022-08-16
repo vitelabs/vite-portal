@@ -3,6 +3,7 @@ spring:
         activate:
             on-profile: dev
 name: dev-YAML
+environment: development
 server:
   port: 8080
 kafka:
@@ -16,6 +17,7 @@ spring:
         activate:
             on-profile: test
 name: test-YAML
+environment: testing
 kafka:
   servers:
   awardTopic:
@@ -27,6 +29,7 @@ spring:
         activate:
             on-profile: prod
 name: prod-YAML
+environment: production
 kafka:
   servers:
   awardTopic:

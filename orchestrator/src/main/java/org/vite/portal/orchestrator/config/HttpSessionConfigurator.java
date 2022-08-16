@@ -33,11 +33,11 @@ public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
      * This bean will automatically register the Websocket endpoint declared with
      * the @ServerEndpoint annotation
      * 
-     * When the active profile is different e.g. prod, serverEndpointExporter will
+     * When the active profile is different e.g. test, serverEndpointExporter will
      * be ignored. This is to prevent "javax.websocket.server.ServerContainer not
      * available" error when running tests.
      */
-    @Profile({ "dev", "test" })
+    @Profile({ "dev", "prod" })
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();

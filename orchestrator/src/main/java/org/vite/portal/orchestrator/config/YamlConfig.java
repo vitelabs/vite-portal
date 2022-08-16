@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties
 public class YamlConfig {
   private String name;
+  private String environment;
 
   public String getName() {
     return name;
@@ -16,5 +17,13 @@ public class YamlConfig {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getEnvironment() {
+    return environment;
+  }
+
+  public void setEnvironment(String environment) {
+    this.environment = environment;
   }
 }

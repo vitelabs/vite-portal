@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/cryptoutil"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/jsonutil"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/mathutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/cryptoutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
 // Session randomly groups one client with a set of nodes and is valid for a limited timeframe

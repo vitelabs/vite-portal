@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 )
 
 func TestConfigFile(t *testing.T) {

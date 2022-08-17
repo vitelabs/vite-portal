@@ -10,8 +10,8 @@ import (
 	"github.com/rs/zerolog"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/runtimeutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/runtimeutil"
 )
 
 var (
@@ -34,15 +34,15 @@ func Init(debug bool) {
 	logger = zerolog.New(newConsoleWriter()).With().Timestamp().Logger()
 }
 
-func Configure(cfg *types.Config) {
-	Init(cfg.Debug)
+func Configure(debug bool, cfg types.LoggingConfig) {
+	Init(debug)
 
 	var writers []io.Writer
 
-	if cfg.Logging.ConsoleOutputEnabled {
+	if cfg.ConsoleOutputEnabled {
 		writers = append(writers, newConsoleWriter())
 	}
-	if cfg.Logging.FileOutputEnabled {
+	if cfg.FileOutputEnabled {
 		writers = append(writers, newRollingFile(cfg))
 	}
 	mw := zerolog.MultiLevelWriter(writers...)
@@ -70,16 +70,16 @@ func newConsoleWriter() io.Writer {
 	return zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 }
 
-func newRollingFile(config *types.Config) io.Writer {
-	if err := os.MkdirAll(config.Logging.Directory, 0744); err != nil {
-		logger.Error().Err(err).Str("path", config.Logging.Directory).Msg("can't create log directory")
+func newRollingFile(config types.LoggingConfig) io.Writer {
+	if err := os.MkdirAll(config.Directory, 0744); err != nil {
+		logger.Error().Err(err).Str("path", config.Directory).Msg("can't create log directory")
 		return nil
 	}
 
 	return &lumberjack.Logger{
-		Filename:   path.Join(config.Logging.Directory, config.Logging.Filename),
-		MaxBackups: config.Logging.MaxBackups,
-		MaxSize:    config.Logging.MaxSize,
-		MaxAge:     config.Logging.MaxAge,
+		Filename:   path.Join(config.Directory, config.Filename),
+		MaxBackups: config.MaxBackups,
+		MaxSize:    config.MaxSize,
+		MaxAge:     config.MaxAge,
 	}
 }

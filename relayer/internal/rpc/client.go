@@ -7,8 +7,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/relayer/internal/app"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
 func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

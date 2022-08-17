@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/jsonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
 var (
@@ -54,7 +54,7 @@ func InitConfig(debug bool, configPath string) (types.Config, error) {
 	}
 
 	// 3. Configure logger
-	logger.Configure(&c)
+	logger.Configure(c.Debug, c.Logging)
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("GlobalConfig")
 
 	// 4. Validate

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
 type Server struct {

@@ -3,6 +3,8 @@ package types
 import (
 	"errors"
 	"fmt"
+
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 const (
@@ -60,24 +62,7 @@ type Config struct {
 	// The entries to map a host to the respective chain
 	HostToChainMap map[string]string `json:"hostToChainMap"`
 	// Logging related configurtion
-	Logging LoggingConfig `json:"logging"`
-}
-
-type LoggingConfig struct {
-	// Enable console logging
-	ConsoleOutputEnabled bool `json:"consoleOutputEnabled"`
-	// Enable logging to a file
-	FileOutputEnabled bool `json:"fileOutputEnabled"`
-	// Directory to log to to when file output is enabled
-	Directory string `json:"directory"`
-	// Filename is the name of the logfile which will be placed inside the directory
-	Filename string `json:"filename"`
-	// MaxSize the max size in MB of the logfile before it's rolled
-	MaxSize int `json:"maxSize"`
-	// MaxBackups the max number of rolled files to keep
-	MaxBackups int `json:"maxBackups"`
-	// MaxAge the max age in days to keep a logfile
-	MaxAge int `json:"maxAge"`
+	Logging sharedtypes.LoggingConfig `json:"logging"`
 }
 
 func NewDefaultConfig() Config {
@@ -96,7 +81,7 @@ func NewDefaultConfig() Config {
 		MaxSessionDuration:     DefaultMaxSessionDuration,
 		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
 		HostToChainMap:         map[string]string{},
-		Logging: LoggingConfig{
+		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,
 			Directory:            DefaultLoggingDirectory,

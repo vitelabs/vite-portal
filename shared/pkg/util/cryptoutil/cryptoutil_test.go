@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vitelabs/vite-portal/relayer/internal/generics"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	g "github.com/zyedidia/generic"
 )
 

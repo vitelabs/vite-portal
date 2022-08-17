@@ -3,7 +3,7 @@ package collections
 import (
 	"sync"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/util/sliceutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 )
 
 type NameObjectCollectionI interface {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/vitelabs/vite-portal/relayer/internal/generics"
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/mathutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
 func (s *Service) GetChains() []string {

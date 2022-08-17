@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/jsonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
 const (

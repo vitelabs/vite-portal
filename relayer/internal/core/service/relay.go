@@ -13,10 +13,10 @@ import (
 	"time"
 
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/cryptoutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/cryptoutil"
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes

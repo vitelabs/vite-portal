@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 )
 
 func TestHandleSession_Error(t *testing.T) {

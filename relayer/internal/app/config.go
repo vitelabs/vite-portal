@@ -14,11 +14,6 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/util/jsonutil"
 )
 
-const (
-	AppName               = "vite-portal-relayer"
-	DefaultConfigFilename = "relayer_config.json"
-)
-
 var (
 	CoreApp *RelayerCoreApp
 )
@@ -47,7 +42,7 @@ func InitConfig(debug bool, configPath string) (types.Config, error) {
 
 	// 1. Load config file
 	if configPath == "" {
-		loadConfigFromFile(DefaultConfigFilename, &c)
+		loadConfigFromFile(types.DefaultConfigFilename, &c)
 	} else {
 		loadConfigFromFile(configPath, &c)
 	}

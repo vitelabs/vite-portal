@@ -18,7 +18,7 @@ func main() {
 		panic("unable to get the current filename")
 	}
 	dirname := filepath.Dir(filename)
-	path := path.Join(dirname, "relayer_config.json")
+	path := path.Join(dirname, types.DefaultConfigFilename)
 	c := types.NewDefaultConfig()
 	writeConfigFile(path, &c)
 	fmt.Printf("config written to: %s\n", path)

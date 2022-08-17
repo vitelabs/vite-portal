@@ -11,7 +11,7 @@ import (
 )
 
 func TestConfigFile(t *testing.T) {
-	p := path.Join("test", idutil.NewGuid(), DefaultConfigFilename)
+	p := path.Join("test", idutil.NewGuid(), types.DefaultConfigFilename)
 	dir := path.Dir(p)
 	defer os.RemoveAll(dir)
 	expected := types.NewDefaultConfig()
@@ -31,7 +31,7 @@ func TestConfigFile(t *testing.T) {
 }
 
 func TestConfigFileBackup(t *testing.T) {
-	p := path.Join("test", idutil.NewGuid(), DefaultConfigFilename)
+	p := path.Join("test", idutil.NewGuid(), types.DefaultConfigFilename)
 	dir := path.Dir(p)
 	defer os.RemoveAll(dir)
 	config1 := types.NewDefaultConfig()

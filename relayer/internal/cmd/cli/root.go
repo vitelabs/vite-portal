@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/app"
 	"github.com/vitelabs/vite-portal/relayer/internal/cmd"
 	"github.com/vitelabs/vite-portal/relayer/internal/rpc"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/relayer/version"
 )
 
@@ -21,10 +22,10 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   fmt.Sprintf("%s", app.AppName),
-	Short: fmt.Sprintf("%s relays data requests and responses to and from Vite full nodes.", app.AppName),
+	Use:   fmt.Sprintf("%s", types.AppName),
+	Short: fmt.Sprintf("%s relays data requests and responses to and from Vite full nodes.", types.AppName),
 	Long: fmt.Sprintf(`%s is the core component of VitePortal and responsible for relaying
-	data requests and responses to and from Vite full nodes.`, app.AppName),
+	data requests and responses to and from Vite full nodes.`, types.AppName),
 }
 
 func Execute() {
@@ -43,8 +44,8 @@ func init() {
 
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: fmt.Sprintf("Starts %s daemon", app.AppName),
-	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, app.AppName, app.DefaultConfigFilename),
+	Short: fmt.Sprintf("Starts %s daemon", types.AppName),
+	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, types.AppName, types.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
 		if err := app.InitApp(debug, configPath); err != nil {
 			cmd.Exit("start error", err)
@@ -69,7 +70,7 @@ var startCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
-		fmt.Printf("%s started\n", app.AppName)
+		fmt.Printf("%s started\n", types.AppName)
 	},
 }
 

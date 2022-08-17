@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/vitelabs/vite-portal/internal/logger"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
 )
 
 type Node struct {

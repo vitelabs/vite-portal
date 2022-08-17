@@ -1,10 +1,10 @@
 package app
 
 import (
-	corestore "github.com/vitelabs/vite-portal/internal/core/store"
-	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
-	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	"github.com/vitelabs/vite-portal/internal/types"
+	corestore "github.com/vitelabs/vite-portal/relayer/internal/core/store"
+	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
+	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
 )
 
 type Context struct {

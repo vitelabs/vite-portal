@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 )
 
 func TestHttpExecutionError(t *testing.T) {

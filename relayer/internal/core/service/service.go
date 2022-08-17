@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/vitelabs/vite-portal/internal/core/interfaces"
-	"github.com/vitelabs/vite-portal/internal/core/store"
-	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
-	"github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/interfaces"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/store"
+	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
 )
 
 // Service maintains the link to storage and exposes getter/setter methods related to core functionalities

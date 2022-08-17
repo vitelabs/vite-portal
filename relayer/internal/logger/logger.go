@@ -10,8 +10,8 @@ import (
 	"github.com/rs/zerolog"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/runtimeutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/runtimeutil"
 )
 
 var (

@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/generics"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/idutil"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/generics"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 	g "github.com/zyedidia/generic"
 )
 

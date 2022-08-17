@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	"github.com/vitelabs/vite-portal/internal/node/types"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestPutNodeInvalid(t *testing.T) {

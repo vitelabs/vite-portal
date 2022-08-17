@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 )
 
 func TestExtractModelFromBody(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/util/jsonutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/jsonutil"
 )
 
 type HttpCollector struct {

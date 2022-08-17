@@ -5,7 +5,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/vitelabs/vite-portal/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
 )
 
 type codec struct {

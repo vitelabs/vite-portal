@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/idutil"
+	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
 )
 
 func PutNodes(t *testing.T, s nodeinterfaces.ServiceI, chain string, count int) {

@@ -39,13 +39,6 @@
       ],
       "cwd": "${workspaceFolder}/test/client/",
       "console": "integratedTerminal"
-    },
-    {
-      "type": "java",
-      "name": "Launch Orchestrator",
-      "request": "launch",
-      "mainClass": "org.vite.portal.orchestrator.OrchestratorApplication",
-      "projectName": "orchestrator"
     }
   ]
 }

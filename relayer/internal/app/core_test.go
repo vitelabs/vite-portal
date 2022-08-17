@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/internal/core/types"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestSetChain(t *testing.T) {

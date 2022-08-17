@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/vitelabs/vite-portal/internal/util/runtimeutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/runtimeutil"
 )
 
 // Error code namespace identifier

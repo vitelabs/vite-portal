@@ -3,8 +3,8 @@ package jsonutil
 import (
 	"encoding/json"
 
-	"github.com/vitelabs/vite-portal/internal/logger"
-	"github.com/vitelabs/vite-portal/internal/util/runtimeutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/runtimeutil"
 )
 
 func ToByte(v any) ([]byte, error) {

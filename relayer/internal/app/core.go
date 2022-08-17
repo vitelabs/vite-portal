@@ -4,15 +4,15 @@ import (
 	"errors"
 	"fmt"
 
-	coreservice "github.com/vitelabs/vite-portal/internal/core/service"
-	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/logger"
-	"github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/sliceutil"
+	coreservice "github.com/vitelabs/vite-portal/relayer/internal/core/service"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/sliceutil"
 
-	nodeinterfaces "github.com/vitelabs/vite-portal/internal/node/interfaces"
-	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
-	orchestrator "github.com/vitelabs/vite-portal/internal/orchestrator/interfaces"
+	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
+	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
+	orchestrator "github.com/vitelabs/vite-portal/relayer/internal/orchestrator/interfaces"
 )
 
 type RelayerCoreApp struct {

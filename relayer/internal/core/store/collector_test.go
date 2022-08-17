@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
 )
 
 func TestMockCollector(t *testing.T) {

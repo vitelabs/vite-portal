@@ -3,8 +3,8 @@ package version
 import "fmt"
 
 func PrintBuildVersion() {
-	if RELAYER_COMMIT_VERSION != "" {
-		fmt.Printf("version: %s, git commit: %s\n", RELAYER_BUILD_VERSION, RELAYER_COMMIT_VERSION)
+	if PROJECT_COMMIT_VERSION != "" {
+		fmt.Printf("version: %s, git commit: %s\n", PROJECT_BUILD_VERSION, PROJECT_COMMIT_VERSION)
 	} else {
 		fmt.Println("cannot read gitversion file please build with Make first")
 	}

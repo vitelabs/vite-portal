@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/internal/node/types"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestGetChains(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/logger"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 )
 
 type CacheStore struct {

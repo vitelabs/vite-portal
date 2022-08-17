@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vitelabs/vite-portal/internal/node/interfaces"
-	"github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 )
 
 // Service maintains the link to storage and exposes getter/setter methods for handling nodes

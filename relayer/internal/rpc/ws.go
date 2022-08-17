@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vitelabs/vite-portal/internal/logger"
-	"github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/zyedidia/generic/mapset"
 	"golang.org/x/net/websocket"
 )

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
 )
 
 func TestCacheStore(t *testing.T) {

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 )
 
 func (s *Service) PutNode(n types.Node) error {

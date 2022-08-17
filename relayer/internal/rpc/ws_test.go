@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"golang.org/x/net/websocket"
 )
 

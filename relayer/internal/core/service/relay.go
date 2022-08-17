@@ -12,11 +12,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
-	"github.com/vitelabs/vite-portal/internal/logger"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/cryptoutil"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/logger"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/cryptoutil"
 )
 
 // HandleRelay handles a read/write request to one or multiple nodes

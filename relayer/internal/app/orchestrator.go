@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/vitelabs/vite-portal/internal/orchestrator/client"
-	"github.com/vitelabs/vite-portal/internal/orchestrator/interfaces"
+	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/client"
+	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/interfaces"
 )
 
 func NewOrchestrator() (interfaces.ClientI, error) {

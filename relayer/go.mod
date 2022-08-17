@@ -1,4 +1,4 @@
-module github.com/vitelabs/vite-portal
+module github.com/vitelabs/vite-portal/relayer
 
 go 1.18
 

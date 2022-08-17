@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	coretypes "github.com/vitelabs/vite-portal/internal/core/types"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
-	"github.com/vitelabs/vite-portal/internal/util/idutil"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/idutil"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestHandleSession_Error(t *testing.T) {

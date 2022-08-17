@@ -1,18 +1,19 @@
-MAIN_DIR=relayer
+NAME=relayer
+CONFIG=relayer_config.json
 WORK_DIR=$(shell pwd)
-MAIN=$(shell pwd)/cmd/$(MAIN_DIR)/main.go
+MAIN=$(shell pwd)/cmd/$(NAME)/main.go
 BUILD_ROOT_DIR=$(shell pwd)/build
-RELAYER_GIT_COMMIT=$(shell git rev-parse HEAD)
-RELAYER_VERSION=$(shell cat version/buildversion)
-RELAYER_VERSION_FILE=$(shell pwd)/version/buildversion.go
+PROJECT_GIT_COMMIT=$(shell git rev-parse HEAD)
+PROJECT_VERSION=$(shell cat version/buildversion)
+PROJECT_VERSION_FILE=$(shell pwd)/version/buildversion.go
 
-BUILD_DIR=$(BUILD_ROOT_DIR)/cmd/$(MAIN_DIR)
-BUILD_BIN=$(BUILD_DIR)/relayer
+BUILD_DIR=$(BUILD_ROOT_DIR)/cmd/$(NAME)
+BUILD_BIN=$(BUILD_DIR)/$(NAME)
 
 build:
 	GO111MODULE=on go build -o $(BUILD_BIN) $(MAIN)
-	@echo "Build relayer done."
-	@echo "Run $(BUILD_DIR)/relayer to start relayer."
+	@echo "Build $(NAME) done."
+	@echo "Run $(BUILD_DIR)/$(NAME) to start $(NAME)."
 
 test:
 	GO111MODULE=on go test ./...
@@ -21,38 +22,38 @@ create_config:
 	GO111MODULE=on go run ./config/main.go
 
 build_version: create_config
-	@echo "package version" > $(RELAYER_VERSION_FILE)
-	@echo "const RELAYER_COMMIT_VERSION = "\"$(RELAYER_GIT_COMMIT)\" >> $(RELAYER_VERSION_FILE)
-	@echo "const RELAYER_BUILD_VERSION = "\"$(RELAYER_VERSION)\" >> $(RELAYER_VERSION_FILE)
-	@echo "build version is "$(RELAYER_VERSION)", git commit is "$(RELAYER_GIT_COMMIT)"."
+	@echo "package version" > $(PROJECT_VERSION_FILE)
+	@echo "const PROJECT_COMMIT_VERSION = "\"$(PROJECT_GIT_COMMIT)\" >> $(PROJECT_VERSION_FILE)
+	@echo "const PROJECT_BUILD_VERSION = "\"$(PROJECT_VERSION)\" >> $(PROJECT_VERSION_FILE)
+	@echo "build version is "$(PROJECT_VERSION)", git commit is "$(PROJECT_GIT_COMMIT)"."
 
 build_linux_amd64:
-	$(eval BUILD_DIR_LOCAL := $(BUILD_DIR)/relayer-$(RELAYER_VERSION)-linux-amd64)
-	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on GOARCH=amd64 go build -o $(BUILD_DIR_LOCAL)/relayer $(MAIN)
+	$(eval BUILD_DIR_LOCAL := $(BUILD_DIR)/$(NAME)-$(PROJECT_VERSION)-linux-amd64)
+	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on GOARCH=amd64 go build -o $(BUILD_DIR_LOCAL)/$(NAME) $(MAIN)
 
-	@cp $(shell pwd)/config/relayer_config.json $(BUILD_DIR_LOCAL)/relayer_config.json
+	@cp $(shell pwd)/config/$(CONFIG) $(BUILD_DIR_LOCAL)/$(CONFIG)
 	@cp $(shell pwd)/bin/bootstrap_linux.sh $(BUILD_DIR_LOCAL)/bootstrap.sh
 
-	@ls -d $(BUILD_DIR_LOCAL)/relayer
-	@echo "Build linux-amd64 version done."
+	@ls -d $(BUILD_DIR_LOCAL)/$(NAME)
+	@echo "Build $(NAME)-linux-amd64 version done."
 
 build_linux_arm64:
-	$(eval BUILD_DIR_LOCAL := $(BUILD_DIR)/relayer-$(RELAYER_VERSION)-linux-arm64)
-	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on GOARCH=arm64 go build -o $(BUILD_DIR_LOCAL)/relayer $(MAIN)
+	$(eval BUILD_DIR_LOCAL := $(BUILD_DIR)/$(NAME)-$(PROJECT_VERSION)-linux-arm64)
+	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on GOARCH=arm64 go build -o $(BUILD_DIR_LOCAL)/$(NAME) $(MAIN)
 
-	@cp $(shell pwd)/config/relayer_config.json $(BUILD_DIR_LOCAL)/relayer_config.json
+	@cp $(shell pwd)/config/$(CONFIG) $(BUILD_DIR_LOCAL)/$(CONFIG)
 	@cp $(shell pwd)/bin/bootstrap_linux.sh $(BUILD_DIR_LOCAL)/bootstrap.sh
 
-	@ls -d $(BUILD_DIR_LOCAL)/relayer
-	@echo "Build linux-arm64 version done."
+	@ls -d $(BUILD_DIR_LOCAL)/$(NAME)
+	@echo "Build $(NAME)-linux-arm64 version done."
 
-relayer-linux-amd64: build_version build_linux_amd64
+app-linux-amd64: build_version build_linux_amd64
 
-relayer-linux-arm64: build_version build_linux_arm64
+app-linux-arm64: build_version build_linux_arm64
 
-relayer: build_version build
+app: build_version build
 
-all: relayer-linux-amd64 relayer-linux-arm64
+all: app-linux-amd64 app-linux-arm64
 
 clean:
 	rm -r $(BUILD_ROOT_DIR)/

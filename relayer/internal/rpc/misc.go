@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/vitelabs/vite-portal/internal/app"
-	"github.com/vitelabs/vite-portal/version"
+	"github.com/vitelabs/vite-portal/relayer/internal/app"
+	"github.com/vitelabs/vite-portal/relayer/version"
 )
 
 func Name(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -13,5 +13,5 @@ func Name(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func Version(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-	WriteResponse(w, version.RELAYER_BUILD_VERSION, ContentTypeTextPlain)
+	WriteResponse(w, version.PROJECT_BUILD_VERSION, ContentTypeTextPlain)
 }

@@ -3,8 +3,8 @@ package store
 import (
 	"sync"
 
-	"github.com/vitelabs/vite-portal/internal/collections"
-	"github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/collections"
+	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 )
 
 type MemoryStore struct {

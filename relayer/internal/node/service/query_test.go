@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestGetNodes_Empty(t *testing.T) {

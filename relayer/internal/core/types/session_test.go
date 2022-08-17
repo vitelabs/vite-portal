@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
-	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
+	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 func TestNewSessionKey(t *testing.T) {

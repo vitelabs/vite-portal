@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 )
 
 const DefaultCodeNamespace roottypes.CodeNamespace = ModuleName

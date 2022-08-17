@@ -1,12 +1,12 @@
 package service
 
 import (
-	corestore "github.com/vitelabs/vite-portal/internal/core/store"
-	nodeservice "github.com/vitelabs/vite-portal/internal/node/service"
-	nodestore "github.com/vitelabs/vite-portal/internal/node/store"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
-	roottypes "github.com/vitelabs/vite-portal/internal/types"
-	"github.com/vitelabs/vite-portal/internal/util/testutil"
+	corestore "github.com/vitelabs/vite-portal/relayer/internal/core/store"
+	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
+	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
 
 type testContext struct {

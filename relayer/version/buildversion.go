@@ -1,3 +1,3 @@
 package version
-const RELAYER_COMMIT_VERSION = "2cd7bd288214ea0277f985b73e4026bc94af0421"
-const RELAYER_BUILD_VERSION = "v0.0.1-alpha.4"
+const PROJECT_COMMIT_VERSION = "4dbadc9c8ba22210aa7f9ea6f68bd30ca67b4e53"
+const PROJECT_BUILD_VERSION = "v0.0.1-alpha.4"

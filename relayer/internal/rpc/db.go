@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/vitelabs/vite-portal/internal/app"
-	nodetypes "github.com/vitelabs/vite-portal/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/app"
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 )
 
 func GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {

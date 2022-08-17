@@ -7,10 +7,10 @@ import (
 	"syscall"
 
 	"github.com/spf13/cobra"
-	"github.com/vitelabs/vite-portal/internal/app"
-	"github.com/vitelabs/vite-portal/internal/cmd"
-	"github.com/vitelabs/vite-portal/internal/rpc"
-	"github.com/vitelabs/vite-portal/version"
+	"github.com/vitelabs/vite-portal/relayer/internal/app"
+	"github.com/vitelabs/vite-portal/relayer/internal/cmd"
+	"github.com/vitelabs/vite-portal/relayer/internal/rpc"
+	"github.com/vitelabs/vite-portal/relayer/version"
 )
 
 var (
@@ -78,6 +78,6 @@ var versionCmd = &cobra.Command{
 	Short: "Get current version",
 	Long:  `Retrieves the version`,
 	Run: func(command *cobra.Command, args []string) {
-		fmt.Printf("Version: %s\n", version.RELAYER_BUILD_VERSION)
+		fmt.Printf("Version: %s\n", version.PROJECT_BUILD_VERSION)
 	},
 }

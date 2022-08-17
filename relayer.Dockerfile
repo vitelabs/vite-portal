@@ -4,12 +4,11 @@ FROM golang:1.18-alpine as build
 
 WORKDIR /buildroot
 
-COPY go.mod ./
-COPY go.sum ./
+ADD . .
+
+WORKDIR /buildroot/relayer
 
 RUN go mod download
-
-ADD . .
 
 RUN go build -o relayer cmd/relayer/main.go
 

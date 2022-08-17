@@ -1,0 +1,3 @@
+package version
+const PROJECT_COMMIT_VERSION = "49126d170b08a334c41a8c6ec2eb72b92f99e121"
+const PROJECT_BUILD_VERSION = "v0.0.1-alpha.4"

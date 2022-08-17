@@ -4,8 +4,8 @@ WORK_DIR=$(shell pwd)
 MAIN=$(shell pwd)/cmd/$(NAME)/main.go
 BUILD_ROOT_DIR=$(shell pwd)/build
 PROJECT_GIT_COMMIT=$(shell git rev-parse HEAD)
-PROJECT_VERSION=$(shell cat version/buildversion)
-PROJECT_VERSION_FILE=$(shell pwd)/version/buildversion.go
+PROJECT_VERSION=$(shell cd .. && cat shared/pkg/version/buildversion)
+PROJECT_VERSION_FILE=$(shell cd .. && pwd)/shared/pkg/version/buildversion.go
 
 BUILD_DIR=$(BUILD_ROOT_DIR)/cmd/$(NAME)
 BUILD_BIN=$(BUILD_DIR)/$(NAME)

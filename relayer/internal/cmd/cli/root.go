@@ -11,7 +11,7 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/cmd"
 	"github.com/vitelabs/vite-portal/relayer/internal/rpc"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/version"
+	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
 
 var (

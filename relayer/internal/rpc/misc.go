@@ -5,7 +5,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/relayer/version"
+	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
 
 func Name(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

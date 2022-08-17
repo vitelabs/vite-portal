@@ -3,7 +3,6 @@ module github.com/vitelabs/vite-portal/relayer
 go 1.18
 
 require (
-	github.com/hashicorp/golang-lru v0.5.4
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
@@ -13,6 +12,7 @@ require (
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/rs/zerolog v1.27.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

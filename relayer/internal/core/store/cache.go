@@ -6,18 +6,18 @@ import (
 	"time"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type CacheStore struct {
-	sessionCache roottypes.Cache
+	sessionCache sharedtypes.Cache
 	lock         sync.RWMutex
 }
 
 func NewCacheStore(capacity int) *CacheStore {
 	s := &CacheStore{
-		sessionCache: *roottypes.NewCache(capacity),
+		sessionCache: *sharedtypes.NewCache(capacity),
 		lock:         sync.RWMutex{},
 	}
 	return s

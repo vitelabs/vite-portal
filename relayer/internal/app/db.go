@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/vitelabs/vite-portal/relayer/internal/generics"
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 )
 
 func (app *RelayerCoreApp) GetChains() []string {

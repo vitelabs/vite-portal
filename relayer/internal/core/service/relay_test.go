@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/generics"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 	g "github.com/zyedidia/generic"
 )

@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/google/uuid v1.3.0
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/rs/zerolog v1.27.0
 	github.com/stretchr/testify v1.8.0
 	github.com/zyedidia/generic v1.1.0

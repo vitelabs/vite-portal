@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/vitelabs/vite-portal/relayer/internal/generics"
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 )
 
 type ServiceI interface {

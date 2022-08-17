@@ -3,8 +3,8 @@ package service
 import (
 	"errors"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/generics"
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 

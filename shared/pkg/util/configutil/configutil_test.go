@@ -6,8 +6,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 )
+
+func TestInitConfig(t *testing.T) {
+	p := path.Join("test", idutil.NewGuid(), "test.json")
+	dir := path.Dir(p)
+	defer os.RemoveAll(dir)
+	actual := newTestConfig()
+	actual.Debug = false
+	err := InitConfig(&actual, true, p, actual.Version)
+	assert.NoError(t, err)
+	assert.Equal(t, true, actual.Debug)
+}
 
 func TestConfigFile(t *testing.T) {
 	p := path.Join("test", idutil.NewGuid(), "test.json")
@@ -51,8 +63,24 @@ type testConfig struct {
 	HostToChainMap map[string]string `json:"hostToChainMap"`
 }
 
-func (c testConfig) GetVersion() string {
+func (c *testConfig) GetVersion() string {
 	return c.Version
+}
+
+func (c *testConfig) GetDebug() bool {
+	return c.Debug
+}
+
+func (c *testConfig) SetDebug(debug bool) {
+	c.Debug = debug
+}
+
+func (c *testConfig) GetLoggingConfig() sharedtypes.LoggingConfig {
+	return *new(sharedtypes.LoggingConfig)
+}
+
+func (c *testConfig) Validate() error {
+	return nil
 }
 
 func newTestConfig() testConfig {

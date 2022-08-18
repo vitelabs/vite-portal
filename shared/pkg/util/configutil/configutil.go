@@ -14,7 +14,32 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
-func LoadConfigFromFile[T interfaces.ConfigI](p, defaultVersion string, c *T) {
+func InitConfig[T interfaces.ConfigI](c T, debug bool, configPath, version string) error {
+	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("DefaultConfig")
+
+	// 1. Load config file
+	LoadConfigFromFile(configPath, version, c)
+	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("After loading config file")
+
+	// 2. Apply flags, overwrite the loaded file configuration
+	if debug {
+		c.SetDebug(debug)
+	}
+
+	// 3. Configure logger
+	logger.Configure(c.GetDebug(), c.GetLoggingConfig())
+	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("GlobalConfig")
+
+	// 4. Validate
+	err := c.Validate()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func LoadConfigFromFile[T interfaces.ConfigI](p, defaultVersion string, c T) {
 	var jsonFile *os.File
 	defer jsonFile.Close()
 	// if file does not exist -> create, otherwise open and compare version

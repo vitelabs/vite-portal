@@ -12,7 +12,7 @@ export function testVersion(common: TestCommon) {
 
   describe("testVersion", () => {
     it('test getVersion', async function () {
-      const expected = await fileUtil.readFileAsync("../../relayer/version/buildversion")
+      const expected = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
       const actual = await common.relayer.getVersion()
       expect("text/plain; charset=UTF-8").to.be.equal(actual.headers["content-type"])
       expect(expected.trim()).to.be.equal(actual.data)

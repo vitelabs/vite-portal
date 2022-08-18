@@ -94,6 +94,10 @@ func NewDefaultConfig() Config {
 	return c
 }
 
+func (c Config) GetVersion() string {
+	return c.Version
+}
+
 func (c *Config) Validate() error {
 	prefix := "Config error: "
 	if c.SessionNodeCount <= 0 {

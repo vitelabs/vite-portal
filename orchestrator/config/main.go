@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 

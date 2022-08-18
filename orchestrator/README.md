@@ -1,1 +1,56 @@
 # portal-orchestrator
+
+Orchestrator is the heart of VitePortal and responsible for managing relayers and collecting uptime data from Vite full nodes.
+
+## Getting Started
+### Example usage
+
+```
+Usage:
+  vite-portal-orchestrator [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  start       Starts vite-portal-orchestrator daemon
+  version     Get current version
+
+Flags:
+      --debug   sets log level to debug
+  -h, --help    help for vite-portal-orchestrator
+
+Use "vite-portal-orchestrator [command] --help" for more information about a command.
+```
+
+### Build
+
+All build options will be located in `build/cmd/orchestrator` after running the following command:
+
+`make all`
+
+### Run
+
+`go run cmd/orchestrator/main.go`
+
+or
+
+`go run cmd/orchestrator/main.go start`
+
+The latter command makes use of `orchestrator_config.json` in the current directory or creates a new file. If the schema version does not match, the existing configuration file will be backed up and replaced with default values.
+
+A description of the different configuration options can be found [here](./internal/types/config.go).
+
+### Test
+
+By running the following command all unit tests will be executed:
+
+`go test ./...`
+
+### Debug
+
+1. Modify args in `.vscode/launch.json`
+2. Set breakpoint(s)
+3. Open `cmd/orchestrator/main.go`
+4. Press F5
+
+Note: Consider deleting `orchestrator_config.json` and `logs` in `cmd/orchestrator` before debugging.

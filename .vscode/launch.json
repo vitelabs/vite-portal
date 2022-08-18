@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch main",
+      "name": "Launch relayer",
       "type": "go",
       "request": "launch",
       "mode": "auto",
@@ -16,12 +16,15 @@
       ]
     },
     {
-      "name": "Launch go",
+      "name": "Launch orchestrator",
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${fileDirname}",
-      "args": []
+      "program": "${workspaceFolder}/orchestrator/cmd/orchestrator",
+      "args": [
+        "start",
+        "--debug"
+      ]
     },
     {
       "type": "node",

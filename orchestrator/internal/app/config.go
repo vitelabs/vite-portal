@@ -25,3 +25,6 @@ func InitApp(debug bool, configPath string) error {
 	return nil
 }
 
+func Shutdown() {
+	logger.Logger().Info().Msg("Shutdown called")
+}

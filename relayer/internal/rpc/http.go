@@ -7,14 +7,7 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
-)
-
-const (
-	ContentTypeTextPlain = "text/plain; charset=UTF-8"
-	ContentTypeJson      = "application/json; charset=UTF-8"
 )
 
 type route struct {
@@ -73,48 +66,4 @@ func cors(w *http.ResponseWriter, r *http.Request) (isOptions bool) {
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST")
 	// TODO: set Access-Control-Allow-Headers
 	return ((*r).Method == "OPTIONS")
-}
-
-func WriteResponse(w http.ResponseWriter, data, contentType string) {
-	WriteResponseWithCode(w, data, contentType, http.StatusOK)
-}
-
-func WriteResponseWithCode(w http.ResponseWriter, data, contentType string, code int) {
-	writeHeader(w, contentType)
-	w.WriteHeader(code)
-	_, err2 := w.Write([]byte(data))
-	if err2 != nil {
-		logger.Logger().Error().Err(err2).Msg("WriteResponseWithCode failed")
-	}
-}
-
-func WriteJsonResponse(w http.ResponseWriter, data any) {
-	WriteJsonResponseWithCode(w, data, http.StatusOK)
-}
-
-func WriteJsonResponseWithCode(w http.ResponseWriter, data any, code int) {
-	b, err1 := jsonutil.ToByte(data)
-	if err1 != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, err1.Error())
-		logger.Logger().Error().Err(err1).Msg("WriteJsonResponseWithCode failed")
-		return
-	}
-	writeHeader(w, ContentTypeJson)
-	w.WriteHeader(code)
-	_, err2 := w.Write(b)
-	if err2 != nil {
-		logger.Logger().Error().Err(err2).Msg("WriteJsonResponseWithCode failed")
-	}
-}
-
-func WriteErrorResponse(w http.ResponseWriter, code int, msg string) {
-	err := &types.RpcError{
-		Code:    code,
-		Message: msg,
-	}
-	WriteJsonResponseWithCode(w, err, code)
-}
-
-func writeHeader(w http.ResponseWriter, contentType string) {
-	w.Header().Set("Content-Type", contentType)
 }

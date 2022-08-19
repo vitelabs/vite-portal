@@ -24,7 +24,7 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response := types.RpcRelayErrorResponse{
 			Error: err1.Error(),
 		}
-		WriteJsonResponseWithCode(w, response, http.StatusBadRequest)
+		httputil.WriteJsonResponseWithCode(w, response, http.StatusBadRequest)
 		return
 	}
 	res, err2 := app.CoreApp.HandleRelay(relay)
@@ -32,13 +32,13 @@ func Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		response := types.RpcRelayErrorResponse{
 			Error: err2.Error(),
 		}
-		WriteJsonResponseWithCode(w, response, http.StatusBadRequest)
+		httputil.WriteJsonResponseWithCode(w, response, http.StatusBadRequest)
 		return
 	}
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("response", fmt.Sprintf("%#v", res)).Msg("relay response")
 	}
-	WriteResponse(w, res, ContentTypeJson)
+	httputil.WriteResponse(w, res, httputil.ContentTypeJson)
 }
 
 func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (coretypes.Relay, error) {

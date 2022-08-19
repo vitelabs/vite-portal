@@ -6,12 +6,14 @@ import (
 	"net/http"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/app"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
 func handleNode(w http.ResponseWriter, r *http.Request) {
 	chain, err := getChain(r)
 	if err != nil {
 		log.Print(err)
+		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	log.Println(chain)

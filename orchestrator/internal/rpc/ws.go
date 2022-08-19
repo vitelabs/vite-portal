@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
@@ -20,8 +21,14 @@ var upgrader = websocket.Upgrader{
 func StartWsRpc(port int32, timeout int64) {
 	upgrader.HandshakeTimeout = time.Duration(timeout) * time.Millisecond
 
+    relayerHub := relayer.NewHub()
+	go relayerHub.Run()
+
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/ws/v1/node", handleNode)
+    serveMux.HandleFunc("/ws/v1/relayer", func(w http.ResponseWriter, r *http.Request) {
+        handleRelayer(relayerHub, w, r, timeout)
+    })
 	serveMux.HandleFunc("/", home)
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), serveMux)

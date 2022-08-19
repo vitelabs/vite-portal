@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/app"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/cmd"
+	"github.com/vitelabs/vite-portal/orchestrator/internal/rpc"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
@@ -49,6 +50,8 @@ var startCmd = &cobra.Command{
 		if err := app.InitApp(debug, configPath); err != nil {
 			cmd.Exit("start error", err)
 		}
+
+		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, app.CoreApp.Config.RpcTimeout)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

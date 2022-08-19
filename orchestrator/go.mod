@@ -3,6 +3,7 @@ module github.com/vitelabs/vite-portal/orchestrator
 go 1.18
 
 require (
+	github.com/gorilla/websocket v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/vitelabs/vite-portal/shared v0.0.0
 )

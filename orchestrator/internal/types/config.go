@@ -7,11 +7,12 @@ import (
 const (
 	DefaultConfigVersion               = "v0.1"
 	DefaultDebug                       = false
-	DefaultRpcHttpPort                 = 56331
-	DefaultRpcWsPort                   = 56332
-	DefaultRpcTimeout                  = 10000
+	DefaultRpcHttpPort                 = 57331
+	DefaultRpcWsPort                   = 57332
+	DefaultRpcTimeout                  = 5000
 	DefaultUserAgent                   = ""
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
+	DefaultChain                       = "vite_mainnet"
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -19,6 +20,10 @@ const (
 	DefaultLoggingMaxSize              = 100
 	DefaultLoggingMaxBackups           = 10
 	DefaultLoggingMaxAge               = 28
+)
+
+var (
+	DefaultSupportedChains = []string{"vite_mainnet", "vite_testnet"}
 )
 
 type Config struct {
@@ -36,19 +41,25 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// The default chain name
+	DefaultChain string `json:"defaultChain"`
+	// A list of supported chain names
+	SupportedChains []string `json:"supportedChains"`
 	// Logging related configurtion
 	Logging sharedtypes.LoggingConfig `json:"logging"`
 }
 
 func NewDefaultConfig() Config {
 	c := Config{
-		Version:                DefaultConfigVersion,
-		Debug:                  DefaultDebug,
-		RpcHttpPort:            DefaultRpcHttpPort,
-		RpcWsPort:              DefaultRpcWsPort,
-		RpcTimeout:             DefaultRpcTimeout,
-		UserAgent:              DefaultUserAgent,
-		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		Version:            DefaultConfigVersion,
+		Debug:              DefaultDebug,
+		RpcHttpPort:        DefaultRpcHttpPort,
+		RpcWsPort:          DefaultRpcWsPort,
+		RpcTimeout:         DefaultRpcTimeout,
+		UserAgent:          DefaultUserAgent,
+		HeaderTrueClientIp: DefaultHeaderTrueClientIp,
+		DefaultChain:       DefaultChain,
+		SupportedChains:    DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

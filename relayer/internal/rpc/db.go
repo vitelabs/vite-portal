@@ -6,6 +6,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/relayer/internal/app"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
 func GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
@@ -15,7 +17,7 @@ func GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 
 func GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var params = nodetypes.GetNodesParams{}
-	if err := ExtractQuery(w, r, p, &params); err != nil {
+	if err := httputil.ExtractQuery(w, r, p, &params); err != nil {
 		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -44,7 +46,7 @@ func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	// TODO: auth
 	var node = nodetypes.Node{}
-	if err := ExtractModel(w, r, p, &node); err != nil {
+	if err := httputil.ExtractModel(w, r, &node, types.MaxRequestContentLength); err != nil {
 		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}

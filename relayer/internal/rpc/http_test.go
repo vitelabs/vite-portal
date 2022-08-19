@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
 func TestExtractModelFromBody(t *testing.T) {
@@ -45,7 +46,7 @@ func TestExtractModelFromBody(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := ExtractModelFromBody([]byte(tc.body), &tc.model)
+			err := httputil.ExtractModelFromBody([]byte(tc.body), &tc.model)
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, err.Error(), tc.expectedError.Error())
@@ -122,7 +123,7 @@ func TestExtractParams(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := ExtractQuery(nil, &tc.request, nil, &tc.model)
+			err := httputil.ExtractQuery(nil, &tc.request, nil, &tc.model)
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.expectedError.Error(), err.Error())

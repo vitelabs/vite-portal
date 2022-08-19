@@ -17,7 +17,7 @@ func GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 
 func GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var params = nodetypes.GetNodesParams{}
-	if err := httputil.ExtractQuery(w, r, p, &params); err != nil {
+	if err := httputil.ExtractQuery(w, r, &params); err != nil {
 		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}

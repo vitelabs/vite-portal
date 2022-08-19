@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
@@ -95,7 +94,7 @@ func ExtractModelFromBody(body []byte, model interface{}) error {
 	return nil
 }
 
-func ExtractQuery(w http.ResponseWriter, r *http.Request, _ httprouter.Params, model interface{}) error {
+func ExtractQuery(w http.ResponseWriter, r *http.Request, model interface{}) error {
 	q := r.URL.Query()
 	if len(q) == 0 {
 		return nil

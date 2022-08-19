@@ -123,7 +123,7 @@ func TestExtractParams(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := httputil.ExtractQuery(nil, &tc.request, nil, &tc.model)
+			err := httputil.ExtractQuery(nil, &tc.request, &tc.model)
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.expectedError.Error(), err.Error())

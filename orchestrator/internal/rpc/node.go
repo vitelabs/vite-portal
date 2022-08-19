@@ -6,35 +6,25 @@ import (
 	"net/http"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/app"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
+	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-func handleNode(w http.ResponseWriter, r *http.Request) {
+func handleNode(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+	// TODO: validate node
 	chain, err := getChain(r)
 	if err != nil {
-		log.Print(err)
 		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	log.Println(chain)
-	c, err := upgrader.Upgrade(w, r, nil)
+
+	err = hub.RegisterClient(w, r, timeout)
 	if err != nil {
-		log.Print("upgrade:", err)
+		logger.Logger().Error().Err(err).Msg("register client failed")
+		httputil.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
 	}
 }
 

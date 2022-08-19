@@ -5,27 +5,22 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
 func StartWsRpc(port int32, timeout int64) {
-	upgrader.HandshakeTimeout = time.Duration(timeout) * time.Millisecond
+	nodeHub := ws.NewHub(timeout, messageHandler)
+	go nodeHub.Run()
 
-	relayerHub := ws.NewHub(messageHandler)
+	relayerHub := ws.NewHub(timeout, messageHandler)
 	go relayerHub.Run()
 
 	serveMux := http.NewServeMux()
-	serveMux.HandleFunc("/ws/v1/node", handleNode)
+	serveMux.HandleFunc("/ws/v1/node", func(w http.ResponseWriter, r *http.Request) {
+		handleNode(nodeHub, w, r, timeout)
+	})
 	serveMux.HandleFunc("/ws/v1/relayer", func(w http.ResponseWriter, r *http.Request) {
 		handleRelayer(relayerHub, w, r, timeout)
 	})

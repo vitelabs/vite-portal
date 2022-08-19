@@ -1,5 +1,12 @@
 package ws
 
+import (
+	"net/http"
+	"time"
+
+	"github.com/gorilla/websocket"
+)
+
 // Hub maintains the set of active relayers and broadcasts messages to them.
 type Hub struct {
 	// Registered clients.
@@ -12,16 +19,20 @@ type Hub struct {
 	Unregister chan *Client
 	// The function handling incoming messages from clients.
 	MessageHandler func(client *Client, msg []byte)
+	// The HTTP connection upgrader
+	upgrader *websocket.Upgrader
 }
 
-func NewHub(msgHandler func(client *Client, msg []byte)) *Hub {
-	return &Hub{
+func NewHub(timeout int64, msgHandler func(client *Client, msg []byte)) *Hub {
+	hub := Hub{
 		Clients:        make(map[*Client]bool),
 		Broadcast:      make(chan []byte),
 		Register:       make(chan *Client),
 		Unregister:     make(chan *Client),
 		MessageHandler: msgHandler,
+		upgrader:       NewUpgrader(timeout),
 	}
+	return &hub
 }
 
 func (h *Hub) Run() {
@@ -45,4 +56,25 @@ func (h *Hub) Run() {
 			}
 		}
 	}
+}
+
+func (h *Hub) RegisterClient(w http.ResponseWriter, r *http.Request, timeout int64) error {
+	c, err := h.upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return err
+	}
+
+	client := &Client{
+		WriteWait: time.Duration(timeout) * time.Millisecond,
+		Hub:       h,
+		Conn:      c,
+		Send:      make(chan []byte, 256),
+	}
+	h.Register <- client
+
+	// Allow collection of memory referenced by the caller by doing all work in new goroutines.
+	go client.WritePump()
+	go client.ReadPump()
+
+	return nil
 }

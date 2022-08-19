@@ -2,24 +2,30 @@ package rpc
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/gorilla/websocket"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
-	"github.com/zyedidia/generic/mapset"
-	"golang.org/x/net/websocket"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
+	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
 func StartWsRpc(port int32, timeout int64) {
-	server := NewServer()
-	handler := server.WebsocketHandler([]string{"*"})
+	hub := ws.NewHub(messageHandler)
+	go hub.Run()
 
 	serveMux := http.NewServeMux()
-	serveMux.Handle("/ws/v1", handler)
+	serveMux.HandleFunc("/ws/v1", func(w http.ResponseWriter, r *http.Request) {
+		handleClient(hub, w, r, timeout)
+})
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), serveMux)
 	if err != nil {
@@ -28,110 +34,26 @@ func StartWsRpc(port int32, timeout int64) {
 	}
 }
 
-func (s *Server) WebsocketHandler(allowedOrigins []string) http.Handler {
-	return websocket.Server{
-		Handshake: handshakeValidator(allowedOrigins),
-		Handler: func(conn *websocket.Conn) {
-			// Create custom encode/decode pair to enforce payload size
-			conn.MaxPayloadBytes = types.MaxRequestContentLength
-
-			encoder := func(v interface{}) error {
-				return defaultCodec.Send(conn, v)
-			}
-			decoder := func(v interface{}) error {
-				return defaultCodec.Receive(conn, v)
-			}
-			
-			//safeConn := deadliner{conn, time.Millisecond*100}
-
-			s.ServeCodec(NewCodec(conn, encoder, decoder))
-		},
-	}
+func messageHandler(client *ws.Client, msg []byte) {
+	logger.Logger().Info().Msg(fmt.Sprintf("%s", msg))
+	client.Send <- msg
 }
 
-// handshakeValidator returns a handler that verifies the origin during the
-// websocket upgrade process. If '*' is specified as an allowed origin all
-// connections are accepted.
-func handshakeValidator(allowedOrigins []string) func(*websocket.Config, *http.Request) error {
-	origins := mapset.New[string]()
-	allowAllOrigins := false
-
-	for _, origin := range allowedOrigins {
-		if origin == "*" {
-			allowAllOrigins = true
-		}
-		if origin != "" {
-			origins.Put(strings.ToLower(origin))
-		}
+func handleClient(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		httputil.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
 	}
-
-	// allow localhost if no allowedOrigins are specified.
-	if origins.Size() == 0 {
-		origins.Put("http://localhost")
-		if hostname, err := os.Hostname(); err == nil {
-			origins.Put("http://" + strings.ToLower(hostname))
-		}
+	client := &ws.Client{
+		WriteWait: time.Duration(timeout) * time.Millisecond,
+		Hub:       hub,
+		Conn:      c,
+		Send:      make(chan []byte, 256),
 	}
+	hub.Register <- client
 
-	logger.Logger().Debug().Str("origins", fmt.Sprintf("%#v", origins)).Msg("Allowed origin(s) for WS RPC interface.")
-
-	f := func(cfg *websocket.Config, req *http.Request) error {
-		if req.ContentLength > types.MaxRequestContentLength {
-			return fmt.Errorf("content exceeds the limit of %d bytes", types.MaxRequestContentLength)
-		}
-
-		origin := strings.ToLower(req.Header.Get("Origin"))
-		if allowAllOrigins || origins.Has(origin) {
-			return nil
-		}
-		logger.Logger().Warn().Msg(fmt.Sprintf("origin '%s' not allowed on WS-RPC interface\n", origin))
-		return fmt.Errorf("origin %s not allowed", origin)
-	}
-
-	return f
-}
-
-var defaultCodec = websocket.Codec{
-	Marshal: func(v interface{}) ([]byte, byte, error) {
-		switch data := v.(type) {
-		case string:
-			return []byte(data), websocket.TextFrame, nil
-		case []byte:
-			return data, websocket.BinaryFrame, nil
-		}
-		return nil, websocket.UnknownFrame, websocket.ErrNotSupported
-	},
-	Unmarshal: func(msg []byte, payloadType byte, v interface{}) error {
-		switch data := v.(type) {
-		case *string:
-			*data = string(msg)
-			return nil
-		case *[]byte:
-			*data = msg
-			return nil
-		}
-		return websocket.ErrNotSupported
-	},
-}
-
-// deadliner is a wrapper around net.Conn that sets read/write deadlines before
-// every Read() or Write() call.
-// Source: https://github.com/gobwas/ws-examples/blob/master/src/chat/main.go
-type deadliner struct {
-	net.Conn
-	t time.Duration
-}
-
-func (d deadliner) Write(p []byte) (int, error) {
-	if err := d.Conn.SetWriteDeadline(time.Now().Add(d.t)); err != nil {
-		return 0, err
-	}
-	return d.Conn.Write(p)
-}
-
-func (d deadliner) Read(p []byte) (int, error) {
-	if err := d.Conn.SetReadDeadline(time.Now().Add(d.t)); err != nil {
-		return 0, err
-	}
-	return d.Conn.Read(p)
+	// Allow collection of memory referenced by the caller by doing all work in new goroutines.
+	go client.WritePump()
+	go client.ReadPump()
 }

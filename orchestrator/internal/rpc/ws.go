@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,14 +21,14 @@ var upgrader = websocket.Upgrader{
 func StartWsRpc(port int32, timeout int64) {
 	upgrader.HandshakeTimeout = time.Duration(timeout) * time.Millisecond
 
-    relayerHub := relayer.NewHub()
+	relayerHub := ws.NewHub(messageHandler)
 	go relayerHub.Run()
 
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/ws/v1/node", handleNode)
-    serveMux.HandleFunc("/ws/v1/relayer", func(w http.ResponseWriter, r *http.Request) {
-        handleRelayer(relayerHub, w, r, timeout)
-    })
+	serveMux.HandleFunc("/ws/v1/relayer", func(w http.ResponseWriter, r *http.Request) {
+		handleRelayer(relayerHub, w, r, timeout)
+	})
 	serveMux.HandleFunc("/", home)
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), serveMux)
@@ -36,6 +36,11 @@ func StartWsRpc(port int32, timeout int64) {
 		logger.Logger().Error().Err(err).Msg("WS RPC closed")
 		os.Exit(1)
 	}
+}
+
+func messageHandler(client *ws.Client, msg []byte) {
+	logger.Logger().Info().Msg(fmt.Sprintf("%s", msg))
+	client.Send <- msg
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

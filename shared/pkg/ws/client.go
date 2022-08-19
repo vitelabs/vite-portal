@@ -1,13 +1,12 @@
-package relayer
+package ws
 
 import (
-	"fmt"
-	"log"
+	"bytes"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 // Client is a middleman between the websocket connection and the hub.
@@ -21,6 +20,11 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	Send chan []byte
 }
+
+var (
+	newline = []byte{'\n'}
+	space   = []byte{' '}
+)
 
 // ReadPump pumps messages from the websocket connection to the hub.
 //
@@ -39,12 +43,12 @@ func (c *Client) ReadPump() {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				logger.Logger().Error().Err(err).Msg("connection closed unexpectedly")
 			}
 			break
 		}
-		// TODO: handle message
-		logger.Logger().Info().Msg(fmt.Sprintf("%#v", message))
+		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		c.Hub.MessageHandler(c, message)
 	}
 }
 
@@ -62,7 +66,9 @@ func (c *Client) WritePump() {
 	for {
 		select {
 		case message, ok := <-c.Send:
-			c.Conn.SetWriteDeadline(time.Now().Add(c.WriteWait))
+			if c.WriteWait > 0 {
+				c.Conn.SetWriteDeadline(time.Now().Add(c.WriteWait))
+			}
 			if !ok {
 				// The hub closed the channel.
 				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -79,7 +85,9 @@ func (c *Client) WritePump() {
 				return
 			}
 		case <-ticker.C:
-			c.Conn.SetWriteDeadline(time.Now().Add(c.WriteWait))
+			if c.WriteWait > 0 {
+				c.Conn.SetWriteDeadline(time.Now().Add(c.WriteWait))
+			}
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}

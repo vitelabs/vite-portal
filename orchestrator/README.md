@@ -54,3 +54,23 @@ By running the following command all unit tests will be executed:
 4. Press F5
 
 Note: Consider deleting `orchestrator_config.json` and `logs` in `cmd/orchestrator` before debugging.
+
+#### Install websocat
+
+Download the latest `websocat` executable file from the releases page in GitHub repository:
+
+```
+sudo wget -qO /usr/local/bin/websocat https://github.com/vi/websocat/releases/latest/download/websocat.aarch64-unknown-linux-musl
+```
+
+Set execute permission:
+
+```
+sudo chmod a+x /usr/local/bin/websocat
+```
+
+Now `websocat` will be available for all users as a system-wide command:
+
+```
+websocat ws://localhost:57332/ws/v1/relayer
+```

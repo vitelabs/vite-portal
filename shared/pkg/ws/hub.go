@@ -1,4 +1,4 @@
-package relayer
+package ws
 
 // Hub maintains the set of active relayers and broadcasts messages to them.
 type Hub struct {
@@ -10,14 +10,17 @@ type Hub struct {
 	Register chan *Client
 	// Unregister requests from clients.
 	Unregister chan *Client
+	// The function handling incoming messages from clients.
+	MessageHandler func(client *Client, msg []byte)
 }
 
-func NewHub() *Hub {
+func NewHub(msgHandler func(client *Client, msg []byte)) *Hub {
 	return &Hub{
-		Clients:    make(map[*Client]bool),
-		Broadcast:  make(chan []byte),
-		Register:   make(chan *Client),
-		Unregister: make(chan *Client),
+		Clients:        make(map[*Client]bool),
+		Broadcast:      make(chan []byte),
+		Register:       make(chan *Client),
+		Unregister:     make(chan *Client),
+		MessageHandler: msgHandler,
 	}
 }
 

@@ -4,18 +4,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
+	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-func handleRelayer(hub *relayer.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+func handleRelayer(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
 	// TODO: add authorization
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		httputil.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	client := &relayer.Client{
+	client := &ws.Client{
 		WriteWait: time.Duration(timeout) * time.Millisecond,
 		Hub:       hub,
 		Conn:      c,

@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/vitelabs/vite-portal/relayer/internal/app"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
@@ -47,7 +47,7 @@ func GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 func PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	// TODO: auth
 	var node = nodetypes.Node{}
-	if err := httputil.ExtractModel(w, r, &node, types.MaxRequestContentLength); err != nil {
+	if err := httputil.ExtractModel(w, r, &node, sharedtypes.MaxPayloadSize); err != nil {
 		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}

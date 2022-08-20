@@ -21,15 +21,11 @@ func InitApp(debug bool, configPath string) error {
 	if err != nil {
 		return err
 	}
-	o, err := InitOrchestrator()
-	if err != nil {
-		return err
-	}
 	c, err := InitContext(cfg)
 	if err != nil {
 		return err
 	}
-	CoreApp = NewRelayerCoreApp(cfg, o, c)
+	CoreApp = NewRelayerCoreApp(cfg, c)
 	return nil
 }
 

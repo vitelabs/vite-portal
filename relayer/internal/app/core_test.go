@@ -143,9 +143,8 @@ func newRelayerCoreApp() *RelayerCoreApp {
 	config.HostToChainMap = map[string]string{
 		"test.localhost": "chain2",
 	}
-	o, _ := NewOrchestrator()
 	c := NewContext(config)
-	return NewRelayerCoreApp(config, o, c)
+	return NewRelayerCoreApp(config, c)
 }
 
 func insertChains(coreApp *RelayerCoreApp, chains []string) {

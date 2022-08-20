@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DefaultConfigVersion               = "v0.3"
+	DefaultConfigVersion               = "v0.4"
 	DefaultDebug                       = false
 	DefaultRpcHttpPort                 = 56331
 	DefaultRpcWsPort                   = 56332
@@ -21,6 +21,7 @@ const (
 	DefaultMaxSessionCacheEntries      = 100
 	DefaultMaxSessionDuration          = 60000000
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
+	DefaultOrchestratorWsUrl           = ""
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -57,6 +58,8 @@ type Config struct {
 	MaxSessionDuration int64 `json:"maxSessionDuration"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// The WebSocket URL of the orchestrator
+	OrchestratorWsUrl string `json:"orchestratorWsUrl"`
 	// The optional HttpCollector URL to which all relay results will be sent to
 	HttpCollectorUrl string `json:"httpCollectorUrl,omitempty"`
 	// The entries to map a host to the respective chain
@@ -80,6 +83,7 @@ func NewDefaultConfig() Config {
 		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
 		MaxSessionDuration:     DefaultMaxSessionDuration,
 		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		OrchestratorWsUrl:      DefaultOrchestratorWsUrl,
 		HostToChainMap:         map[string]string{},
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,

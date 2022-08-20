@@ -10,6 +10,7 @@ import (
 func NewUpgrader(timeout int64) *websocket.Upgrader {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
+			// TODO: pass array of acceptable origins
 			return true
 		},
 	}

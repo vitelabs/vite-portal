@@ -12,7 +12,6 @@ import (
 
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
 	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
-	orchestrator "github.com/vitelabs/vite-portal/relayer/internal/orchestrator/interfaces"
 )
 
 type RelayerCoreApp struct {
@@ -22,7 +21,7 @@ type RelayerCoreApp struct {
 	nodeService nodeinterfaces.ServiceI
 }
 
-func NewRelayerCoreApp(cfg types.Config, o orchestrator.ClientI, c *Context) *RelayerCoreApp {
+func NewRelayerCoreApp(cfg types.Config, c *Context) *RelayerCoreApp {
 	app := &RelayerCoreApp{
 		Config:  cfg,
 		context: c,

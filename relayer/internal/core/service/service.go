@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/vitelabs/vite-portal/relayer/internal/core/interfaces"
 	"github.com/vitelabs/vite-portal/relayer/internal/core/store"
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
@@ -23,7 +25,8 @@ func NewService(config types.Config, cache *store.CacheStore, nodeService nodein
 		nodeService: nodeService,
 	}
 	if config.HttpCollectorUrl != "" {
-		svc.httpCollector = store.NewHttpCollector(config.HttpCollectorUrl, config.UserAgent, config.RpcNodeTimeout)
+		timeout := time.Duration(config.RpcNodeTimeout) * time.Millisecond
+		svc.httpCollector = store.NewHttpCollector(config.HttpCollectorUrl, config.UserAgent, timeout)
 	}
-	return svc 
+	return svc
 }

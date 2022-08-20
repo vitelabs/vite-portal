@@ -32,7 +32,7 @@ func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, root
 	}
 	err1 := errors.New("relay timed out")
 	c := make(chan string, len(nodes))
-	ctx, cancelFn := context.WithTimeout(context.Background(), time.Millisecond*time.Duration(s.config.RpcNodeTimeout))
+	ctx, cancelFn := context.WithTimeout(context.Background(), time.Duration(s.config.RpcNodeTimeout)*time.Millisecond)
 	_ = cancelFn // Ignore `lostcancel` warning (https://github.com/golang/go/issues/29587)
 	var processed uint32
 	responses := make([]coretypes.NodeResponse, len(nodes))
@@ -58,10 +58,10 @@ func (s *Service) HandleRelay(r coretypes.Relay) (*coretypes.RelayResponse, root
 	}
 	for {
 		select {
-		case response := <- c:
+		case response := <-c:
 			res := &coretypes.RelayResponse{
 				SessionKey: header.HashString(),
-				Response: response,
+				Response:   response,
 			}
 			// TODO: track relay time and add to metrics
 			return res, nil
@@ -100,9 +100,9 @@ func (s *Service) execute(ctx context.Context, n nodetypes.Node, r coretypes.Rel
 	startTime := time.Now()
 	response, err := s.executeHttpRequest(ctx, url, r.Payload)
 	result := coretypes.NodeResponse{
-		NodeId: n.Id,
+		NodeId:       n.Id,
 		ResponseTime: time.Since(startTime).Milliseconds(),
-		Response: strings.TrimSpace(response),
+		Response:     strings.TrimSpace(response),
 	}
 	if ctx.Err() != nil {
 		if ctx.Err().Error() == "context deadline exceeded" {
@@ -159,8 +159,8 @@ func (s *Service) executeHttpRequest(ctx context.Context, url string, payload co
 func (s *Service) dispatchRelayResult(r coretypes.Relay, sessionKey string, responses []coretypes.NodeResponse) {
 	result := coretypes.RelayResult{
 		SessionKey: sessionKey,
-		Relay: r,
-		Responses: responses,
+		Relay:      r,
+		Responses:  responses,
 	}
 	if s.config.Debug {
 		logger.Logger().Debug().Str("result", fmt.Sprintf("%#v", result)).Msg("relay result")

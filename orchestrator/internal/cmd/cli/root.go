@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/app"
@@ -51,7 +52,7 @@ var startCmd = &cobra.Command{
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, app.CoreApp.Config.RpcTimeout)
+		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, time.Duration(app.CoreApp.Config.RpcTimeout) * time.Millisecond)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

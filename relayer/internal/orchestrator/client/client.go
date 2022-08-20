@@ -13,10 +13,10 @@ type Client struct {
 	Conn *websocket.Conn
 }
 
-func NewClient(url string, timeout int64) *Client {
+func NewClient(url string, timeout time.Duration) *Client {
 	return &Client{
 		url: url,
-		timeout: time.Duration(timeout) * time.Millisecond,
+		timeout: timeout,
 	}
 }
 

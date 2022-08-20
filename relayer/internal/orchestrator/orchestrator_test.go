@@ -8,7 +8,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-var timeout int64 = 1000
+var timeout = 1000 * time.Millisecond
 
 func TestInit(t *testing.T) {
 	mock := ws.StartMockWsRpc(timeout)

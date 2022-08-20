@@ -17,7 +17,7 @@ type route struct {
 	HandlerFunc httprouter.Handle
 }
 
-func StartHttpRpc(port int32, timeout int64, debug, profile bool) {
+func StartHttpRpc(port int32, timeout time.Duration, debug, profile bool) {
 	routes := []route{
 		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: Name},
 		{Name: "AppName", Method: "GET", Path: "/api", HandlerFunc: Name},
@@ -43,7 +43,7 @@ func StartHttpRpc(port int32, timeout int64, debug, profile bool) {
 		ReadHeaderTimeout: 5 * time.Second,
 		WriteTimeout:      15 * time.Second,
 		Addr:              ":" + strconv.Itoa(int(port)),
-		Handler:           http.TimeoutHandler(router(routes), time.Duration(timeout)*time.Millisecond, "Server Timeout Handling Request"),
+		Handler:           http.TimeoutHandler(router(routes), timeout, "Server Timeout Handling Request"),
 	}
 
 	err := srv.ListenAndServe()

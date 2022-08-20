@@ -12,10 +12,10 @@ import (
 type HttpCollector struct {
 	url string
 	userAgent string
-	timeout int64
+	timeout time.Duration
 }
 
-func NewHttpCollector(url, userAgent string, timeout int64) *HttpCollector {
+func NewHttpCollector(url, userAgent string, timeout time.Duration) *HttpCollector {
 	return &HttpCollector{
 		url: url,
 		userAgent: userAgent,
@@ -37,7 +37,7 @@ func (c *HttpCollector) DispatchRelayResult(result types.RelayResult) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	_, err1 := (&http.Client{Timeout: time.Duration(c.timeout) * time.Millisecond}).Do(req)
+	_, err1 := (&http.Client{Timeout: c.timeout}).Do(req)
 	if err1 != nil {
 		return err1
 	}

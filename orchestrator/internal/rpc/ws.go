@@ -5,12 +5,13 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-func StartWsRpc(port int32, timeout int64) {
+func StartWsRpc(port int32, timeout time.Duration) {
 	nodeHub := ws.NewHub(timeout, messageHandler)
 	go nodeHub.Run()
 

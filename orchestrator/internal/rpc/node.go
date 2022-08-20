@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/app"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -11,7 +12,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-func handleNode(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+func handleNode(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	// TODO: validate node
 	chain, err := getChain(r)
 	if err != nil {

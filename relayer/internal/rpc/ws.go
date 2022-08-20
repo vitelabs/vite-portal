@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
-func StartWsRpc(port int32, timeout int64) {
+func StartWsRpc(port int32, timeout time.Duration) {
 	hub := ws.NewHub(timeout, messageHandler)
 	go hub.Run()
 
@@ -31,7 +32,7 @@ func messageHandler(client *ws.Client, msg []byte) {
 	client.Send <- msg
 }
 
-func handleClient(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+func handleClient(hub *ws.Hub, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	err := hub.RegisterClient(w, r, timeout)
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("register client failed")

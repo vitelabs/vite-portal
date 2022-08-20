@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func NewUpgrader(timeout int64) *websocket.Upgrader {
+func NewUpgrader(timeout time.Duration) *websocket.Upgrader {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			// TODO: pass array of acceptable origins
@@ -15,7 +15,7 @@ func NewUpgrader(timeout int64) *websocket.Upgrader {
 		},
 	}
 	if timeout > 0 {
-		upgrader.HandshakeTimeout = time.Duration(timeout) * time.Millisecond
+		upgrader.HandshakeTimeout = timeout
 	}
 	return &upgrader
 }

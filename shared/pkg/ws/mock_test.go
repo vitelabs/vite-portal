@@ -11,7 +11,8 @@ import (
 )
 
 func TestStartMockWsRpc(t *testing.T) {
-	mock := StartMockWsRpc(1000)
+	timeout := 100 * time.Millisecond
+	mock := StartMockWsRpc(timeout)
 	require.Greater(t, mock.Port, 0)
 	require.Equal(t, "/ws/mock", mock.Pattern)
 	require.Equal(t, fmt.Sprintf("ws://localhost:%d/ws/mock", mock.Port), mock.Url)

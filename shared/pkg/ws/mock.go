@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
@@ -20,7 +21,7 @@ func (r *MockWsRpc) Close() error {
 	return r.listener.Close()
 }
 
-func StartMockWsRpc(timeout int64) *MockWsRpc {
+func StartMockWsRpc(timeout time.Duration) *MockWsRpc {
 	l, err := net.Listen("tcp", ":0")
 	if err != nil {
 		panic(err)
@@ -39,7 +40,7 @@ func StartMockWsRpc(timeout int64) *MockWsRpc {
 	}
 }
 
-func startMockWsRpc(l net.Listener, pattern string, timeout int64) {
+func startMockWsRpc(l net.Listener, pattern string, timeout time.Duration) {
 	hub := NewHub(timeout, messageHandler)
 	go hub.Run()
 
@@ -59,7 +60,7 @@ func messageHandler(client *Client, msg []byte) {
 	client.Send <- msg
 }
 
-func handleClient(hub *Hub, w http.ResponseWriter, r *http.Request, timeout int64) {
+func handleClient(hub *Hub, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	err := hub.RegisterClient(w, r, timeout)
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("register client failed")

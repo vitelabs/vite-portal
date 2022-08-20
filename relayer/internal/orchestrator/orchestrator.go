@@ -16,13 +16,13 @@ type Orchestrator struct {
 	client *client.Client
 }
 
-func NewOrchestrator(url string, timeout int64) *Orchestrator {
+func NewOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	return &Orchestrator{
 		client: client.NewClient(url, timeout),
 	}
 }
 
-func InitOrchestrator(url string, timeout int64) (*Orchestrator, error) {
+func InitOrchestrator(url string, timeout time.Duration) (*Orchestrator, error) {
 	u, e := urlutil.Parse(url)
 	if e != nil {
 		return nil, e

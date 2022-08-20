@@ -23,7 +23,7 @@ type Hub struct {
 	upgrader *websocket.Upgrader
 }
 
-func NewHub(timeout int64, msgHandler func(client *Client, msg []byte)) *Hub {
+func NewHub(timeout time.Duration, msgHandler func(client *Client, msg []byte)) *Hub {
 	hub := Hub{
 		Clients:        make(map[*Client]bool),
 		Broadcast:      make(chan []byte),
@@ -58,14 +58,14 @@ func (h *Hub) Run() {
 	}
 }
 
-func (h *Hub) RegisterClient(w http.ResponseWriter, r *http.Request, timeout int64) error {
+func (h *Hub) RegisterClient(w http.ResponseWriter, r *http.Request, timeout time.Duration) error {
 	c, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return err
 	}
 
 	client := &Client{
-		WriteWait: time.Duration(timeout) * time.Millisecond,
+		WriteWait: timeout,
 		Hub:       h,
 		Conn:      c,
 		Send:      make(chan []byte),

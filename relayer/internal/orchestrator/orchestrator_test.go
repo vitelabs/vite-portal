@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
@@ -16,7 +17,9 @@ func TestInit(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	time.Sleep(100 * time.Millisecond)
+	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
+		return status == ws.Connected
+	})
 	require.Equal(t, ws.Connected, o.GetStatus())
 }
 

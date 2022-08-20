@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"testing"
-	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
@@ -41,8 +40,7 @@ func TestWsMaxPayloadBytes(t *testing.T) {
 }
 
 func startWsRpc(port int32) *websocket.Conn {
-	go StartWsRpc(port, 0)
-	time.Sleep(time.Duration(time.Millisecond * 100))
+	StartWsRpc(port, 0)
 	url := fmt.Sprintf("ws://localhost:%d/ws/v1", port)
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {

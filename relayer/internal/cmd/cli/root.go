@@ -53,8 +53,8 @@ var startCmd = &cobra.Command{
 		}
 
 		timeout := time.Duration(app.CoreApp.Config.RpcTimeout) * time.Millisecond
-		go rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, timeout, app.CoreApp.Config.Debug, profile)
-		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, timeout)
+		rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, timeout, app.CoreApp.Config.Debug, profile)
+		rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, timeout)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

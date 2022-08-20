@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -46,11 +47,19 @@ func StartHttpRpc(port int32, timeout time.Duration, debug, profile bool) {
 		Handler:           http.TimeoutHandler(router(routes), timeout, "Server Timeout Handling Request"),
 	}
 
-	err := srv.ListenAndServe()
+	l, err := net.Listen("tcp", srv.Addr)
 	if err != nil {
-		logger.Logger().Error().Err(err).Msg("HTTP RPC closed")
+		logger.Logger().Error().Err(err).Msg("HTTP RPC error")
 		os.Exit(1)
 	}
+
+	go func() {
+		err := srv.Serve(l)
+		if err != nil {
+			logger.Logger().Error().Err(err).Msg("HTTP RPC closed")
+			os.Exit(1)
+		}
+	}()
 }
 
 func router(routes []route) *httprouter.Router {

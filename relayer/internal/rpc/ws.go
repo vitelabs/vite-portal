@@ -2,8 +2,10 @@ package rpc
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -20,11 +22,19 @@ func StartWsRpc(port int32, timeout time.Duration) {
 		handleClient(hub, w, r, timeout)
 	})
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), serveMux)
+	l, err := net.Listen("tcp", ":" + strconv.Itoa(int(port)))
 	if err != nil {
-		logger.Logger().Error().Err(err).Msg("WS RPC closed")
+		logger.Logger().Error().Err(err).Msg("WS RPC error")
 		os.Exit(1)
 	}
+
+	go func() {
+		err := http.Serve(l, serveMux)
+		if err != nil {
+			logger.Logger().Error().Err(err).Msg("WS RPC closed")
+			os.Exit(1)
+		}
+	}()
 }
 
 func messageHandler(client *ws.Client, msg []byte) {

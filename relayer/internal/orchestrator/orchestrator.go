@@ -12,13 +12,16 @@ import (
 )
 
 type Orchestrator struct {
-	status ws.ConnectionStatus
-	client *client.Client
+	StatusChanged chan ws.ConnectionStatus
+	status        ws.ConnectionStatus
+	client        *client.Client
 }
 
 func NewOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	return &Orchestrator{
-		client: client.NewClient(url, timeout),
+		StatusChanged: make(chan ws.ConnectionStatus),
+		status:        ws.Unknown,
+		client:        client.NewClient(url, timeout),
 	}
 }
 
@@ -40,16 +43,16 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 }
 
 func (o *Orchestrator) init() {
-	o.status = ws.Connecting
+	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {
 		// TODO: use use exponential backoff strategy
 		time.Sleep(1 * time.Second)
 		o.init()
 	}
-	o.status = ws.Connected
+	o.setStatus(ws.Connected)
 	o.client.Conn.SetCloseHandler(func(code int, text string) error {
-		o.status = ws.Disconnected
+		o.setStatus(ws.Disconnected)
 		logger.Logger().Error().Msg(fmt.Sprintf("orchestrator connection closed with code: %d and text: %s", code, text))
 		return nil
 	})
@@ -63,5 +66,12 @@ func (o *Orchestrator) handleMessages() {
 			break
 		}
 		logger.Logger().Info().Msg(fmt.Sprintf("message: %s", message))
+	}
+}
+
+func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
+	if o.status != newStatus {
+		o.status = newStatus
+		o.StatusChanged <- newStatus
 	}
 }

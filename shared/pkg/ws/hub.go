@@ -68,7 +68,7 @@ func (h *Hub) RegisterClient(w http.ResponseWriter, r *http.Request, timeout int
 		WriteWait: time.Duration(timeout) * time.Millisecond,
 		Hub:       h,
 		Conn:      c,
-		Send:      make(chan []byte, 256),
+		Send:      make(chan []byte),
 	}
 	h.Register <- client
 

@@ -22,7 +22,7 @@ func StartWsRpc(port int32, timeout time.Duration) {
 		handleClient(hub, w, r, timeout)
 	})
 
-	l, err := net.Listen("tcp", ":" + strconv.Itoa(int(port)))
+	l, err := net.Listen("tcp", ":"+strconv.Itoa(int(port)))
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("WS RPC error")
 		os.Exit(1)

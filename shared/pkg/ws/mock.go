@@ -1,9 +1,11 @@
 package ws
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -11,6 +13,7 @@ import (
 )
 
 type MockWsRpc struct {
+	cancel context.CancelFunc
 	listener net.Listener
 	Port int
 	Pattern string
@@ -18,29 +21,33 @@ type MockWsRpc struct {
 }
 
 func (r *MockWsRpc) Close() error {
+	r.cancel()
 	return r.listener.Close()
 }
 
-func StartMockWsRpc(timeout time.Duration) *MockWsRpc {
-	l, err := net.Listen("tcp", ":0")
+func StartMockWsRpc(port int32, timeout time.Duration) *MockWsRpc {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	l, err := net.Listen("tcp", ":"+strconv.Itoa(int(port)))
 	if err != nil {
 		panic(err)
 	}
 
 	var pattern = "/ws/mock"
-	var port = l.Addr().(*net.TCPAddr).Port
+	var realPort = l.Addr().(*net.TCPAddr).Port
 
-	go startMockWsRpc(l, pattern, timeout)
+	go startMockWsRpc(ctx, l, pattern, timeout)
 
 	return &MockWsRpc{
+		cancel: cancel,
 		listener: l,
-		Port: port,
+		Port: realPort,
 		Pattern: pattern,
-		Url: fmt.Sprintf("ws://localhost:%d%s", port, pattern),
+		Url: fmt.Sprintf("ws://localhost:%d%s", realPort, pattern),
 	}
 }
 
-func startMockWsRpc(l net.Listener, pattern string, timeout time.Duration) {
+func startMockWsRpc(ctx context.Context, l net.Listener, pattern string, timeout time.Duration) {
 	hub := NewHub(timeout, messageHandler)
 	go hub.Run()
 
@@ -49,10 +56,7 @@ func startMockWsRpc(l net.Listener, pattern string, timeout time.Duration) {
 		handleClient(hub, w, r, timeout)
 	})
 
-	err := http.Serve(l, serveMux)
-	if err != nil {
-		panic(err)
-	}
+	http.Serve(l, serveMux)
 }
 
 func messageHandler(client *Client, msg []byte) {

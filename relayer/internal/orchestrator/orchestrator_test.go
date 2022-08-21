@@ -12,7 +12,8 @@ import (
 var timeout = 1000 * time.Millisecond
 
 func TestInit(t *testing.T) {
-	mock := ws.StartMockWsRpc(timeout)
+	mock := ws.StartMockWsRpc(0, timeout)
+	require.NotNil(t, mock)
 	o, err := InitOrchestrator(mock.Url, timeout)
 	require.Nil(t, err)
 	require.NotNil(t, o)
@@ -21,6 +22,13 @@ func TestInit(t *testing.T) {
 		return status == ws.Connected
 	})
 	require.Equal(t, ws.Connected, o.GetStatus())
+	require.True(t, ws.CanConnect(mock.Url, timeout))
+	mock.Close()
+	require.False(t, ws.CanConnect(mock.Url, timeout))
+	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
+		return status == ws.Disconnected
+	})
+	require.Equal(t, ws.Disconnected, o.GetStatus())
 }
 
 func TestInitError(t *testing.T) {

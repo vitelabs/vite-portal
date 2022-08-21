@@ -51,15 +51,14 @@ func (o *Orchestrator) init() {
 		o.init()
 	}
 	o.setStatus(ws.Connected)
-	o.client.Conn.SetCloseHandler(func(code int, text string) error {
-		o.setStatus(ws.Disconnected)
-		logger.Logger().Error().Msg(fmt.Sprintf("orchestrator connection closed with code: %d and text: %s", code, text))
-		return nil
-	})
 	go o.handleMessages()
 }
 
 func (o *Orchestrator) handleMessages() {
+	defer func() {
+		o.client.Conn.Close()
+		o.setStatus(ws.Disconnected)
+	}()
 	for {
 		_, message, err := o.client.Conn.ReadMessage()
 		if err != nil {

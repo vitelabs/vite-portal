@@ -12,8 +12,9 @@ import (
 var timeout = 1000 * time.Millisecond
 
 func TestInit(t *testing.T) {
-	mock := ws.StartMockWsRpc(0, timeout)
+	mock := ws.NewMockWsRpc(0)
 	require.NotNil(t, mock)
+	go mock.Serve(timeout)
 	o, err := InitOrchestrator(mock.Url, timeout)
 	require.Nil(t, err)
 	require.NotNil(t, o)

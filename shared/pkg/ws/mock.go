@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"net/http"
@@ -13,7 +12,6 @@ import (
 )
 
 type MockWsRpc struct {
-	cancel context.CancelFunc
 	listener net.Listener
 	Port int
 	Pattern string
@@ -21,13 +19,10 @@ type MockWsRpc struct {
 }
 
 func (r *MockWsRpc) Close() error {
-	r.cancel()
 	return r.listener.Close()
 }
 
-func StartMockWsRpc(port int32, timeout time.Duration) *MockWsRpc {
-	ctx, cancel := context.WithCancel(context.Background())
-
+func NewMockWsRpc(port int32) *MockWsRpc {
 	l, err := net.Listen("tcp", ":"+strconv.Itoa(int(port)))
 	if err != nil {
 		panic(err)
@@ -36,10 +31,7 @@ func StartMockWsRpc(port int32, timeout time.Duration) *MockWsRpc {
 	var pattern = "/ws/mock"
 	var realPort = l.Addr().(*net.TCPAddr).Port
 
-	go startMockWsRpc(ctx, l, pattern, timeout)
-
 	return &MockWsRpc{
-		cancel: cancel,
 		listener: l,
 		Port: realPort,
 		Pattern: pattern,
@@ -47,16 +39,16 @@ func StartMockWsRpc(port int32, timeout time.Duration) *MockWsRpc {
 	}
 }
 
-func startMockWsRpc(ctx context.Context, l net.Listener, pattern string, timeout time.Duration) {
+func (r *MockWsRpc) Serve(timeout time.Duration) error {
 	hub := NewHub(timeout, messageHandler)
 	go hub.Run()
 
 	serveMux := http.NewServeMux()
-	serveMux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+	serveMux.HandleFunc(r.Pattern, func(w http.ResponseWriter, r *http.Request) {
 		handleClient(hub, w, r, timeout)
 	})
 
-	http.Serve(l, serveMux)
+	return http.Serve(r.listener, serveMux)
 }
 
 func messageHandler(client *Client, msg []byte) {

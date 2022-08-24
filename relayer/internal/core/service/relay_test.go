@@ -9,7 +9,6 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
-	g "github.com/zyedidia/generic"
 )
 
 func TestGetConsensusNodes_Error(t *testing.T) {
@@ -67,8 +66,8 @@ func TestGetConsensusNodes(t *testing.T) {
 				ids = append(ids, nodes[i].Id)
 			}
 			require.Equal(t, 2*tc.expected, len(ids))
-			s := generics.HashsetOf(uint64(len(nodes)), g.Equals[string], g.HashString, ids...)
-			require.Equal(t, tc.expected, s.Size())
+			s := generics.FilterDuplicates(ids...)
+			require.Equal(t, tc.expected, len(s))
 		})
 	}
 }

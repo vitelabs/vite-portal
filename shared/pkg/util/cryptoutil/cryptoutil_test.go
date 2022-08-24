@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
-	g "github.com/zyedidia/generic"
 )
 
 func TestUniqueRandomIntCases(t *testing.T) {
@@ -65,8 +64,8 @@ func TestUniqueRandomIntCases(t *testing.T) {
 				r := UniqueRandomInt(tc.max, tc.n)
 				assert.Equal(t, tc.expected, len(r))
 				// assert random numbers are unique
-				s := generics.HashsetOf(uint64(len(r)), g.Equals[int], g.HashInt, r...)
-				assert.Equal(t, tc.expected, s.Size())	
+				s := generics.FilterDuplicates(r...)
+				assert.Equal(t, tc.expected, len(s))	
 			}
 		})
 	}

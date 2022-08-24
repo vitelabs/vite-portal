@@ -52,7 +52,8 @@ var startCmd = &cobra.Command{
 			cmd.Exit("start error", err)
 		}
 
-		go rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, time.Duration(app.CoreApp.Config.RpcTimeout) * time.Millisecond)
+		timeout := time.Duration(app.CoreApp.Config.RpcTimeout) * time.Millisecond
+		rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, timeout)
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

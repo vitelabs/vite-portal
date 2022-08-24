@@ -46,7 +46,7 @@ func (o *Orchestrator) init() {
 	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {
-		// TODO: use use exponential backoff strategy
+		// TODO: use exponential backoff strategy
 		time.Sleep(1 * time.Second)
 		o.init()
 	}

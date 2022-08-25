@@ -47,11 +47,14 @@ var startCmd = &cobra.Command{
 	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, types.AppName, types.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
 		o, err := app.InitApp(debug, configPath)
-		if ; err != nil {
-			cmd.Exit("start error", err)
+		if err != nil {
+			cmd.Exit("init error", err)
 		}
 
-		o.Start()
+		err = o.Start()
+		if err != nil {
+			cmd.Exit("start error", err)
+		}
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)

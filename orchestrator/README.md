@@ -74,3 +74,29 @@ Now `websocat` will be available for all users as a system-wide command:
 ```
 websocat ws://localhost:57332/ws/v1/relayer
 ```
+
+# API
+
+## Get version <a name="get_version"></a>
+
+### Request
+
+    curl -i -X POST http://localhost:57331/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "public_version",
+      "params": null
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Thu, 25 Aug 2022 14:21:14 GMT
+    Content-Length: 41
+
+    {"jsonrpc":"2.0","id":1,"result":"v0.1"}

@@ -34,8 +34,8 @@ import (
 
 // TestCorsHandler makes sure CORS are properly handled on the http server.
 func TestCorsHandler(t *testing.T) {
-	srv := createAndStartServer(t, &httpConfig{CorsAllowedOrigins: []string{"test", "test.com"}}, false, &wsConfig{})
-	defer srv.stop()
+	srv := createAndStartServer(t, &HTTPConfig{CorsAllowedOrigins: []string{"test", "test.com"}}, false, &WSConfig{})
+	defer srv.Stop()
 	url := "http://" + srv.listenAddr()
 
 	resp := rpcRequest(t, url, "origin", "test.com")
@@ -47,8 +47,8 @@ func TestCorsHandler(t *testing.T) {
 
 // TestVhosts makes sure vhosts are properly handled on the http server.
 func TestVhosts(t *testing.T) {
-	srv := createAndStartServer(t, &httpConfig{Vhosts: []string{"test"}}, false, &wsConfig{})
-	defer srv.stop()
+	srv := createAndStartServer(t, &HTTPConfig{Vhosts: []string{"test"}}, false, &WSConfig{})
+	defer srv.Stop()
 	url := "http://" + srv.listenAddr()
 
 	resp := rpcRequest(t, url, "host", "test")
@@ -143,7 +143,7 @@ func TestWebsocketOrigins(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		srv := createAndStartServer(t, &httpConfig{}, true, &wsConfig{Origins: splitAndTrim(tc.spec)})
+		srv := createAndStartServer(t, &HTTPConfig{}, true, &WSConfig{Origins: splitAndTrim(tc.spec)})
 		url := fmt.Sprintf("ws://%v", srv.listenAddr())
 		for _, origin := range tc.expOk {
 			if err := wsRequest(t, url, "Origin", origin); err != nil {
@@ -155,7 +155,7 @@ func TestWebsocketOrigins(t *testing.T) {
 				t.Errorf("spec '%v', origin '%v': expected not to allow,  got ok", tc.spec, origin)
 			}
 		}
-		srv.stop()
+		srv.Stop()
 	}
 }
 
@@ -229,16 +229,16 @@ func Test_checkPath(t *testing.T) {
 	}
 }
 
-func createAndStartServer(t *testing.T, conf *httpConfig, ws bool, wsConf *wsConfig) *httpServer {
+func createAndStartServer(t *testing.T, conf *HTTPConfig, ws bool, wsConf *WSConfig) *HTTPServer {
 	t.Helper()
 
-	srv := newHTTPServer(logger.Logger(), DefaultHTTPTimeouts)
-	assert.NoError(t, srv.enableRPC(nil, *conf))
+	srv := NewHTTPServer(logger.Logger(), DefaultHTTPTimeouts)
+	assert.NoError(t, srv.EnableRPC(nil, *conf))
 	if ws {
-		assert.NoError(t, srv.enableWS(nil, *wsConf))
+		assert.NoError(t, srv.EnableWS(nil, *wsConf))
 	}
-	assert.NoError(t, srv.setListenAddr("localhost", 0))
-	assert.NoError(t, srv.start())
+	assert.NoError(t, srv.SetListenAddr("localhost", 0))
+	assert.NoError(t, srv.Start())
 	return srv
 }
 
@@ -312,8 +312,8 @@ func TestJWT(t *testing.T) {
 		ss, _ := jwt.NewWithClaims(method, testClaim(input)).SignedString(secret)
 		return ss
 	}
-	srv := createAndStartServer(t, &httpConfig{jwtSecret: []byte("secret")},
-		true, &wsConfig{Origins: []string{"*"}, jwtSecret: []byte("secret")})
+	srv := createAndStartServer(t, &HTTPConfig{JwtSecret: []byte("secret")},
+		true, &WSConfig{Origins: []string{"*"}, JwtSecret: []byte("secret")})
 	wsUrl := fmt.Sprintf("ws://%v", srv.listenAddr())
 	htUrl := fmt.Sprintf("http://%v", srv.listenAddr())
 
@@ -415,5 +415,5 @@ func TestJWT(t *testing.T) {
 			t.Errorf("tc %d-http, token '%v': expected not to allow,  got %v", i, token, resp.StatusCode)
 		}
 	}
-	srv.stop()
+	srv.Stop()
 }

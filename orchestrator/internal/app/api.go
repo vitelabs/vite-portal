@@ -38,6 +38,11 @@ type adminAPI struct {
 	app *OrchestratorApp
 }
 
+// GetSecrect returns the app secrect
+func (a *adminAPI) GetSecrect() string {
+	return "secret1234"
+}
+
 // publicAPI offers helper utils
 type publicAPI struct {
 	app *OrchestratorApp

@@ -3,6 +3,9 @@
     "-count=1"
   ],
   "gopls": {
-    "experimentalWorkspaceModule": true
+    "experimentalWorkspaceModule": true,
+    "ui.diagnostic.analyses": {
+      "deepequalerrors": false
+    }
   }
 }

@@ -6,11 +6,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
-var (
-	CoreApp *OrchestratorCoreApp
-)
-
-func InitApp(debug bool, configPath string) error {
+func InitApp(debug bool, configPath string) (*OrchestratorApp, error) {
 	logger.Init(debug)
 	p := configPath
 	if p == "" {
@@ -19,12 +15,8 @@ func InitApp(debug bool, configPath string) error {
 	cfg := types.NewDefaultConfig()
 	err := configutil.InitConfig(&cfg, debug, p, types.DefaultConfigVersion)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	CoreApp = NewOrchestratorCoreApp(cfg)
-	return nil
-}
-
-func Shutdown() {
-	logger.Logger().Info().Msg("Shutdown called")
+	app := NewOrchestratorApp(&cfg)
+	return app, nil
 }

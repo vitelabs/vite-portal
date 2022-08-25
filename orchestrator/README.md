@@ -72,7 +72,12 @@ sudo chmod a+x /usr/local/bin/websocat
 Now `websocat` will be available for all users as a system-wide command:
 
 ```
-websocat ws://localhost:57332/ws/v1/relayer
+websocat ws://localhost:57332/ -E
+```
+
+```
+{"jsonrpc": "2.0", "id": 2, "method": "public_version", "params": []}
+{"jsonrpc": "2.0", "id": 2, "method": "admin_getSecret", "params": []}
 ```
 
 # API

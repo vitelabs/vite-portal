@@ -1,6 +1,10 @@
 package app
 
-import "github.com/vitelabs/vite-portal/shared/pkg/rpc"
+import (
+	"github.com/gorilla/websocket"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+)
 
 // Attach creates an RPC client attached to an in-process API handler.
 func (a *OrchestratorApp) Attach() (*rpc.Client, error) {
@@ -49,7 +53,7 @@ func (a *OrchestratorApp) startRPC() error {
 			Origins:   DefaultAllowedOrigins,
 			Prefix:    "",
 			JwtSecret: secret,
-		}); err != nil {
+		}, a.OnConnect); err != nil {
 			return err
 		}
 
@@ -57,11 +61,11 @@ func (a *OrchestratorApp) startRPC() error {
 	}
 
 	// Set up unauthenticated RPC.
-	if err := init(a.rpc, open, int(a.config.RpcHttpPort), nil); err != nil {
+	if err := init(a.rpc, open, int(a.config.RpcPort), nil); err != nil {
 		return err
 	}
 	// Set up authenticated RPC.
-	if err := init(a.rpcAuth, all, int(a.config.RpcWsPort), nil); err != nil {
+	if err := init(a.rpcAuth, all, int(a.config.RpcAuthPort), nil); err != nil {
 		return err
 	}
 
@@ -91,4 +95,9 @@ func (a *OrchestratorApp) startInProc() error {
 // stopInProc terminates the in-process RPC endpoint.
 func (a *OrchestratorApp) stopInProc() {
 	a.inprocHandler.Stop()
+}
+
+func (a *OrchestratorApp) OnConnect(c *websocket.Conn) error {
+	logger.Logger().Debug().Interface("conn", c).Msg(a.config.Version)
+	return nil
 }

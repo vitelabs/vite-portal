@@ -7,8 +7,8 @@ import (
 const (
 	DefaultConfigVersion               = "v0.1"
 	DefaultDebug                       = false
-	DefaultRpcHttpPort                 = 57331
-	DefaultRpcWsPort                   = 57332
+	DefaultRpcPort                     = 57331
+	DefaultRpcAuthPort                 = 57332
 	DefaultRpcTimeout                  = 5000
 	DefaultUserAgent                   = ""
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
@@ -31,10 +31,10 @@ type Config struct {
 	Version string `json:"version"`
 	// Enable debug mode
 	Debug bool `json:"debug"`
-	// Port number for the HTTP RPC
-	RpcHttpPort int32 `json:"rpcHttpPort"`
-	// Port number for the WebSocket RPC
-	RpcWsPort int32 `json:"rpcWsPort"`
+	// Port number for the unauthenticated RPC
+	RpcPort int32 `json:"rpcPort"`
+	// Port number for the authenticated RPC
+	RpcAuthPort int32 `json:"rpcAuthPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
 	// The user agent used when sending RPC requests
@@ -53,8 +53,8 @@ func NewDefaultConfig() Config {
 	c := Config{
 		Version:            DefaultConfigVersion,
 		Debug:              DefaultDebug,
-		RpcHttpPort:        DefaultRpcHttpPort,
-		RpcWsPort:          DefaultRpcWsPort,
+		RpcPort:            DefaultRpcPort,
+		RpcAuthPort:        DefaultRpcAuthPort,
 		RpcTimeout:         DefaultRpcTimeout,
 		UserAgent:          DefaultUserAgent,
 		HeaderTrueClientIp: DefaultHeaderTrueClientIp,

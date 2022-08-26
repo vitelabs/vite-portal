@@ -6,6 +6,12 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
+var (
+	DefaultAllowedOrigins = []string{"*"}
+	DefaultVhosts         = []string{"localhost"}
+	DefaultModules        = []string{"nodes", "public"}
+)
+
 func InitApp(debug bool, configPath string) (*RelayerApp, error) {
 	logger.Init(debug)
 	p := configPath

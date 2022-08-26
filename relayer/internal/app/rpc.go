@@ -1,22 +1,69 @@
 package app
 
-import (
-	"time"
+import "github.com/vitelabs/vite-portal/shared/pkg/rpc"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/rpc"
-)
+func (a *RelayerApp) startRPC(profile bool) error {
+	a.StartHttpRpc(profile)
+	a.StartWsRpc()
 
-func (a *RelayerApp) startRPC(profile bool) {
-	routes := []rpc.Route{
-		{Name: "Relay", Method: "POST", Path: "/api/v1/client/relay", HandlerFunc: a.Relay},
-		{Name: "GetChains", Method: "GET", Path: "/api/v1/db/chains", HandlerFunc: a.GetChains},
-		{Name: "GetNodes", Method: "GET", Path: "/api/v1/db/nodes", HandlerFunc: a.GetNodes},
-		{Name: "GetNode", Method: "GET", Path: "/api/v1/db/nodes/:id", HandlerFunc: a.GetNode},
-		{Name: "PutNode", Method: "PUT", Path: "/api/v1/db/nodes", HandlerFunc: a.PutNode},
-		{Name: "DeleteNode", Method: "DELETE", Path: "/api/v1/db/nodes/:id", HandlerFunc: a.DeleteNode},
+	if err := a.startInProc(); err != nil {
+		return err
 	}
 
-	timeout := time.Duration(a.Config.RpcTimeout) * time.Millisecond
-	rpc.StartHttpRpc(routes, a.Config.RpcHttpPort, timeout, a.Config.Debug, profile)
-	rpc.StartWsRpc(a.Config.RpcWsPort, timeout)
+	open, all := a.GetAPIs()
+
+	init := func(server *rpc.HTTPServer, apis []rpc.API, port int, secret []byte) error {
+		if err := server.SetListenAddr("", port); err != nil {
+			return err
+		}
+
+		// Enable HTTP
+		if err := server.EnableRPC(apis, rpc.HTTPConfig{
+			CorsAllowedOrigins: DefaultAllowedOrigins,
+			Vhosts:             DefaultVhosts,
+			Modules:            DefaultModules,
+			Prefix:             "",
+			JwtSecret:          secret,
+		}); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	// Set up unauthenticated RPC.
+	if err := init(a.rpc, open, int(55331), nil); err != nil {
+		return err
+	}
+	// Set up authenticated RPC.
+	if err := init(a.rpcAuth, all, int(55332), nil); err != nil {
+		return err
+	}
+
+	// Start the servers
+	a.rpc.Start()
+	a.rpcAuth.Start()
+
+	return nil
+}
+
+func (a *RelayerApp) stopRPC() {
+	a.rpc.Stop()
+	a.rpcAuth.Stop()
+	a.stopInProc()
+}
+
+// startInProc registers all RPC APIs on the inproc server.
+func (a *RelayerApp) startInProc() error {
+	for _, api := range a.rpcAPIs {
+		if err := a.inprocHandler.RegisterName(api.Namespace, api.Service); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// stopInProc terminates the in-process RPC endpoint.
+func (a *RelayerApp) stopInProc() {
+	a.inprocHandler.Stop()
 }

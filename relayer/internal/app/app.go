@@ -3,12 +3,15 @@ package app
 import (
 	"errors"
 	"fmt"
+	"sync"
+	"time"
 
 	coreservice "github.com/vitelabs/vite-portal/relayer/internal/core/service"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
@@ -16,31 +19,68 @@ import (
 )
 
 type RelayerApp struct {
-	Config      types.Config
-	context     *Context
-	coreService *coreservice.Service
-	orchestrator *orchestrator.Orchestrator
-	nodeService nodeinterfaces.ServiceI
+	config        types.Config
+	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
+	state         int        // Tracks state of node lifecycle
+	lock          sync.Mutex
+	rpcAPIs       []rpc.API // List of APIs currently provided by the app
+	rpc           *rpc.HTTPServer
+	rpcAuth       *rpc.HTTPServer
+	inprocHandler *rpc.Server // In-process RPC request handler to process the API requests
+	context       *Context
+	coreService   *coreservice.Service
+	orchestrator  *orchestrator.Orchestrator
+	nodeService   nodeinterfaces.ServiceI
 }
 
 func NewRelayerApp(cfg types.Config, o *orchestrator.Orchestrator, c *Context) *RelayerApp {
 	a := &RelayerApp{
-		Config:  cfg,
-		context: c,
-		orchestrator: o,
+		config:        cfg,
+		inprocHandler: rpc.NewServer(),
+		context:       c,
+		orchestrator:  o,
 	}
 	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.coreService = coreservice.NewService(cfg, &c.cacheStore, a.nodeService)
+
+	// Register built-in APIs.
+	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)
+
+	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
+	timeouts := rpc.HTTPTimeouts{
+		ReadTimeout:       defaultTimeout,
+		ReadHeaderTimeout: defaultTimeout,
+		WriteTimeout:      defaultTimeout,
+		IdleTimeout:       defaultTimeout * 2,
+	}
+
+	logger := logger.Logger()
+
+	// Configure RPC servers.
+	a.rpc = rpc.NewHTTPServer(logger, timeouts)
+	a.rpcAuth = rpc.NewHTTPServer(logger, timeouts)
+
 	return a
 }
 
 func (a *RelayerApp) Start(profile bool) error {
-	a.startRPC(profile)
-	return nil
+	logger.Logger().Info().Msg("Start called")
+	a.startStopLock.Lock()
+	defer a.startStopLock.Unlock()
+
+	// start RPC endpoints
+	err := a.startRPC(profile)
+	if err != nil {
+		a.stopRPC()
+	}
+	return err
 }
 
 func (a *RelayerApp) Shutdown() {
 	logger.Logger().Info().Msg("Shutdown called")
+	a.startStopLock.Lock()
+	defer a.startStopLock.Unlock()
+
 	a.context.nodeStore.Close()
 }
 
@@ -60,12 +100,12 @@ func (a *RelayerApp) HandleRelay(r coretypes.Relay) (string, error) {
 	return res.Response, nil
 }
 
-func (app *RelayerApp) setClientIp(r *coretypes.Relay) {
+func (a *RelayerApp) setClientIp(r *coretypes.Relay) {
 	// Check if already set
 	if r.ClientIp != "" {
 		return
 	}
-	v := r.Payload.Headers[app.Config.HeaderTrueClientIp]
+	v := r.Payload.Headers[a.config.HeaderTrueClientIp]
 	if len(v) == 0 || v[0] == "" {
 		r.ClientIp = types.DefaultIpAddress
 	} else {
@@ -73,8 +113,8 @@ func (app *RelayerApp) setClientIp(r *coretypes.Relay) {
 	}
 }
 
-func (app *RelayerApp) setChain(r *coretypes.Relay) error {
-	chains := app.nodeService.GetChains()
+func (a *RelayerApp) setChain(r *coretypes.Relay) error {
+	chains := a.nodeService.GetChains()
 	if len(chains) == 0 {
 		return errors.New("chains are empty")
 	}
@@ -82,7 +122,7 @@ func (app *RelayerApp) setChain(r *coretypes.Relay) error {
 		return errors.New(fmt.Sprintf("the chain '%s' is not supported", chain))
 	}
 	if r.Chain == "" {
-		r.Chain = app.Config.HostToChainMap[r.Host]
+		r.Chain = a.config.HostToChainMap[r.Host]
 	}
 	// Check if chain exists
 	if r.Chain != "" {

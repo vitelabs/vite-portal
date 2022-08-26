@@ -48,7 +48,8 @@ func (o *Orchestrator) init() {
 		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
 		// TODO: use exponential backoff strategy
 		time.Sleep(1 * time.Second)
-		o.init()
+		// o.init()
+		return
 	}
 	o.setStatus(ws.Connected)
 	go o.handleMessages()
@@ -71,6 +72,9 @@ func (o *Orchestrator) handleMessages() {
 func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
 	if o.status != newStatus {
 		o.status = newStatus
-		o.StatusChanged <- newStatus
+		select {
+		case o.StatusChanged <- newStatus:
+		default:
+		}
 	}
 }

@@ -7,6 +7,7 @@ import (
 )
 
 func TestCache(t *testing.T) {
+	t.Parallel()
 	capacity := 10
 	testCache := NewCache(capacity)
 

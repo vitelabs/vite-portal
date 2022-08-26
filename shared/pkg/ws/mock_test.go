@@ -9,6 +9,7 @@ import (
 )
 
 func TestStartMockWsRpc(t *testing.T) {
+	t.Parallel()
 	timeout := 100 * time.Millisecond
 	mock := NewMockWsRpc(0)
 	require.NotNil(t, mock)

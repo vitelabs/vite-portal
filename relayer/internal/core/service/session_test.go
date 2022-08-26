@@ -12,6 +12,7 @@ import (
 )
 
 func TestHandleSession_Error(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name          string
 		header        coretypes.SessionHeader
@@ -44,6 +45,7 @@ func TestHandleSession_Error(t *testing.T) {
 }
 
 func TestHandleSession_SingleNode(t *testing.T) {
+	t.Parallel()
 	chain := "chain1"
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
@@ -55,6 +57,7 @@ func TestHandleSession_SingleNode(t *testing.T) {
 }
 
 func TestHandleSession(t *testing.T) {
+	t.Parallel()
 	chain := "chain1"
 	h := newSessionHeader(chain)
 	ctx := newDefaultTestContext()
@@ -69,6 +72,7 @@ func TestHandleSession(t *testing.T) {
 }
 
 func TestGetActualNodes_Empty(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		session coretypes.Session
@@ -104,6 +108,7 @@ func TestGetActualNodes_Empty(t *testing.T) {
 }
 
 func TestGetActualNodes(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		session  coretypes.Session

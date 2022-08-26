@@ -10,6 +10,7 @@ import (
 )
 
 func TestGetChains(t *testing.T) {
+	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
@@ -28,6 +29,7 @@ func TestGetChains(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
+	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
@@ -50,6 +52,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetById(t *testing.T) {
+	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
@@ -64,6 +67,7 @@ func TestGetById(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
+	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
@@ -84,6 +88,7 @@ func TestCount(t *testing.T) {
 }
 
 func TestUpsertInvalid(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		node *types.Node
@@ -119,6 +124,7 @@ func TestUpsertInvalid(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
+	t.Parallel()
 	node1 := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
@@ -143,6 +149,7 @@ func TestRemove(t *testing.T) {
 }
 
 func TestClear(t *testing.T) {
+	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 

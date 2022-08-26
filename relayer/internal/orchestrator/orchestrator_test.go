@@ -13,6 +13,7 @@ import (
 var timeout = 1000 * time.Millisecond
 
 func TestInit(t *testing.T) {
+	t.Parallel()
 	rpc := wstest.NewTestWsRpc(timeout)
 	rpc.Start()
 	o := InitOrchestrator(rpc.Url, timeout)
@@ -32,6 +33,7 @@ func TestInit(t *testing.T) {
 }
 
 func TestMockInit(t *testing.T) {
+	t.Parallel()
 	mock := ws.NewMockWsRpc(0)
 	require.NotNil(t, mock)
 	go mock.Serve(timeout)
@@ -53,6 +55,7 @@ func TestMockInit(t *testing.T) {
 }
 
 func TestInitInvalidUrl(t *testing.T) {
+	t.Parallel()
 	o := InitOrchestrator("http://localhost:1234", timeout)
 	require.NotNil(t, o)
 }

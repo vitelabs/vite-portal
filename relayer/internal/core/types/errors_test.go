@@ -11,6 +11,7 @@ import (
 )
 
 func TestHttpExecutionError(t *testing.T) {
+	t.Parallel()
 	err := NewError(DefaultCodeNamespace, CodeHttpExecutionError, errors.New("test1234"))
 
 	require.NotNil(t, err)

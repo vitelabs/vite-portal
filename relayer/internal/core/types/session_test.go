@@ -12,6 +12,7 @@ import (
 )
 
 func TestNewSessionKey(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name      string
 		chain     string
@@ -41,6 +42,7 @@ func TestNewSessionKey(t *testing.T) {
 }
 
 func TestNewSessionNodes(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name             string
 		sessionNodeCount int

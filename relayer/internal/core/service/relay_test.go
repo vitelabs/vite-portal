@@ -12,6 +12,7 @@ import (
 )
 
 func TestGetConsensusNodes_Error(t *testing.T) {
+	t.Parallel()
 	chain := "chain1"
 	ctx := newDefaultTestContext()
 	h := coretypes.SessionHeader{
@@ -24,6 +25,7 @@ func TestGetConsensusNodes_Error(t *testing.T) {
 }
 
 func TestGetConsensusNodes(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		nodes    int

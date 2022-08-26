@@ -7,6 +7,7 @@ import (
 )
 
 func Test(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		entry nameObjectEntry
@@ -54,6 +55,7 @@ type testEntry struct {
 }
 
 func TestGet(t *testing.T) {
+	t.Parallel()
 	c := NewNameObjectCollection()
 	actual1 := c.Get("")
 	assert.Nil(t, actual1)
@@ -63,6 +65,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetByIndex(t *testing.T) {
+	t.Parallel()
 	c := NewNameObjectCollection()
 	entry1 := testEntry{id: "1", val: "test1"}
 	c.Add(entry1.id, entry1)
@@ -83,6 +86,7 @@ func TestGetByIndex(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
+	t.Parallel()
 	c := NewNameObjectCollection()
 	entry1 := testEntry{id: "1", val: "test1"}
 	entry2 := testEntry{id: "2", val: "test2"}
@@ -102,6 +106,7 @@ func TestRemove(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
+	t.Parallel()
 	c := NewNameObjectCollection()
 	entry1 := testEntry{id: "1", val: "test1"}
 	entry2 := testEntry{id: "2", val: "test2"}
@@ -117,6 +122,7 @@ func TestSet(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	t.Parallel()
 	c := NewNameObjectCollection()
 	entry1 := testEntry{id: "1", val: "test1"}
 	entry2 := testEntry{id: "2", val: "test2"}

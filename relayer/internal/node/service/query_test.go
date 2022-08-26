@@ -10,6 +10,7 @@ import (
 )
 
 func TestGetNodes_Empty(t *testing.T) {
+	t.Parallel()
 	store := nodestore.NewMemoryStore()
 	service := NewService(store)
 
@@ -23,6 +24,7 @@ func TestGetNodes_Empty(t *testing.T) {
 }
 
 func TestGetNodes(t *testing.T) {
+	t.Parallel()
 	store := nodestore.NewMemoryStore()
 	service := NewService(store)
 

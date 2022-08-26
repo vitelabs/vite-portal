@@ -8,6 +8,7 @@ import (
 )
 
 func TestWaitFor(t *testing.T) {
+	t.Parallel()
 	c := make(chan string)
 	timeout := 100 * time.Millisecond
 	startTime := time.Now()
@@ -26,6 +27,7 @@ func TestWaitFor(t *testing.T) {
 }
 
 func TestWaitForTimeout(t *testing.T) {
+	t.Parallel()
 	c := make(chan string)
 	timeout := 100 * time.Millisecond
 	startTime := time.Now()

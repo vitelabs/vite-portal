@@ -10,6 +10,7 @@ import (
 )
 
 func TestCacheStore(t *testing.T) {
+	t.Parallel()
 	sessionMaxDuration := int64(1000)
 	capacity := 10
 	store := NewCacheStore(capacity)
@@ -32,6 +33,7 @@ func TestCacheStore(t *testing.T) {
 }
 
 func TestExpired(t *testing.T) {
+	t.Parallel()
 	sessionMaxDuration := int64(50)
 	capacity := 10
 	store := NewCacheStore(capacity)

@@ -7,18 +7,21 @@ import (
 )
 
 func TestCodeTypeMessages(t *testing.T) {
+	t.Parallel()
 	expected := codeTypeLimit
 	actual := len(CodeTypeMessages)
 	require.Equal(t, actual, expected)
 }
 
 func TestUnknownCodeTypeMessage(t * testing.T) {
+	t.Parallel()
 	expected := "unknown code 1000"
 	actual := GetCodeMessage(1000)
 	require.Equal(t, actual, expected)
 }
 
 func TestCodeTypeName(t *testing.T) {
+	t.Parallel()
 	expected1 := "everything ok"
 	actual1 := GetCodeMessage(CodeOK)
 	require.Equal(t, actual1, expected1)

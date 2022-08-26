@@ -12,6 +12,7 @@ import (
 )
 
 func TestExtractModelFromBody(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name          string
 		body          string
@@ -59,6 +60,7 @@ func TestExtractModelFromBody(t *testing.T) {
 }
 
 func TestExtractParams(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name          string
 		request       http.Request

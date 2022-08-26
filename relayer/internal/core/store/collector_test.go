@@ -8,6 +8,7 @@ import (
 )
 
 func TestMockCollector(t *testing.T) {
+	t.Parallel()
 	c := NewHttpCollector("", "", 0)
 	err := c.DispatchRelayResult(types.RelayResult{})
 	require.Error(t, err)

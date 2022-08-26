@@ -7,6 +7,7 @@ import (
 )
 
 func TestContains(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		s []string
@@ -54,6 +55,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestRemoveAt(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		input []int

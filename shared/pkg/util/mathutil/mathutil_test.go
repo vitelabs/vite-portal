@@ -7,6 +7,7 @@ import (
 )
 
 func TestMin(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		a int

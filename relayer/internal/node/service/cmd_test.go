@@ -10,6 +10,7 @@ import (
 )
 
 func TestPutNodeInvalid(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		node *types.Node
@@ -48,6 +49,7 @@ func TestPutNodeInvalid(t *testing.T) {
 }
 
 func TestLastActivityTimestamp(t *testing.T) {
+	t.Parallel()
 	store := nodestore.NewMemoryStore()
 	service := NewService(store)
 	chain1 := "chain1"

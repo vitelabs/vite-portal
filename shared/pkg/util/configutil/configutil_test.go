@@ -11,6 +11,7 @@ import (
 )
 
 func TestInitConfig(t *testing.T) {
+	t.Parallel()
 	p := path.Join("test", idutil.NewGuid(), "test.json")
 	dir := path.Dir(p)
 	defer os.RemoveAll(dir)
@@ -22,6 +23,7 @@ func TestInitConfig(t *testing.T) {
 }
 
 func TestConfigFile(t *testing.T) {
+	t.Parallel()
 	p := path.Join("test", idutil.NewGuid(), "test.json")
 	dir := path.Dir(p)
 	defer os.RemoveAll(dir)
@@ -42,6 +44,7 @@ func TestConfigFile(t *testing.T) {
 }
 
 func TestConfigFileBackup(t *testing.T) {
+	t.Parallel()
 	p := path.Join("test", idutil.NewGuid(), "test.json")
 	dir := path.Dir(p)
 	defer os.RemoveAll(dir)

@@ -14,6 +14,7 @@ type testEntry struct {
 }
 
 func TestFromByte(t *testing.T) {
+	t.Parallel()
 	json := `{"id": 12423434, "chain": "chain1"}`
 	expected := testEntry{
 		Id:    12423434,
@@ -28,6 +29,7 @@ func TestFromByte(t *testing.T) {
 }
 
 func TestFromByteMultiple(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name          string
 		body          string

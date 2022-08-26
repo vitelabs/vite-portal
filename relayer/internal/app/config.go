@@ -23,12 +23,7 @@ func InitApp(debug bool, configPath string) (*RelayerApp, error) {
 	if err != nil {
 		return nil, err
 	}
-	o := InitOrchestrator(cfg.OrchestratorWsUrl, cfg.RpcTimeout)
-	c, err := InitContext(cfg)
-	if err != nil {
-		return nil, err
-	}
-	a := NewRelayerApp(cfg, o, c)
+	a := NewRelayerApp(cfg)
 	return a, nil
 }
 

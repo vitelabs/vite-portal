@@ -15,9 +15,10 @@ var timeout = 1000 * time.Millisecond
 func TestInit(t *testing.T) {
 	rpc := wstest.NewTestWsRpc(timeout)
 	rpc.Start()
-	o := InitOrchestrator(rpc.Url, timeout)
+	o := NewOrchestrator(rpc.Url, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
+	o.Start()
 	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
 		return status == ws.Connected
 	})
@@ -35,9 +36,10 @@ func TestMockInit(t *testing.T) {
 	mock := ws.NewMockWsRpc(0)
 	require.NotNil(t, mock)
 	go mock.Serve(timeout)
-	o := InitOrchestrator(mock.Url, timeout)
+	o := NewOrchestrator(mock.Url, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
+	o.Start()
 	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
 		return status == ws.Connected
 	})
@@ -54,6 +56,6 @@ func TestMockInit(t *testing.T) {
 
 func TestInitInvalidUrl(t *testing.T) {
 	t.Parallel()
-	o := InitOrchestrator("http://localhost:1234", timeout)
+	o := NewOrchestrator("http://localhost:1234", timeout)
 	require.NotNil(t, o)
 }

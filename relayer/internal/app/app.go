@@ -33,13 +33,14 @@ type RelayerApp struct {
 	nodeService   nodeinterfaces.ServiceI
 }
 
-func NewRelayerApp(cfg types.Config, o *orchestrator.Orchestrator, c *Context) *RelayerApp {
+func NewRelayerApp(cfg types.Config) *RelayerApp {
+	c := NewContext(cfg)
 	a := &RelayerApp{
 		config:        cfg,
 		inprocHandler: rpc.NewServer(),
-		context:       c,
-		orchestrator:  o,
+		context: c,
 	}
+	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, time.Duration(cfg.RpcTimeout))
 	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.coreService = coreservice.NewService(cfg, &c.cacheStore, a.nodeService)
 
@@ -72,8 +73,12 @@ func (a *RelayerApp) Start(profile bool) error {
 	err := a.startRPC(profile)
 	if err != nil {
 		a.stopRPC()
+		return err
 	}
-	return err
+
+	a.orchestrator.Start()
+
+	return nil
 }
 
 func (a *RelayerApp) Shutdown() {

@@ -17,14 +17,6 @@ type Orchestrator struct {
 }
 
 func NewOrchestrator(url string, timeout time.Duration) *Orchestrator {
-	return &Orchestrator{
-		StatusChanged: make(chan ws.ConnectionStatus),
-		status:        ws.Unknown,
-		client:        client.NewClient(url, timeout),
-	}
-}
-
-func InitOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	u, e := urlutil.Parse(url)
 	if e != nil {
 		logger.Logger().Error().Err(e).Msg("orchestrator URL parse failed")
@@ -32,16 +24,18 @@ func InitOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	if u.Scheme != "ws" && u.Scheme != "wss" {
 		logger.Logger().Error().Msg("orchestrator URL does not match WebSocket protocol")
 	}
-	orchestrator := NewOrchestrator(url, timeout)
-	go orchestrator.init()
-	return orchestrator
+	return &Orchestrator{
+		StatusChanged: make(chan ws.ConnectionStatus),
+		status:        ws.Unknown,
+		client:        client.NewClient(url, timeout),
+	}
 }
 
 func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 	return o.status
 }
 
-func (o *Orchestrator) init() {
+func (o *Orchestrator) Start() {
 	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {

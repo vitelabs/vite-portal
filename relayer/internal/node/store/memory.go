@@ -1,6 +1,8 @@
 package store
 
 import (
+	"errors"
+	"sort"
 	"sync"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/collections"
@@ -32,6 +34,8 @@ func (s *MemoryStore) GetChains() []string {
 		chains[i] = k
 		i++
 	}
+
+	sort.Strings(chains)
 
 	return chains
 }
@@ -91,7 +95,7 @@ func (s *MemoryStore) UpsertMany(n []types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	return nil
+	return errors.New("not yet implemented")
 }
 
 func (s *MemoryStore) Remove(chain string, id string) error {

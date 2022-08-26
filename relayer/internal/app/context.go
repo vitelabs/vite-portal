@@ -19,8 +19,3 @@ func NewContext(config types.Config) *Context {
 	}
 	return c
 }
-
-func InitContext(config types.Config) (*Context, error) {
-	c := NewContext(config)
-	return c, nil
-}

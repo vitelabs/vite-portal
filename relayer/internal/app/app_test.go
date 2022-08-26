@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
 )
@@ -143,12 +142,11 @@ func TestSetClientIp(t *testing.T) {
 
 func newRelayerApp() *RelayerApp {
 	config := roottypes.NewDefaultConfig()
+	config.RpcTimeout = 0
 	config.HostToChainMap = map[string]string{
 		"test.localhost": "chain2",
 	}
-	o := orchestrator.NewOrchestrator("", 0)
-	c := NewContext(config)
-	return NewRelayerApp(config, o, c)
+	return NewRelayerApp(config)
 }
 
 func insertChains(a *RelayerApp, chains []string) {

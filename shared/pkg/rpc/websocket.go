@@ -308,7 +308,7 @@ func (wc *websocketCodec) pingLoop() {
 
 	for {
 		select {
-		case <-wc.closed():
+		case <-wc.Closed():
 			return
 		case <-wc.pingReset:
 			if !timer.Stop() {

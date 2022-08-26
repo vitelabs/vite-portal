@@ -41,8 +41,8 @@ func (r *TestWsRpc) Start() {
 		Setpgid: true,
 	}
 
-	out := sharedtypes.BufferChannel{}
-	cmd.Stdout = &out
+	out := sharedtypes.NewBufferChannel()
+	cmd.Stdout = out
 
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)

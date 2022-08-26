@@ -45,7 +45,7 @@ type ServerCodec interface {
 type jsonWriter interface {
 	writeJSON(context.Context, interface{}) error
 	// Closed returns a channel which is closed when the connection is closed.
-	closed() <-chan interface{}
+	Closed() <-chan interface{}
 	// RemoteAddr returns the peer address of the connection.
 	remoteAddr() string
 }

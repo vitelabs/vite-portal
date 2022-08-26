@@ -98,7 +98,7 @@ func (s *Server) ServeCodec(codec ServerCodec, options CodecOption) {
 	defer s.codecs.Remove(codec)
 
 	c := initClient(codec, s.idgen, &s.services)
-	<-codec.closed()
+	<-codec.Closed()
 	c.Close()
 }
 

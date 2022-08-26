@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 	wstest "github.com/vitelabs/vite-portal/shared/pkg/ws/test"
 )
@@ -13,22 +13,17 @@ import (
 var timeout = 1000 * time.Millisecond
 
 func TestInit(t *testing.T) {
-	rpc := wstest.NewTestWsRpc(timeout)
-	rpc.Start()
-	o := NewOrchestrator(rpc.Url, timeout)
+	r := wstest.NewTestWsRpc(timeout)
+	r.Start()
+	o := NewOrchestrator(r.Url, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	o.Start()
-	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
-		return status == ws.Connected
-	})
+	o.Start(rpc.NewServer())
 	require.Equal(t, ws.Connected, o.GetStatus())
-	require.True(t, ws.CanConnect(rpc.Url, timeout))
-	rpc.Stop()
-	require.False(t, ws.CanConnect(rpc.Url, timeout))
-	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
-		return status == ws.Disconnected
-	})
+	require.True(t, ws.CanConnect(r.Url, timeout))
+	r.Stop()
+	require.False(t, ws.CanConnect(r.Url, timeout))
+	time.Sleep(timeout)
 	require.Equal(t, ws.Disconnected, o.GetStatus())
 }
 
@@ -39,17 +34,12 @@ func TestMockInit(t *testing.T) {
 	o := NewOrchestrator(mock.Url, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	o.Start()
-	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
-		return status == ws.Connected
-	})
+	o.Start(rpc.NewServer())
 	require.Equal(t, ws.Connected, o.GetStatus())
 	require.True(t, ws.CanConnect(mock.Url, timeout))
 	mock.Close()
 	require.False(t, ws.CanConnect(mock.Url, timeout))
-	commonutil.WaitFor(timeout, o.StatusChanged, func(status ws.ConnectionStatus) bool {
-		return status == ws.Disconnected
-	})
+	time.Sleep(timeout)
 	// Connections are not closed -> use TestWsRpc
 	require.Equal(t, ws.Connected, o.GetStatus())
 }

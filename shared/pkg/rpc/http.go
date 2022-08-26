@@ -72,7 +72,7 @@ func (hc *httpConn) close() {
 	hc.closeOnce.Do(func() { close(hc.closeCh) })
 }
 
-func (hc *httpConn) closed() <-chan interface{} {
+func (hc *httpConn) Closed() <-chan interface{} {
 	return hc.closeCh
 }
 

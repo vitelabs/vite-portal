@@ -76,7 +76,7 @@ func (a *RelayerApp) Start(profile bool) error {
 		return err
 	}
 
-	a.orchestrator.Start()
+	a.orchestrator.Start(a.inprocHandler)
 
 	return nil
 }
@@ -86,6 +86,7 @@ func (a *RelayerApp) Shutdown() {
 	a.startStopLock.Lock()
 	defer a.startStopLock.Unlock()
 
+	a.stopRPC()
 	a.context.nodeStore.Close()
 }
 

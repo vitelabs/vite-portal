@@ -1,17 +1,16 @@
 package orchestrator
 
 import (
-	"fmt"
 	urlutil "net/url"
 	"time"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/client"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
 type Orchestrator struct {
-	StatusChanged chan ws.ConnectionStatus
 	status        ws.ConnectionStatus
 	client        *client.Client
 }
@@ -25,7 +24,6 @@ func NewOrchestrator(url string, timeout time.Duration) *Orchestrator {
 		logger.Logger().Error().Msg("orchestrator URL does not match WebSocket protocol")
 	}
 	return &Orchestrator{
-		StatusChanged: make(chan ws.ConnectionStatus),
 		status:        ws.Unknown,
 		client:        client.NewClient(url, timeout),
 	}
@@ -35,7 +33,7 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 	return o.status
 }
 
-func (o *Orchestrator) Start() {
+func (o *Orchestrator) Start(s *rpc.Server) {
 	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {
@@ -46,29 +44,22 @@ func (o *Orchestrator) Start() {
 		return
 	}
 	o.setStatus(ws.Connected)
-	go o.handleMessages()
-}
 
-func (o *Orchestrator) handleMessages() {
-	defer func() {
-		o.client.Conn.Close()
+	codec := rpc.NewFuncCodec(o.client.Conn, o.client.Conn.WriteJSON, o.client.Conn.ReadJSON)
+	go s.ServeCodec(codec, 0)
+
+	go func() {
+		<-codec.Closed()
 		o.setStatus(ws.Disconnected)
 	}()
-	for {
-		_, message, err := o.client.Conn.ReadMessage()
-		if err != nil {
-			break
-		}
-		logger.Logger().Info().Msg(fmt.Sprintf("message: %s", message))
-	}
 }
 
 func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
 	if o.status != newStatus {
+		logger.Logger().Info().
+			Int64("before", int64(o.status)).
+			Int64("after", int64(newStatus)).
+			Msg("connection status changed")
 		o.status = newStatus
-		select {
-		case o.StatusChanged <- newStatus:
-		default:
-		}
 	}
 }

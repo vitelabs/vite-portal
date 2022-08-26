@@ -55,7 +55,7 @@ func (hc *httpConn) writeJSON(context.Context, interface{}) error {
 	panic("writeJSON called on httpConn")
 }
 
-func (hc *httpConn) peerInfo() PeerInfo {
+func (hc *httpConn) PeerInfo() PeerInfo {
 	panic("peerInfo called on httpConn")
 }
 

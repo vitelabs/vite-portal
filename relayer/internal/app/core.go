@@ -6,6 +6,7 @@ import (
 
 	coreservice "github.com/vitelabs/vite-portal/relayer/internal/core/service"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
+	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
@@ -18,13 +19,15 @@ type RelayerCoreApp struct {
 	Config      types.Config
 	context     *Context
 	coreService *coreservice.Service
+	orchestrator *orchestrator.Orchestrator
 	nodeService nodeinterfaces.ServiceI
 }
 
-func NewRelayerCoreApp(cfg types.Config, c *Context) *RelayerCoreApp {
+func NewRelayerCoreApp(cfg types.Config, o *orchestrator.Orchestrator, c *Context) *RelayerCoreApp {
 	app := &RelayerCoreApp{
 		Config:  cfg,
 		context: c,
+		orchestrator: o,
 	}
 	app.nodeService = nodeservice.NewService(c.nodeStore)
 	app.coreService = coreservice.NewService(cfg, &c.cacheStore, app.nodeService)

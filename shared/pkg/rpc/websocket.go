@@ -43,7 +43,7 @@ const (
 
 var wsBufferPool = new(sync.Pool)
 
-type OnConnectFunc func(*websocket.Conn) error
+type OnConnectFunc func(ServerCodec) error
 
 // WebsocketHandler returns a handler that serves JSON-RPC to WebSocket connections.
 //
@@ -62,14 +62,18 @@ func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFu
 			logger.Logger().Debug().Err(err).Msg("WebSocket upgrade failed")
 			return
 		}
+
+		codec := newWebsocketCodec(conn, r.Host, r.Header)
+
 		if onConnect != nil {
-			err = onConnect(conn)
+			err = onConnect(codec)
 			if err != nil {
+				codec.close()
 				logger.Logger().Debug().Err(err).Msg("WebSocket closed")
 				return
 			}
 		}
-		codec := newWebsocketCodec(conn, r.Host, r.Header)
+
 		s.ServeCodec(codec, 0)
 	})
 }
@@ -280,7 +284,7 @@ func (wc *websocketCodec) close() {
 	wc.wg.Wait()
 }
 
-func (wc *websocketCodec) peerInfo() PeerInfo {
+func (wc *websocketCodec) PeerInfo() PeerInfo {
 	return wc.info
 }
 

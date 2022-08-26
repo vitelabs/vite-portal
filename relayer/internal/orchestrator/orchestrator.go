@@ -1,7 +1,6 @@
 package orchestrator
 
 import (
-	"errors"
 	"fmt"
 	urlutil "net/url"
 	"time"
@@ -25,17 +24,17 @@ func NewOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	}
 }
 
-func InitOrchestrator(url string, timeout time.Duration) (*Orchestrator, error) {
+func InitOrchestrator(url string, timeout time.Duration) *Orchestrator {
 	u, e := urlutil.Parse(url)
 	if e != nil {
-		return nil, e
+		logger.Logger().Error().Err(e).Msg("orchestrator URL parse failed")
 	}
 	if u.Scheme != "ws" && u.Scheme != "wss" {
-		return nil, errors.New("URL need to match WebSocket Protocol.")
+		logger.Logger().Error().Msg("orchestrator URL does not match WebSocket protocol")
 	}
 	orchestrator := NewOrchestrator(url, timeout)
 	go orchestrator.init()
-	return orchestrator, nil
+	return orchestrator
 }
 
 func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
@@ -46,6 +45,7 @@ func (o *Orchestrator) init() {
 	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {
+		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
 		// TODO: use exponential backoff strategy
 		time.Sleep(1 * time.Second)
 		o.init()

@@ -1,9 +1,11 @@
 package app
 
 import (
-	"github.com/gorilla/websocket"
+	"errors"
+
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
 // Attach creates an RPC client attached to an in-process API handler.
@@ -97,7 +99,9 @@ func (a *OrchestratorApp) stopInProc() {
 	a.inprocHandler.Stop()
 }
 
-func (a *OrchestratorApp) OnConnect(c *websocket.Conn) error {
-	logger.Logger().Debug().Interface("conn", c).Msg(a.config.Version)
-	return nil
+func (a *OrchestratorApp) OnConnect(c rpc.ServerCodec) error {
+	info := c.PeerInfo()
+	logger.Logger().Debug().Msg(jsonutil.ToString(info))
+	logger.Logger().Debug().Interface("conn", &c).Msg(a.config.Version)
+	return errors.New("test")
 }

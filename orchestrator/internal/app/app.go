@@ -28,13 +28,13 @@ type OrchestratorApp struct {
 }
 
 func NewOrchestratorApp(cfg *types.Config) *OrchestratorApp {
-	app := &OrchestratorApp{
+	a := &OrchestratorApp{
 		config: cfg,
 		inprocHandler: rpc.NewServer(),
 	}
 
 	// Register built-in APIs.
-	app.rpcAPIs = append(app.rpcAPIs, app.apis()...)
+	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)
 
 	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	timeouts := rpc.HTTPTimeouts{
@@ -47,10 +47,10 @@ func NewOrchestratorApp(cfg *types.Config) *OrchestratorApp {
 	logger := logger.Logger()
 
 	// Configure RPC servers.
-	app.rpc = rpc.NewHTTPServer(logger, timeouts)
-	app.rpcAuth = rpc.NewHTTPServer(logger, timeouts)
+	a.rpc = rpc.NewHTTPServer(logger, timeouts)
+	a.rpcAuth = rpc.NewHTTPServer(logger, timeouts)
 
-	return app
+	return a
 }
 
 func (a *OrchestratorApp) Start() error {

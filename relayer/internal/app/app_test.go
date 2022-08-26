@@ -69,9 +69,9 @@ func TestSetChain(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			coreApp := newRelayerCoreApp()
-			insertChains(coreApp, tc.chains)
-			err := coreApp.setChain(&tc.relay)
+			a := newRelayerApp()
+			insertChains(a, tc.chains)
+			err := a.setChain(&tc.relay)
 			if tc.expectedError != nil {
 				require.Error(t, err)
 				require.Equal(t, tc.expectedError.Error(), err.Error())
@@ -133,26 +133,26 @@ func TestSetClientIp(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			coreApp := newRelayerCoreApp()
-			coreApp.setClientIp(&tc.relay)
+			a := newRelayerApp()
+			a.setClientIp(&tc.relay)
 			require.NotEmpty(t, tc.relay.ClientIp)
 			require.Equal(t, tc.expected, tc.relay.ClientIp)
 		})
 	}
 }
 
-func newRelayerCoreApp() *RelayerCoreApp {
+func newRelayerApp() *RelayerApp {
 	config := roottypes.NewDefaultConfig()
 	config.HostToChainMap = map[string]string{
 		"test.localhost": "chain2",
 	}
 	o := orchestrator.NewOrchestrator("", 0)
 	c := NewContext(config)
-	return NewRelayerCoreApp(config, o, c)
+	return NewRelayerApp(config, o, c)
 }
 
-func insertChains(coreApp *RelayerCoreApp, chains []string) {
+func insertChains(a *RelayerApp, chains []string) {
 	for _, c := range chains {
-		coreApp.nodeService.PutNode(testutil.NewNode(c))
+		a.nodeService.PutNode(testutil.NewNode(c))
 	}
 }

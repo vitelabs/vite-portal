@@ -46,12 +46,12 @@ var startCmd = &cobra.Command{
 	Short: fmt.Sprintf("Starts %s daemon", types.AppName),
 	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, types.AppName, types.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
-		o, err := app.InitApp(debug, configPath)
+		a, err := app.InitApp(debug, configPath)
 		if err != nil {
 			cmd.Exit("init error", err)
 		}
 
-		err = o.Start()
+		err = a.Start()
 		if err != nil {
 			cmd.Exit("start error", err)
 		}
@@ -68,7 +68,7 @@ var startCmd = &cobra.Command{
 		defer func() {
 			sig := <-signalChannel
 			fmt.Printf("Exit signal %s received\n", sig)
-			o.Shutdown()
+			a.Shutdown()
 			os.Exit(0)
 		}()
 

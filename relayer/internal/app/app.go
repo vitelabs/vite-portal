@@ -15,7 +15,7 @@ import (
 	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
 )
 
-type RelayerCoreApp struct {
+type RelayerApp struct {
 	Config      types.Config
 	context     *Context
 	coreService *coreservice.Service
@@ -23,34 +23,44 @@ type RelayerCoreApp struct {
 	nodeService nodeinterfaces.ServiceI
 }
 
-func NewRelayerCoreApp(cfg types.Config, o *orchestrator.Orchestrator, c *Context) *RelayerCoreApp {
-	app := &RelayerCoreApp{
+func NewRelayerApp(cfg types.Config, o *orchestrator.Orchestrator, c *Context) *RelayerApp {
+	a := &RelayerApp{
 		Config:  cfg,
 		context: c,
 		orchestrator: o,
 	}
-	app.nodeService = nodeservice.NewService(c.nodeStore)
-	app.coreService = coreservice.NewService(cfg, &c.cacheStore, app.nodeService)
-	return app
+	a.nodeService = nodeservice.NewService(c.nodeStore)
+	a.coreService = coreservice.NewService(cfg, &c.cacheStore, a.nodeService)
+	return a
 }
 
-func (app *RelayerCoreApp) HandleRelay(r coretypes.Relay) (string, error) {
-	app.setClientIp(&r)
-	err := app.setChain(&r)
+func (a *RelayerApp) Start(profile bool) error {
+	a.startRPC(profile)
+	return nil
+}
+
+func (a *RelayerApp) Shutdown() {
+	logger.Logger().Info().Msg("Shutdown called")
+	a.context.nodeStore.Close()
+}
+
+func (a *RelayerApp) HandleRelay(r coretypes.Relay) (string, error) {
+	a.setClientIp(&r)
+	err := a.setChain(&r)
 	if err != nil {
 		return "", err
 	}
 	if logger.DebugEnabled() {
 		logger.Logger().Debug().Str("relay", fmt.Sprintf("%#v", r)).Msg("relay data")
 	}
-	res, err1 := app.coreService.HandleRelay(r)
+	res, err1 := a.coreService.HandleRelay(r)
 	if err1 != nil {
 		return "", errors.New(err1.InnerError())
 	}
 	return res.Response, nil
 }
 
-func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
+func (app *RelayerApp) setClientIp(r *coretypes.Relay) {
 	// Check if already set
 	if r.ClientIp != "" {
 		return
@@ -63,7 +73,7 @@ func (app *RelayerCoreApp) setClientIp(r *coretypes.Relay) {
 	}
 }
 
-func (app *RelayerCoreApp) setChain(r *coretypes.Relay) error {
+func (app *RelayerApp) setChain(r *coretypes.Relay) error {
 	chains := app.nodeService.GetChains()
 	if len(chains) == 0 {
 		return errors.New("chains are empty")

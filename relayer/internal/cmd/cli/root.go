@@ -5,12 +5,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vitelabs/vite-portal/relayer/internal/app"
 	"github.com/vitelabs/vite-portal/relayer/internal/cmd"
-	"github.com/vitelabs/vite-portal/relayer/internal/rpc"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
@@ -48,13 +46,15 @@ var startCmd = &cobra.Command{
 	Short: fmt.Sprintf("Starts %s daemon", types.AppName),
 	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, types.AppName, types.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
-		if err := app.InitApp(debug, configPath); err != nil {
-			cmd.Exit("start error", err)
+		a, err := app.InitApp(debug, configPath)
+		if err != nil {
+			cmd.Exit("init error", err)
 		}
 
-		timeout := time.Duration(app.CoreApp.Config.RpcTimeout) * time.Millisecond
-		rpc.StartHttpRpc(app.CoreApp.Config.RpcHttpPort, timeout, app.CoreApp.Config.Debug, profile)
-		rpc.StartWsRpc(app.CoreApp.Config.RpcWsPort, timeout)
+		err = a.Start(profile)
+		if err != nil {
+			cmd.Exit("start error", err)
+		}
 
 		// trap kill signals
 		signalChannel := make(chan os.Signal, 1)
@@ -68,7 +68,7 @@ var startCmd = &cobra.Command{
 		defer func() {
 			sig := <-signalChannel
 			fmt.Printf("Exit signal %s received\n", sig)
-			app.Shutdown()
+			a.Shutdown()
 			os.Exit(0)
 		}()
 

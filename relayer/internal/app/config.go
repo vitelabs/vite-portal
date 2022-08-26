@@ -6,11 +6,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
-var (
-	CoreApp *RelayerCoreApp
-)
-
-func InitApp(debug bool, configPath string) error {
+func InitApp(debug bool, configPath string) (*RelayerApp, error) {
 	logger.Init(debug)
 	p := configPath
 	if p == "" {
@@ -19,18 +15,14 @@ func InitApp(debug bool, configPath string) error {
 	cfg := types.NewDefaultConfig()
 	err := configutil.InitConfig(&cfg, debug, p, types.DefaultConfigVersion)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	o := InitOrchestrator(cfg.OrchestratorWsUrl, cfg.RpcTimeout)
 	c, err := InitContext(cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	CoreApp = NewRelayerCoreApp(cfg, o, c)
-	return nil
+	a := NewRelayerApp(cfg, o, c)
+	return a, nil
 }
 
-func Shutdown() {
-	logger.Logger().Info().Msg("Shutdown called")
-	CoreApp.context.nodeStore.Close()
-}

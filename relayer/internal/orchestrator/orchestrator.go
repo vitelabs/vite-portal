@@ -34,6 +34,7 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 }
 
 func (o *Orchestrator) Start(s *rpc.Server) {
+	// TODO: start/stop properly
 	o.setStatus(ws.Connecting)
 	err := o.client.Connect()
 	if err != nil {

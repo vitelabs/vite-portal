@@ -12,7 +12,7 @@
     "maxSessionDuration": 60000000,
     "headerTrueClientIp": "True-Client-Ip",
     "httpCollectorUrl": "http://127.0.0.1:23460",
-    "orchestratorWsUrl": "",
+    "orchestratorWsUrl": "ws://127.0.0.1:57331",
     "hostToChainMap": {
         "http://127.0.0.1:23460": "mockchain"
     },

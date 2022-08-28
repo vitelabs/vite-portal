@@ -16,7 +16,7 @@ const (
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
-	DefaultLoggingFilename             = "relayer.log"
+	DefaultLoggingFilename             = "orchestrator.log"
 	DefaultLoggingMaxSize              = 100
 	DefaultLoggingMaxBackups           = 10
 	DefaultLoggingMaxAge               = 28

@@ -105,3 +105,4 @@ dist
 
 # Custom
 bin/relayer
+bin/orchestrator

@@ -1,18 +1,21 @@
 import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
 import { TestContants } from "./constants"
-import { startRelayer } from "../src/vite"
+import { VitePortal } from "../src/portal"
 import { RpcClient } from "../src/client"
 import { HttpMockCollector } from "../src/mock_collector"
 import { DefaultMockNode, MockNode, TimeoutMockNode } from "../src/mock_node"
 import { Relayer } from "../src/relayer"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
+import { Orchestrator } from "../src/orchestrator"
 
 export class TestCommon {
+  orchestratorUrl: string
   relayerUrl: string
   providerUrl: string
   nodeHttpUrl: string
+  orchestrator!: Orchestrator
   relayer!: Relayer
   provider: any
   deployer: any
@@ -22,6 +25,7 @@ export class TestCommon {
   timeoutMockNode: MockNode
 
   constructor() {
+    this.orchestratorUrl = "http://127.0.0.1:57331"
     this.relayerUrl = "http://127.0.0.1:56331"
     this.providerUrl = this.relayerUrl + "/api/v1/client/relay"
     this.nodeHttpUrl = config.networks.local.http
@@ -31,7 +35,8 @@ export class TestCommon {
   }
 
   startAsync = async () => {
-    this.relayer = await startRelayer(this.relayerUrl)
+    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl)
+    this.relayer = await VitePortal.startRelayer(this.relayerUrl)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
     this.client = new RpcClient()
@@ -41,6 +46,7 @@ export class TestCommon {
   }
 
   stopAsync = async () => {
+    await this.orchestrator.stop()
     await this.relayer.stop()
     this.httpMockCollector.stop()
     this.defaultMockNode.stop()

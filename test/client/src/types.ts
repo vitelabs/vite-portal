@@ -34,6 +34,13 @@ export type NodeResponse = {
   error: string
 }
 
+export type RelayerConfig = {
+  rpcUrl: string
+  rpcAuthUrl: string
+  rpcRelayHttpUrl: string
+  repcRelayWsUrl: string
+}
+
 export type Relay = {
   host: string
   chain: string

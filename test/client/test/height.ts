@@ -56,4 +56,4 @@ export function testHeight(common: TestCommon) {
       expect(batch[1].error).to.be.null
     })
   })
-};
+}

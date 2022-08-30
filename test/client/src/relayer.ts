@@ -1,9 +1,12 @@
-import { NodeEntity, GenericPage } from "./types";
-import { BaseApp } from "./app";
+import { NodeEntity, GenericPage, RelayerConfig } from "./types"
+import { BaseApp } from "./app"
 
 export class Relayer extends BaseApp {
-  constructor(url: string) {
-    super(url)
+  config: RelayerConfig
+
+  constructor(config: RelayerConfig) {
+    super(config.rpcRelayHttpUrl)
+    this.config = config
   }
 
   name(): string {

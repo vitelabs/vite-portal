@@ -85,4 +85,4 @@ export function testRelay(common: TestCommon) {
       throw new Error(`result does not contain node with id: ${nodeId}`)
     }
   })
-};
+}

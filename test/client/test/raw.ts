@@ -55,4 +55,4 @@ export function testRaw(common: TestCommon) {
       expect(data0_1.result).to.be.equal(data1_1.result)
     })
   })
-};
+}

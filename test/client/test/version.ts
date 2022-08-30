@@ -24,4 +24,4 @@ export function testVersion(common: TestCommon) {
       expect("vite-portal-relayer").to.be.equal(actual.data)
     })
   })
-};
+}

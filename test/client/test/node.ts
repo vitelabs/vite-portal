@@ -2,7 +2,7 @@ import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
 import { TestContants } from "./constants"
-import { NodeEntity } from "../src/types";
+import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
 export function testNodes(common: TestCommon) {
@@ -99,4 +99,4 @@ export function testNodes(common: TestCommon) {
       expect(deleteResult.status).to.be.equal(200)
     }
   })
-};
+}

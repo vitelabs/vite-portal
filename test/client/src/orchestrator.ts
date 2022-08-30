@@ -1,13 +1,9 @@
-import { BaseApp } from "./app";
-import { RpcClient } from "./client";
-import { CommonUtil } from "./utils";
+import { BaseApp } from "./app"
+import { CommonUtil } from "./utils"
 
 export class Orchestrator extends BaseApp {
-  rpcClient: RpcClient
-
   constructor(url: string) {
     super(url)
-    this.rpcClient = new RpcClient()
   }
 
   name(): string {

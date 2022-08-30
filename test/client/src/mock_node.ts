@@ -1,7 +1,7 @@
 import express from "express"
 import * as http from "http"
-import { JsonRpcResponse, NodeEntity } from "./types";
-import { CommonUtil } from "./utils";
+import { JsonRpcResponse, NodeEntity } from "./types"
+import { CommonUtil } from "./utils"
 
 export abstract class MockNode {
   app: express.Express

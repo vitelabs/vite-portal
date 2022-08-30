@@ -4,8 +4,8 @@ import { BaseApp } from "./app"
 export class Relayer extends BaseApp {
   config: RelayerConfig
 
-  constructor(config: RelayerConfig) {
-    super(config.rpcRelayHttpUrl)
+  constructor(config: RelayerConfig, timeout: number) {
+    super(config.rpcRelayHttpUrl, timeout)
     this.config = config
   }
 

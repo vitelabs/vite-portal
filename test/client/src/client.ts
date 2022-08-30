@@ -5,10 +5,10 @@ export class RpcClient {
   requestId: number
   provider: AxiosInstance
 
-  constructor() {
+  constructor(timeout: number) {
     this.requestId = 0
     this.provider = axios.create({
-      timeout: 1000,
+      timeout: timeout,
     })
   }
 

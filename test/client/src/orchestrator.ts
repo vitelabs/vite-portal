@@ -2,8 +2,8 @@ import { BaseApp } from "./app"
 import { CommonUtil } from "./utils"
 
 export class Orchestrator extends BaseApp {
-  constructor(url: string) {
-    super(url)
+  constructor(url: string, timeout: number) {
+    super(url, timeout)
   }
 
   name(): string {

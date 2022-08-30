@@ -26,7 +26,7 @@ export function testMockNodes(common: TestCommon) {
 
   it('test TimeoutMockNode client.send', async function () {
     const url = common.timeoutMockNode.entity.rpcHttpUrl
-    await CommonUtil.expectThrowsAsync(() => common.client.send(url, "test_method"), "timeout of 1000ms exceeded")
+    await CommonUtil.expectThrowsAsync(() => common.client.send(url, "test_method"), "timeout of 2100ms exceeded")
   })
 
   it('test TimeoutMockNode provider.request', async function () {

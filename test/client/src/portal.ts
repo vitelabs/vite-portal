@@ -16,15 +16,15 @@ export abstract class VitePortal {
     })
   }
 
-  public static async startOrchestrator(url: string) {
-    const app = new Orchestrator(url)
+  public static async startOrchestrator(url: string, timeout: number) {
+    const app = new Orchestrator(url, timeout)
     this.handleShutdown(app)
     await app.start()
     return app
   }
 
-  public static async startRelayer(config: RelayerConfig) {
-    const app = new Relayer(config)
+  public static async startRelayer(config: RelayerConfig, timeout: number) {
+    const app = new Relayer(config, timeout)
     this.handleShutdown(app)
     await app.start()
     return app

@@ -1,5 +1,6 @@
 import { describe } from "mocha"
 import { TestCommon } from "./common"
+import { testEmpty } from "./empty"
 import { testHeight } from "./height"
 import { testHelloWorld } from "./HelloWorld"
 import { testMockNodes } from "./mock_node"
@@ -31,6 +32,7 @@ describe('run tests', () => {
     common.timeoutMockNode.clear()
   })
 
+  testEmpty(common)
   testHeight(common)
   testHelloWorld(common)
   testNodes(common)

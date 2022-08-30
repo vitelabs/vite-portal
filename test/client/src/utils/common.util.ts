@@ -20,23 +20,33 @@ export abstract class CommonUtil {
     })
   }
 
-  public static waitFor(conditionFn: () => Promise<boolean>, description: string = '', pollInterval: number = 1000) {
-    process.stdout.write(description)
-    const poll = (resolve: any) => {
-      conditionFn().then((result) => {
-        if (result) {
-          console.log(" OK")
-          resolve()
-        } else {
-          process.stdout.write('.')
-          setTimeout(() => poll(resolve), pollInterval)
+  public static retry(conditionFn: () => Promise<boolean>, description: string = '', maxRetries: number = 5) {
+    process.stdout.write(description + "\n")
+    async function retryWithBackoff(retries: number): Promise<any> {
+      try {
+        // Make sure we don't wait on the first attempt
+        if (retries > 0) {
+          const timeToWait = 2 ** retries * 100;
+          process.stdout.write(`waiting for ${timeToWait}ms...\n`);
+          await CommonUtil.sleep(timeToWait);
         }
-      }).catch(() => {
-        process.stdout.write('.')
-        setTimeout(() => poll(resolve), pollInterval)
-      })
+        const result = await conditionFn()
+        if (result) {
+          process.stdout.write("OK\n")
+          return
+        } else {
+          throw new Error("retry failed")
+        }
+      } catch (e) {
+        if (retries < maxRetries) {
+          return retryWithBackoff(retries + 1);
+        } else {
+          process.stdout.write("Max retries reached. Bubbling the error up\n");
+          throw e;
+        }
+      }
     }
-    return new Promise(poll)
+    return retryWithBackoff(0);
   }
 
   public static uuid(): string {

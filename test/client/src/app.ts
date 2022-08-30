@@ -17,14 +17,14 @@ export abstract class BaseApp {
   rpcClient: RpcClient
   axiosClient: AxiosInstance
 
-  constructor(url: string, binPath: string = defaultBinPath) {
+  constructor(url: string, timeout: number, binPath: string = defaultBinPath) {
     this.url = url
     this.binPath = binPath
     this.stopped = false
-    this.rpcClient = new RpcClient()
+    this.rpcClient = new RpcClient(timeout)
     this.axiosClient = axios.create({
       baseURL: url,
-      timeout: 1000,
+      timeout: timeout,
       validateStatus: function () {
         return true
       }
@@ -55,7 +55,7 @@ export abstract class BaseApp {
       //this.execCallback
     )
 
-    await CommonUtil.waitFor(this.isUp, `Wait for [${this.name()}]`, 1000)
+    await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`)
     console.log(`[${this.name()}] Started.`)
   }
 

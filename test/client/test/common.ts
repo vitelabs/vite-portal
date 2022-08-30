@@ -40,11 +40,12 @@ export class TestCommon {
   }
 
   startAsync = async () => {
-    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl)
-    this.relayer = await VitePortal.startRelayer(this.relayerConfig)
+    const timeout = 2100
+    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, timeout)
+    this.relayer = await VitePortal.startRelayer(this.relayerConfig, timeout)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
-    this.client = new RpcClient()
+    this.client = new RpcClient(timeout)
     this.httpMockCollector.start()
     this.defaultMockNode.start()
     this.timeoutMockNode.start()

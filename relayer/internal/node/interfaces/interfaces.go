@@ -17,6 +17,9 @@ type ServiceI interface {
 }
 
 type StoreI interface {
+	Clear()
+	Close()
+	Count(chain string) int
 	GetChains() []string
 	Get(chain string, id string) (types.Node, bool)
 	GetByIndex(chain string, index int) (n types.Node, found bool)
@@ -24,7 +27,4 @@ type StoreI interface {
 	Upsert(n types.Node) error
 	UpsertMany(nodes []types.Node) error
 	Remove(chain string, id string) error
-	Count(chain string) int
-	Clear()
-	Close()
 }

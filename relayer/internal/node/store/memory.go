@@ -26,6 +26,26 @@ func NewMemoryStore() *MemoryStore {
 // ---
 // Implement "StoreI" interface
 
+func (s *MemoryStore) Clear() {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.idMap = map[string]string{}
+	s.db = map[string]collections.NameObjectCollectionI{}
+}
+
+func (s *MemoryStore) Close() {
+
+}
+
+func (s *MemoryStore) Count(chain string) int {
+	if s.db[chain] == nil {
+		return 0
+	}
+
+	return s.db[chain].Count()
+}
+
 func (s *MemoryStore) GetChains() []string {
 	chains := make([]string, len(s.db))
 
@@ -114,26 +134,6 @@ func (s *MemoryStore) Remove(chain string, id string) error {
 	}
 
 	return nil
-}
-
-func (s *MemoryStore) Count(chain string) int {
-	if s.db[chain] == nil {
-		return 0
-	}
-
-	return s.db[chain].Count()
-}
-
-func (s *MemoryStore) Clear() {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-
-	s.idMap = map[string]string{}
-	s.db = map[string]collections.NameObjectCollectionI{}
-}
-
-func (s *MemoryStore) Close() {
-
 }
 
 func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectionI) {

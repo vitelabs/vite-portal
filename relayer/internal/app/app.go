@@ -38,7 +38,7 @@ func NewRelayerApp(cfg types.Config) *RelayerApp {
 	a := &RelayerApp{
 		config:        cfg,
 		inprocHandler: rpc.NewServer(),
-		context: c,
+		context:       c,
 	}
 	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, time.Duration(cfg.RpcTimeout))
 	a.nodeService = nodeservice.NewService(c.nodeStore)

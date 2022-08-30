@@ -1,6 +1,7 @@
 package commonutil
 
 import (
+	"reflect"
 	"time"
 )
 
@@ -15,4 +16,8 @@ func WaitFor[T any](timeout time.Duration, c chan T, checkFn func(result T) bool
 			return
 		}
 	}
+}
+
+func IsZero(value any) bool {
+	return reflect.ValueOf(value).IsZero()
 }

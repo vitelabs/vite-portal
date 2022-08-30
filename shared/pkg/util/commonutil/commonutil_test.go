@@ -44,3 +44,36 @@ func TestWaitForTimeout(t *testing.T) {
 	endTime := time.Now()
 	assert.Greater(t, endTime.UnixNano()-startTime.UnixNano(), timeout.Nanoseconds())
 }
+
+type testValue struct {
+	id int
+}
+
+func TestIsZero(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		v testValue
+		expected bool
+	}{
+		{
+			name: "Test zero",
+			v: testValue{},
+			expected: true,
+		},
+		{
+			name: "Test not zero",
+			v: testValue{
+				id: 1,
+			},
+			expected: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := IsZero(tc.v)
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}

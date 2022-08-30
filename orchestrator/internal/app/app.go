@@ -16,7 +16,7 @@ const (
 )
 
 type OrchestratorApp struct {
-	config        *types.Config
+	config        types.Config
 	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
 	state         int        // Tracks state of node lifecycle
 
@@ -25,12 +25,15 @@ type OrchestratorApp struct {
 	rpc           *rpc.HTTPServer
 	rpcAuth       *rpc.HTTPServer
 	inprocHandler *rpc.Server // In-process RPC request handler to process the API requests
+	context       *Context
 }
 
-func NewOrchestratorApp(cfg *types.Config) *OrchestratorApp {
+func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
+	c := NewContext(cfg)
 	a := &OrchestratorApp{
-		config: cfg,
+		config:        cfg,
 		inprocHandler: rpc.NewServer(),
+		context:       c,
 	}
 
 	// Register built-in APIs.
@@ -38,10 +41,10 @@ func NewOrchestratorApp(cfg *types.Config) *OrchestratorApp {
 
 	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	timeouts := rpc.HTTPTimeouts{
-		ReadTimeout: defaultTimeout,
+		ReadTimeout:       defaultTimeout,
 		ReadHeaderTimeout: defaultTimeout,
-		WriteTimeout: defaultTimeout,
-		IdleTimeout: defaultTimeout * 2,
+		WriteTimeout:      defaultTimeout,
+		IdleTimeout:       defaultTimeout * 2,
 	}
 
 	logger := logger.Logger()
@@ -72,9 +75,4 @@ func (a *OrchestratorApp) Shutdown() {
 	defer a.startStopLock.Unlock()
 
 	a.stopRPC()
-}
-
-// Config returns the configuration of app.
-func (a *OrchestratorApp) Config() *types.Config {
-	return a.config
 }

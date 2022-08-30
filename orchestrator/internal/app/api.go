@@ -1,6 +1,9 @@
 package app
 
-import "github.com/vitelabs/vite-portal/shared/pkg/rpc"
+import (
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/version"
+)
 
 // GetAPIs return two sets of APIs, both the ones that do not require
 // authentication, and the complete set
@@ -50,5 +53,5 @@ type publicAPI struct {
 
 // Version returns the app version
 func (a *publicAPI) Version() string {
-	return a.app.config.Version
+	return version.PROJECT_BUILD_VERSION
 }

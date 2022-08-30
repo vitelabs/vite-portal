@@ -20,8 +20,9 @@ func (n *Node) IsValid() bool {
 
 func (n *Node) Validate() error {
 	if !n.IsValid() {
-		err := errors.New("node is invalid")
-		logger.Logger().Error().Err(err).Str("node", fmt.Sprintf("%#v", n))
+		msg := "node is invalid"
+		err := errors.New(msg)
+		logger.Logger().Error().Err(err).Str("node", fmt.Sprintf("%#v", n)).Msg(msg)
 		return err
 	}
 	return nil

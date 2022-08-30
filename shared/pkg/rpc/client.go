@@ -568,7 +568,7 @@ func (c *Client) dispatch(codec ServerCodec) {
 			}
 
 		case err := <-c.readErr:
-			conn.handler.log.Debug().Err(err).Msg("RPC connection read error")
+			conn.handler.extendLogger(logger.Logger()).Debug().Err(err).Msg("RPC connection read error")
 			conn.close(err, lastOp)
 			reading = false
 

@@ -60,7 +60,6 @@ type handler struct {
 	rootCtx        context.Context                // canceled by close()
 	cancelRoot     func()                         // cancel function for rootCtx
 	conn           jsonWriter                     // where responses will be sent
-	log            *zerolog.Logger
 	allowSubscribe bool
 
 	subLock    sync.Mutex
@@ -84,14 +83,17 @@ func newHandler(connCtx context.Context, conn jsonWriter, idgen func() ID, reg *
 		cancelRoot:     cancelRoot,
 		allowSubscribe: true,
 		serverSubs:     make(map[ID]*Subscription),
-		log:            logger.Logger(),
-	}
-	if conn.remoteAddr() != "" {
-		sublogger := h.log.With().Str("conn", conn.remoteAddr()).Logger()
-		h.log = &sublogger
 	}
 	h.unsubscribeCb = newCallback(reflect.Value{}, reflect.ValueOf(h.unsubscribe))
 	return h
+}
+
+func (h *handler) extendLogger(l *zerolog.Logger) *zerolog.Logger {
+	if h.conn.remoteAddr() != "" {
+		sublogger := l.With().Str("conn", h.conn.remoteAddr()).Logger()
+		return &sublogger
+	}
+	return l
 }
 
 // handleBatch executes all messages in a batch and returns the responses.
@@ -242,7 +244,7 @@ func (h *handler) handleImmediate(msg *jsonrpcMessage) bool {
 		return false
 	case msg.isResponse():
 		h.handleResponse(msg)
-		h.log.Trace().Str("reqid", idForLog{msg.ID}.String()).Dur("duration", time.Since(start)).Msg("Handled RPC response")
+		h.extendLogger(logger.Logger()).Trace().Str("reqid", idForLog{msg.ID}.String()).Dur("duration", time.Since(start)).Msg("Handled RPC response")
 		return true
 	default:
 		return false
@@ -253,7 +255,7 @@ func (h *handler) handleImmediate(msg *jsonrpcMessage) bool {
 func (h *handler) handleSubscriptionResult(msg *jsonrpcMessage) {
 	var result subscriptionResult
 	if err := json.Unmarshal(msg.Params, &result); err != nil {
-		h.log.Debug().Msg("Dropping invalid subscription message")
+		h.extendLogger(logger.Logger()).Debug().Msg("Dropping invalid subscription message")
 		return
 	}
 	if h.clientSubs[result.ID] != nil {
@@ -265,7 +267,7 @@ func (h *handler) handleSubscriptionResult(msg *jsonrpcMessage) {
 func (h *handler) handleResponse(msg *jsonrpcMessage) {
 	op := h.respWait[string(msg.ID)]
 	if op == nil {
-		h.log.Debug().Str("reqid", idForLog{msg.ID}.String()).Msg("Unsolicited RPC response")
+		h.extendLogger(logger.Logger()).Debug().Str("reqid", idForLog{msg.ID}.String()).Msg("Unsolicited RPC response")
 		return
 	}
 	delete(h.respWait, string(msg.ID))
@@ -294,7 +296,7 @@ func (h *handler) handleCallMsg(ctx *callProc, msg *jsonrpcMessage) *jsonrpcMess
 	switch {
 	case msg.isNotification():
 		h.handleCall(ctx, msg)
-		h.log.Debug().Dur("duration", time.Since(start)).Msg("Served "+msg.Method)
+		h.extendLogger(logger.Logger()).Debug().Dur("duration", time.Since(start)).Msg("Served "+msg.Method)
 		return nil
 	case msg.isCall():
 		resp := h.handleCall(ctx, msg)
@@ -305,9 +307,9 @@ func (h *handler) handleCallMsg(ctx *callProc, msg *jsonrpcMessage) *jsonrpcMess
 			if resp.Error.Data != nil {
 				ctx = append(ctx, "errdata", resp.Error.Data)
 			}
-			h.log.Warn().Interface("ctx", &ctx).Msg("Served "+msg.Method)
+			h.extendLogger(logger.Logger()).Warn().Interface("ctx", &ctx).Msg("Served "+msg.Method)
 		} else {
-			h.log.Debug().Interface("ctx", &ctx).Msg("Served "+msg.Method)
+			h.extendLogger(logger.Logger()).Debug().Interface("ctx", &ctx).Msg("Served "+msg.Method)
 		}
 		return resp
 	case msg.hasValidID():

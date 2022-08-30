@@ -50,11 +50,9 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		IdleTimeout:       defaultTimeout * 2,
 	}
 
-	logger := logger.Logger()
-
 	// Configure RPC servers.
-	a.rpc = rpc.NewHTTPServer(logger, timeouts)
-	a.rpcAuth = rpc.NewHTTPServer(logger, timeouts)
+	a.rpc = rpc.NewHTTPServer(timeouts)
+	a.rpcAuth = rpc.NewHTTPServer(timeouts)
 
 	return a
 }

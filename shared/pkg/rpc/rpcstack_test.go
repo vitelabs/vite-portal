@@ -29,7 +29,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
-	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
 // TestCorsHandler makes sure CORS are properly handled on the http server.
@@ -232,7 +231,7 @@ func Test_checkPath(t *testing.T) {
 func createAndStartServer(t *testing.T, conf *HTTPConfig, ws bool, wsConf *WSConfig) *HTTPServer {
 	t.Helper()
 
-	srv := NewHTTPServer(logger.Logger(), DefaultHTTPTimeouts)
+	srv := NewHTTPServer(DefaultHTTPTimeouts)
 	assert.NoError(t, srv.EnableRPC(nil, *conf))
 	if ws {
 		assert.NoError(t, srv.EnableWS(nil, *wsConf, nil))

@@ -30,7 +30,6 @@ import (
 	"time"
 
 	"github.com/rs/cors"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
@@ -58,7 +57,6 @@ type rpcHandler struct {
 }
 
 type HTTPServer struct {
-	log      *zerolog.Logger
 	timeouts HTTPTimeouts
 	mux      http.ServeMux // registered handlers go here
 
@@ -87,8 +85,8 @@ const (
 	shutdownTimeout = 5 * time.Second
 )
 
-func NewHTTPServer(log *zerolog.Logger, timeouts HTTPTimeouts) *HTTPServer {
-	h := &HTTPServer{log: log, timeouts: timeouts, handlerNames: make(map[string]string)}
+func NewHTTPServer(timeouts HTTPTimeouts) *HTTPServer {
+	h := &HTTPServer{timeouts: timeouts, handlerNames: make(map[string]string)}
 
 	h.httpHandler.Store((*rpcHandler)(nil))
 	h.wsHandler.Store((*rpcHandler)(nil))
@@ -157,14 +155,14 @@ func (h *HTTPServer) Start() error {
 		if h.wsConfig.Prefix != "" {
 			url += h.wsConfig.Prefix
 		}
-		h.log.Info().Str("url", url).Msg("WebSocket enabled")
+		logger.Logger().Info().Str("url", url).Msg("WebSocket enabled")
 	}
 	// if server is websocket only, return after logging
 	if !h.rpcAllowed() {
 		return nil
 	}
 	// Log http endpoint.
-	h.log.Info().
+	logger.Logger().Info().
 		Interface("endpoint", listener.Addr()).
 		Bool("auth", (h.httpConfig.JwtSecret != nil)).
 		Str("prefix", h.httpConfig.Prefix).
@@ -273,11 +271,11 @@ func (h *HTTPServer) doStop() {
 	defer cancel()
 	err := h.server.Shutdown(ctx)
 	if err == ctx.Err() {
-		h.log.Warn().Msg("HTTP server graceful shutdown timed out")
+		logger.Logger().Warn().Msg("HTTP server graceful shutdown timed out")
 		h.server.Close()
 	}
 	h.listener.Close()
-	h.log.Info().Interface("endpoint", h.listener.Addr()).Msg("HTTP server stopped")
+	logger.Logger().Info().Interface("endpoint", h.listener.Addr()).Msg("HTTP server stopped")
 
 	// Clear out everything to allow re-configuring it later.
 	h.host, h.port, h.endpoint = "", 0, ""

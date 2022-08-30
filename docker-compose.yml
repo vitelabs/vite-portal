@@ -8,6 +8,8 @@ services:
     ports:
       - 56331:56331
       - 56332:56332
+      - 56333:56333
+      - 56334:56334
     volumes:
       - relayer_data:/root/.relayer
       - ./relayer/bin:/root/relayer-bin

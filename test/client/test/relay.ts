@@ -42,7 +42,7 @@ export function testRelay(common: TestCommon) {
       await CommonUtil.expectAsync(() => relayResults.length == 1, timeout)
       const relayResult: RelayResult = relayResults[0]
       expect(relayResult.sessionKey).to.be.equal("cb8b30cecd1857c59530f8bda15fab91")
-      expect(relayResult.relay.host).to.be.equal("127.0.0.1:56331")
+      expect(relayResult.relay.host).to.be.equal("127.0.0.1:56333")
       expect(relayResult.relay.chain).to.be.equal(TestContants.DefaultChain)
       expect(relayResult.relay.clientIp).to.be.equal(TestContants.DefaultIpAddress)
       expect(relayResult.relay.payload.data).to.contain(method)

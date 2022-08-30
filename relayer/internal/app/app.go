@@ -12,6 +12,7 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
@@ -19,6 +20,7 @@ import (
 )
 
 type RelayerApp struct {
+	id            string
 	config        types.Config
 	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
 	state         int        // Tracks state of node lifecycle
@@ -36,6 +38,7 @@ type RelayerApp struct {
 func NewRelayerApp(cfg types.Config) *RelayerApp {
 	c := NewContext(cfg)
 	a := &RelayerApp{
+		id:            idutil.NewGuid(),
 		config:        cfg,
 		inprocHandler: rpc.NewServer(),
 		context:       c,

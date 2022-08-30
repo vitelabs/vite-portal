@@ -23,6 +23,6 @@ func InitApp(debug bool, configPath string) (*OrchestratorApp, error) {
 	if err != nil {
 		return nil, err
 	}
-	app := NewOrchestratorApp(&cfg)
+	app := NewOrchestratorApp(cfg)
 	return app, nil
 }

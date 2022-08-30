@@ -8,10 +8,12 @@ import (
 )
 
 const (
-	DefaultConfigVersion               = "v0.4"
+	DefaultConfigVersion               = "v0.5"
 	DefaultDebug                       = false
-	DefaultRpcHttpPort                 = 56331
-	DefaultRpcWsPort                   = 56332
+	DefaultRpcPort                     = 56331
+	DefaultRpcAuthPort                 = 56332
+	DefaultRpcRelayHttpPort            = 56333
+	DefaultRpcRelayWsPort              = 56334
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
 	DefaultUserAgent                   = ""
@@ -36,10 +38,14 @@ type Config struct {
 	Version string `json:"version"`
 	// Enable debug mode
 	Debug bool `json:"debug"`
-	// Port number for the HTTP RPC
-	RpcHttpPort int32 `json:"rpcHttpPort"`
-	// Port number for the WebSocket RPC
-	RpcWsPort int32 `json:"rpcWsPort"`
+	// Port number for the unauthenticated RPC
+	RpcPort int32 `json:"rpcPort"`
+	// Port number for the authenticated RPC
+	RpcAuthPort int32 `json:"rpcAuthPort"`
+	// Port number for the relay HTTP RPC
+	RpcRelayHttpPort int32 `json:"rpcRelayHttpPort"`
+	// Port number for the relay WebSocket RPC
+	RpcRelayWsPort int32 `json:"rpcRelayWsPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
 	// The time in milliseconds before a RPC request to a node times out
@@ -72,8 +78,10 @@ func NewDefaultConfig() Config {
 	c := Config{
 		Version:                DefaultConfigVersion,
 		Debug:                  DefaultDebug,
-		RpcHttpPort:            DefaultRpcHttpPort,
-		RpcWsPort:              DefaultRpcWsPort,
+		RpcPort:                DefaultRpcPort,
+		RpcAuthPort:            DefaultRpcAuthPort,
+		RpcRelayHttpPort:       DefaultRpcRelayHttpPort,
+		RpcRelayWsPort:         DefaultRpcRelayWsPort,
 		RpcTimeout:             DefaultRpcTimeout,
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
 		UserAgent:              DefaultUserAgent,

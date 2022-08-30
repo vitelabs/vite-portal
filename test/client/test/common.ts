@@ -26,7 +26,7 @@ export class TestCommon {
 
   constructor() {
     this.orchestratorUrl = "http://127.0.0.1:57331"
-    this.relayerUrl = "http://127.0.0.1:56331"
+    this.relayerUrl = "http://127.0.0.1:56333"
     this.providerUrl = this.relayerUrl + "/api/v1/client/relay"
     this.nodeHttpUrl = config.networks.local.http
     this.httpMockCollector = new HttpMockCollector(23460)

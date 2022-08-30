@@ -29,6 +29,6 @@ WORKDIR /root
 
 COPY --from=build /buildroot/relayer .
 
-EXPOSE 56331 56332
+EXPOSE 56331 56332 56333 56334
 
 ENTRYPOINT ["./relayer"]

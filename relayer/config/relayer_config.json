@@ -1,8 +1,10 @@
 {
-    "version": "v0.3",
+    "version": "v0.5",
     "debug": false,
-    "rpcHttpPort": 56331,
-    "rpcWsPort": 56332,
+    "rpcPort": 56331,
+    "rpcAuthPort": 56332,
+    "rpcRelayHttpPort": 56333,
+    "rpcRelayWsPort": 56334,
     "rpcTimeout": 10000,
     "rpcNodeTimeout": 5000,
     "userAgent": "",
@@ -12,6 +14,7 @@
     "maxSessionCacheEntries": 100,
     "maxSessionDuration": 60000000,
     "headerTrueClientIp": "True-Client-Ip",
+    "orchestratorWsUrl": "",
     "hostToChainMap": {},
     "logging": {
         "consoleOutputEnabled": true,

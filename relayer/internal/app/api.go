@@ -1,6 +1,10 @@
 package app
 
-import "github.com/vitelabs/vite-portal/shared/pkg/rpc"
+import (
+	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/version"
+)
 
 // GetAPIs return two sets of APIs, both the ones that do not require
 // authentication, and the complete set
@@ -26,8 +30,8 @@ func (a *RelayerApp) apis() []rpc.API {
 		// 	Service:   debug.Handler,
 		// },
 		{
-			Namespace: "public",
-			Service:   &publicAPI{a},
+			Namespace: "core",
+			Service:   &coreAPI{a},
 		},
 	}
 }
@@ -41,11 +45,15 @@ func (a *nodesAPI) GetSecret() string {
 	return "secret1234"
 }
 
-// publicAPI offers helper utils
-type publicAPI struct {
+// coreAPI exposes API methods related to core
+type coreAPI struct {
 	app *RelayerApp
 }
 
-func (a *publicAPI) Version() string {
-	return a.app.config.Version
+func (a *coreAPI) AppInfo() types.AppInfo {
+	return types.AppInfo{
+		Id:      a.app.id,
+		Version: version.PROJECT_BUILD_VERSION,
+		Name:    types.AppName,
+	}
 }

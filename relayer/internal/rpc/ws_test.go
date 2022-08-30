@@ -14,7 +14,7 @@ import (
 
 func TestWsConnection(t *testing.T) {
 	t.Parallel()
-	conn := startWsRpc(types.DefaultRpcWsPort)
+	conn := startWsRpc(types.DefaultRpcRelayWsPort)
 	writeMsg := []byte("hello, world!\n")
 	if err := conn.WriteMessage(websocket.BinaryMessage, writeMsg); err != nil {
 		log.Fatal(err)
@@ -26,7 +26,7 @@ func TestWsConnection(t *testing.T) {
 
 func TestWsMaxPayloadBytes(t *testing.T) {
 	t.Parallel()
-	conn := startWsRpc(types.DefaultRpcWsPort + 1)
+	conn := startWsRpc(types.DefaultRpcRelayWsPort + 1)
 	writeMsg := make([]byte, sharedtypes.MaxPayloadSize + 1)
 	rand.Read(writeMsg)
 	err := conn.WriteMessage(websocket.BinaryMessage, writeMsg)

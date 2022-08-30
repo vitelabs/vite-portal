@@ -68,7 +68,7 @@ Before running the image you can create and modify the configuration file to be 
 A description of the different configuration options can be found [here](./internal/types/config.go).
 
 ```
-docker run -v $HOME/.relayer/:/var/relayer/ -p 56331:56331 -p 56332:56332 --name portal-relayer --detach vitelabs/portal-relayer:test start --config /var/relayer/relayer_config.json
+docker run -v $HOME/.relayer/:/var/relayer/ -p 56331:56331 -p 56332:56332 -p 56333:56333 -p 56334:56334 --name portal-relayer --detach vitelabs/portal-relayer:test start --config /var/relayer/relayer_config.json
 ```
 
 ### Inspect container
@@ -108,7 +108,7 @@ GET /api/v1/db/nodes
 | `offset` | `number` | The pagination offset |
 | `limit` | `number` | The pagination limit |
 
-    curl -i -X GET http://localhost:56331/api/v1/db/nodes?chain=vite_testnet
+    curl -i -X GET http://localhost:56333/api/v1/db/nodes?chain=vite_testnet
 
 ### Response
 
@@ -141,7 +141,7 @@ TODO: add authorization to restrict access to orchestrator
 PUT /api/v1/db/nodes
 ```
 
-    curl -i -X PUT http://localhost:56331/api/v1/db/nodes \
+    curl -i -X PUT http://localhost:56333/api/v1/db/nodes \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -172,7 +172,7 @@ GET /api/v1/db/nodes/{id}
 | :--- | :--- | :--- |
 | `id` | `string` | **Required**. The unique identifier of the node |
 
-    curl -i -X GET http://localhost:56331/api/v1/db/nodes/n1
+    curl -i -X GET http://localhost:56333/api/v1/db/nodes/n1
 
 ### Response
 
@@ -202,7 +202,7 @@ DELETE /api/v1/db/nodes/{id}
 | :--- | :--- | :--- |
 | `id` | `string` | **Required**. The unique identifier of the node |
 
-    curl -i -X DELETE http://localhost:56331/api/v1/db/nodes/n1
+    curl -i -X DELETE http://localhost:56333/api/v1/db/nodes/n1
 
 ### Response
 
@@ -221,7 +221,7 @@ DELETE /api/v1/db/nodes/{id}
 GET /api/v1/db/chains
 ```
 
-    curl -i -X GET http://localhost:56331/api/v1/db/chains
+    curl -i -X GET http://localhost:56333/api/v1/db/chains
 
 ### Response
 
@@ -242,7 +242,7 @@ The load balancer should forward all incoming HTTP requests to this endpoint giv
 POST /api/v1/client/relay
 ```
 
-    curl -i -X POST http://localhost:56331/api/v1/client/relay \
+    curl -i -X POST http://localhost:56333/api/v1/client/relay \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {

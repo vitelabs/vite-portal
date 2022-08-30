@@ -1,7 +1,10 @@
 {
-    "version": "v0.4",
+    "version": "v0.5",
     "debug": false,
-    "rpcHttpPort": 56331,
+    "rpcPort": 56331,
+    "rpcAuthPort": 56332,
+    "rpcRelayHttpPort": 56333,
+    "rpcRelayWsPort": 56334,
     "rpcTimeout": 10000,
     "rpcNodeTimeout": 2000,
     "userAgent": "test-relayer",

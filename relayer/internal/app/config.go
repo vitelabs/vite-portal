@@ -6,10 +6,16 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
+const (
+	RpcCoreModule  = "core"
+	RpcNodesModule = "nodes"
+	RpcDebugModule = "debug"
+)
+
 var (
 	DefaultAllowedOrigins = []string{"*"}
 	DefaultVhosts         = []string{"localhost"}
-	DefaultModules        = []string{"nodes", "public"}
+	DefaultModules        = []string{RpcCoreModule, RpcNodesModule}
 )
 
 func InitApp(debug bool, configPath string) (*RelayerApp, error) {
@@ -26,4 +32,3 @@ func InitApp(debug bool, configPath string) (*RelayerApp, error) {
 	a := NewRelayerApp(cfg)
 	return a, nil
 }
-

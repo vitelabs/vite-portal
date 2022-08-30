@@ -32,11 +32,11 @@ func (a *RelayerApp) startRPC(profile bool) error {
 	}
 
 	// Set up unauthenticated RPC.
-	if err := init(a.rpc, open, int(55331), nil); err != nil {
+	if err := init(a.rpc, open, int(a.config.RpcPort), nil); err != nil {
 		return err
 	}
 	// Set up authenticated RPC.
-	if err := init(a.rpcAuth, all, int(55332), nil); err != nil {
+	if err := init(a.rpcAuth, all, int(a.config.RpcAuthPort), nil); err != nil {
 		return err
 	}
 

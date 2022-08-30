@@ -11,12 +11,14 @@ export function binPath() {
 }
 
 export abstract class BaseApp {
+  url: string
   binPath: string
   stopped: boolean
   rpcClient: RpcClient
   axiosClient: AxiosInstance
 
   constructor(url: string, binPath: string = defaultBinPath) {
+    this.url = url
     this.binPath = binPath
     this.stopped = false
     this.rpcClient = new RpcClient()

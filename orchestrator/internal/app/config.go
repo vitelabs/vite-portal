@@ -6,10 +6,16 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
+const (
+	RpcCoreModule  = "core"
+	RpcAdminModule = "admin"
+	RpcDebugModule = "debug"
+)
+
 var (
 	DefaultAllowedOrigins = []string{"*"}
 	DefaultVhosts         = []string{"localhost"}
-	DefaultModules        = []string{"admin", "debug", "public"}
+	DefaultModules        = []string{RpcCoreModule, RpcAdminModule}
 )
 
 func InitApp(debug bool, configPath string) (*OrchestratorApp, error) {

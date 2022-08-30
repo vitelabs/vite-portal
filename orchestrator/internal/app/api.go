@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
@@ -20,7 +21,11 @@ func (a *OrchestratorApp) GetAPIs() (unauthenticated, all []rpc.API) {
 func (a *OrchestratorApp) apis() []rpc.API {
 	return []rpc.API{
 		{
-			Namespace: "admin",
+			Namespace: RpcCoreModule,
+			Service:   &coreAPI{a},
+		},
+		{
+			Namespace: RpcAdminModule,
 			Authenticated: true,
 			Service:   &adminAPI{a},
 		},
@@ -28,10 +33,19 @@ func (a *OrchestratorApp) apis() []rpc.API {
 		// 	Namespace: "debug",
 		// 	Service:   debug.Handler,
 		// },
-		{
-			Namespace: "public",
-			Service:   &publicAPI{a},
-		},
+	}
+}
+
+// coreAPI exposes API methods related to core
+type coreAPI struct {
+	app *OrchestratorApp
+}
+
+func (a *coreAPI) GetAppInfo() types.AppInfo {
+	return types.AppInfo{
+		Id:      a.app.id,
+		Version: version.PROJECT_BUILD_VERSION,
+		Name:    types.AppName,
 	}
 }
 
@@ -44,14 +58,4 @@ type adminAPI struct {
 // GetSecrect returns the app secret
 func (a *adminAPI) GetSecret() string {
 	return "secret1234"
-}
-
-// publicAPI offers helper utils
-type publicAPI struct {
-	app *OrchestratorApp
-}
-
-// Version returns the app version
-func (a *publicAPI) Version() string {
-	return version.PROJECT_BUILD_VERSION
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 )
 
 const (
@@ -16,6 +17,7 @@ const (
 )
 
 type OrchestratorApp struct {
+	id            string
 	config        types.Config
 	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
 	state         int        // Tracks state of node lifecycle
@@ -31,6 +33,7 @@ type OrchestratorApp struct {
 func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 	c := NewContext(cfg)
 	a := &OrchestratorApp{
+		id:            idutil.NewGuid(),
 		config:        cfg,
 		inprocHandler: rpc.NewServer(),
 		context:       c,

@@ -21,7 +21,11 @@ func (a *RelayerApp) GetAPIs() (unauthenticated, all []rpc.API) {
 func (a *RelayerApp) apis() []rpc.API {
 	return []rpc.API{
 		{
-			Namespace:     "nodes",
+			Namespace: RpcCoreModule,
+			Service:   &coreAPI{a},
+		},
+		{
+			Namespace:     RpcNodesModule,
 			Authenticated: true,
 			Service:       &nodesAPI{a},
 		},
@@ -29,10 +33,19 @@ func (a *RelayerApp) apis() []rpc.API {
 		// 	Namespace: "debug",
 		// 	Service:   debug.Handler,
 		// },
-		{
-			Namespace: "core",
-			Service:   &coreAPI{a},
-		},
+	}
+}
+
+// coreAPI exposes API methods related to core
+type coreAPI struct {
+	app *RelayerApp
+}
+
+func (a *coreAPI) GetAppInfo() types.AppInfo {
+	return types.AppInfo{
+		Id:      a.app.id,
+		Version: version.PROJECT_BUILD_VERSION,
+		Name:    types.AppName,
 	}
 }
 
@@ -43,17 +56,4 @@ type nodesAPI struct {
 
 func (a *nodesAPI) GetSecret() string {
 	return "secret1234"
-}
-
-// coreAPI exposes API methods related to core
-type coreAPI struct {
-	app *RelayerApp
-}
-
-func (a *coreAPI) AppInfo() types.AppInfo {
-	return types.AppInfo{
-		Id:      a.app.id,
-		Version: version.PROJECT_BUILD_VERSION,
-		Name:    types.AppName,
-	}
 }

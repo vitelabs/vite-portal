@@ -377,12 +377,12 @@ type unsubscribeRecorder struct {
 	unsubscribes map[string]bool
 }
 
-func (r *unsubscribeRecorder) readBatch() ([]*jsonrpcMessage, bool, error) {
+func (r *unsubscribeRecorder) ReadBatch() ([]*jsonrpcMessage, bool, error) {
 	if r.unsubscribes == nil {
 		r.unsubscribes = make(map[string]bool)
 	}
 
-	msgs, batch, err := r.ServerCodec.readBatch()
+	msgs, batch, err := r.ServerCodec.ReadBatch()
 	for _, msg := range msgs {
 		if msg.isUnsubscribe() {
 			var params []string

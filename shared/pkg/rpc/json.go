@@ -203,11 +203,11 @@ func (c *jsonCodec) PeerInfo() PeerInfo {
 	return PeerInfo{Transport: "ipc", RemoteAddr: c.remote}
 }
 
-func (c *jsonCodec) remoteAddr() string {
+func (c *jsonCodec) RemoteAddr() string {
 	return c.remote
 }
 
-func (c *jsonCodec) readBatch() (messages []*jsonrpcMessage, batch bool, err error) {
+func (c *jsonCodec) ReadBatch() (messages []*jsonrpcMessage, batch bool, err error) {
 	// Decode the next JSON object in the input stream.
 	// This verifies basic syntax, etc.
 	var rawmsg json.RawMessage
@@ -225,7 +225,7 @@ func (c *jsonCodec) readBatch() (messages []*jsonrpcMessage, batch bool, err err
 	return messages, batch, nil
 }
 
-func (c *jsonCodec) writeJSON(ctx context.Context, v interface{}) error {
+func (c *jsonCodec) WriteJSON(ctx context.Context, v interface{}) error {
 	c.encMu.Lock()
 	defer c.encMu.Unlock()
 
@@ -237,7 +237,7 @@ func (c *jsonCodec) writeJSON(ctx context.Context, v interface{}) error {
 	return c.encode(v)
 }
 
-func (c *jsonCodec) close() {
+func (c *jsonCodec) Close() {
 	c.closer.Do(func() {
 		close(c.closeCh)
 		c.conn.Close()

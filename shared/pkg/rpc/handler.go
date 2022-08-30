@@ -59,7 +59,7 @@ type handler struct {
 	callWG         sync.WaitGroup                 // pending call goroutines
 	rootCtx        context.Context                // canceled by close()
 	cancelRoot     func()                         // cancel function for rootCtx
-	conn           jsonWriter                     // where responses will be sent
+	conn           JSONWriter                     // where responses will be sent
 	allowSubscribe bool
 
 	subLock    sync.Mutex
@@ -71,7 +71,7 @@ type callProc struct {
 	notifiers []*Notifier
 }
 
-func newHandler(connCtx context.Context, conn jsonWriter, idgen func() ID, reg *serviceRegistry) *handler {
+func newHandler(connCtx context.Context, conn JSONWriter, idgen func() ID, reg *serviceRegistry) *handler {
 	rootCtx, cancelRoot := context.WithCancel(connCtx)
 	h := &handler{
 		reg:            reg,
@@ -89,8 +89,8 @@ func newHandler(connCtx context.Context, conn jsonWriter, idgen func() ID, reg *
 }
 
 func (h *handler) extendLogger(l *zerolog.Logger) *zerolog.Logger {
-	if h.conn.remoteAddr() != "" {
-		sublogger := l.With().Str("conn", h.conn.remoteAddr()).Logger()
+	if h.conn.RemoteAddr() != "" {
+		sublogger := l.With().Str("conn", h.conn.RemoteAddr()).Logger()
 		return &sublogger
 	}
 	return l
@@ -101,7 +101,7 @@ func (h *handler) handleBatch(msgs []*jsonrpcMessage) {
 	// Emit error response for empty batches:
 	if len(msgs) == 0 {
 		h.startCallProc(func(cp *callProc) {
-			h.conn.writeJSON(cp.ctx, errorMessage(&invalidRequestError{"empty batch"}))
+			h.conn.WriteJSON(cp.ctx, errorMessage(&invalidRequestError{"empty batch"}))
 		})
 		return
 	}
@@ -126,7 +126,7 @@ func (h *handler) handleBatch(msgs []*jsonrpcMessage) {
 		}
 		h.addSubscriptions(cp.notifiers)
 		if len(answers) > 0 {
-			h.conn.writeJSON(cp.ctx, answers)
+			h.conn.WriteJSON(cp.ctx, answers)
 		}
 		for _, n := range cp.notifiers {
 			n.activate()
@@ -143,7 +143,7 @@ func (h *handler) handleMsg(msg *jsonrpcMessage) {
 		answer := h.handleCallMsg(cp, msg)
 		h.addSubscriptions(cp.notifiers)
 		if answer != nil {
-			h.conn.writeJSON(cp.ctx, answer)
+			h.conn.WriteJSON(cp.ctx, answer)
 		}
 		for _, n := range cp.notifiers {
 			n.activate()

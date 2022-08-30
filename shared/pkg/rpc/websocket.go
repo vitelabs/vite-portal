@@ -68,7 +68,7 @@ func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFu
 		if onConnect != nil {
 			err = onConnect(codec)
 			if err != nil {
-				codec.close()
+				codec.Close()
 				logger.Logger().Debug().Err(err).Msg("WebSocket closed")
 				return
 			}
@@ -279,8 +279,8 @@ func newWebsocketCodec(conn *websocket.Conn, host string, req http.Header) Serve
 	return wc
 }
 
-func (wc *websocketCodec) close() {
-	wc.jsonCodec.close()
+func (wc *websocketCodec) Close() {
+	wc.jsonCodec.Close()
 	wc.wg.Wait()
 }
 
@@ -288,8 +288,8 @@ func (wc *websocketCodec) PeerInfo() PeerInfo {
 	return wc.info
 }
 
-func (wc *websocketCodec) writeJSON(ctx context.Context, v interface{}) error {
-	err := wc.jsonCodec.writeJSON(ctx, v)
+func (wc *websocketCodec) WriteJSON(ctx context.Context, v interface{}) error {
+	err := wc.jsonCodec.WriteJSON(ctx, v)
 	if err == nil {
 		// Notify pingLoop to delay the next idle ping.
 		select {

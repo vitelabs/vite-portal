@@ -85,7 +85,7 @@ type Client struct {
 	// writeConn is used for writing to the connection on the caller's goroutine. It should
 	// only be accessed outside of dispatch, with the write lock held. The write lock is
 	// taken by sending on reqInit and released by sending on reqSent.
-	writeConn jsonWriter
+	writeConn JSONWriter
 
 	// for dispatch
 	close       chan struct{}
@@ -118,7 +118,7 @@ func (c *Client) newClientConn(conn ServerCodec) *clientConn {
 
 func (cc *clientConn) close(err error, inflightReq *requestOp) {
 	cc.handler.close(err, inflightReq)
-	cc.codec.close()
+	cc.codec.Close()
 }
 
 type readOp struct {
@@ -497,7 +497,7 @@ func (c *Client) write(ctx context.Context, msg interface{}, retry bool) error {
 			return err
 		}
 	}
-	err := c.writeConn.writeJSON(ctx, msg)
+	err := c.writeConn.WriteJSON(ctx, msg)
 	if err != nil {
 		c.writeConn = nil
 		if !retry {
@@ -527,7 +527,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 		c.writeConn = newconn
 		return nil
 	case <-c.didClose:
-		newconn.close()
+		newconn.Close()
 		return ErrClientQuit
 	}
 }
@@ -574,7 +574,7 @@ func (c *Client) dispatch(codec ServerCodec) {
 
 		// Reconnect:
 		case newcodec := <-c.reconnected:
-			logger.Logger().Debug().Bool("reading", reading).Str("conn", newcodec.remoteAddr()).Msg("RPC client reconnected")
+			logger.Logger().Debug().Bool("reading", reading).Str("conn", newcodec.RemoteAddr()).Msg("RPC client reconnected")
 			if reading {
 				// Wait for the previous read loop to exit. This is a rare case which
 				// happens if this loop isn't notified in time after the connection breaks.
@@ -628,9 +628,9 @@ func (c *Client) drainRead() {
 // read decodes RPC messages from a codec, feeding them into dispatch.
 func (c *Client) read(codec ServerCodec) {
 	for {
-		msgs, batch, err := codec.readBatch()
+		msgs, batch, err := codec.ReadBatch()
 		if _, ok := err.(*json.SyntaxError); ok {
-			codec.writeJSON(context.Background(), errorMessage(&parseError{err.Error()}))
+			codec.WriteJSON(context.Background(), errorMessage(&parseError{err.Error()}))
 		}
 		if err != nil {
 			c.readErr <- err

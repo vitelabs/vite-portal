@@ -34,18 +34,18 @@ type API struct {
 // multiple go-routines concurrently.
 type ServerCodec interface {
 	PeerInfo() PeerInfo
-	readBatch() (msgs []*jsonrpcMessage, isBatch bool, err error)
-	close()
+	ReadBatch() (msgs []*jsonrpcMessage, isBatch bool, err error)
+	Close()
 
-	jsonWriter
+	JSONWriter
 }
 
-// jsonWriter can write JSON messages to its underlying connection.
+// JSONWriter can write JSON messages to its underlying connection.
 // Implementations must be safe for concurrent use.
-type jsonWriter interface {
-	writeJSON(context.Context, interface{}) error
+type JSONWriter interface {
+	WriteJSON(context.Context, interface{}) error
 	// Closed returns a channel which is closed when the connection is closed.
 	Closed() <-chan interface{}
 	// RemoteAddr returns the peer address of the connection.
-	remoteAddr() string
+	RemoteAddr() string
 }

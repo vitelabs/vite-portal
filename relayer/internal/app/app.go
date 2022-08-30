@@ -36,6 +36,7 @@ type RelayerApp struct {
 }
 
 func NewRelayerApp(cfg types.Config) *RelayerApp {
+	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	c := NewContext(cfg)
 	a := &RelayerApp{
 		id:            idutil.NewGuid(),
@@ -43,14 +44,13 @@ func NewRelayerApp(cfg types.Config) *RelayerApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
-	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, time.Duration(cfg.RpcTimeout))
+	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, defaultTimeout)
 	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.coreService = coreservice.NewService(cfg, &c.cacheStore, a.nodeService)
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)
 
-	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	timeouts := rpc.HTTPTimeouts{
 		ReadTimeout:       defaultTimeout,
 		ReadHeaderTimeout: defaultTimeout,

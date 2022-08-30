@@ -51,7 +51,7 @@ type httpConn struct {
 // and some methods don't work. The panic() stubs here exist to ensure
 // this special treatment is correct.
 
-func (hc *httpConn) writeJSON(context.Context, interface{}) error {
+func (hc *httpConn) WriteJSON(context.Context, interface{}) error {
 	panic("writeJSON called on httpConn")
 }
 
@@ -59,16 +59,16 @@ func (hc *httpConn) PeerInfo() PeerInfo {
 	panic("peerInfo called on httpConn")
 }
 
-func (hc *httpConn) remoteAddr() string {
+func (hc *httpConn) RemoteAddr() string {
 	return hc.url
 }
 
-func (hc *httpConn) readBatch() ([]*jsonrpcMessage, bool, error) {
+func (hc *httpConn) ReadBatch() ([]*jsonrpcMessage, bool, error) {
 	<-hc.closeCh
 	return nil, false, io.EOF
 }
 
-func (hc *httpConn) close() {
+func (hc *httpConn) Close() {
 	hc.closeOnce.Do(func() { close(hc.closeCh) })
 }
 
@@ -267,7 +267,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// single request.
 	w.Header().Set("content-type", contentType)
 	codec := newHTTPServerConn(r, w)
-	defer codec.close()
+	defer codec.Close()
 	s.serveSingleRequest(ctx, codec)
 }
 

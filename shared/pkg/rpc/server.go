@@ -68,7 +68,7 @@ func (s *Server) ServeListener(l net.Listener) error {
 			return err
 		}
 		logger.Logger().Trace().Interface("conn", conn.RemoteAddr()).Msg("Accepted RPC connection")
-		go s.ServeCodec(NewCodec(conn), 0)
+		go s.ServeCodec(NewCodec(conn), 0, nil)
 	}
 }
 
@@ -85,7 +85,7 @@ func (s *Server) RegisterName(name string, receiver interface{}) error {
 // server is stopped. In either case the codec is closed.
 //
 // Note that codec options are no longer supported.
-func (s *Server) ServeCodec(codec ServerCodec, options CodecOption) {
+func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect OnConnectFunc) {
 	defer codec.Close()
 
 	// Don't serve if server is stopped.
@@ -98,8 +98,18 @@ func (s *Server) ServeCodec(codec ServerCodec, options CodecOption) {
 	defer s.codecs.Remove(codec)
 
 	c := initClient(codec, s.idgen, &s.services)
+	defer c.Close()
+
+	if onConnect != nil {
+		err := onConnect(c)
+		if err != nil {
+			codec.Close()
+			logger.Logger().Debug().Err(err).Msg("WebSocket closed")
+			return
+		}
+	}
+
 	<-codec.Closed()
-	c.Close()
 }
 
 // serveSingleRequest reads and processes a single RPC request from the given codec. This

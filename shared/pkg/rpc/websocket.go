@@ -43,7 +43,7 @@ const (
 
 var wsBufferPool = new(sync.Pool)
 
-type OnConnectFunc func(ServerCodec) error
+type OnConnectFunc func(c *Client) error
 
 // WebsocketHandler returns a handler that serves JSON-RPC to WebSocket connections.
 //
@@ -65,16 +65,7 @@ func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFu
 
 		codec := newWebsocketCodec(conn, r.Host, r.Header)
 
-		if onConnect != nil {
-			err = onConnect(codec)
-			if err != nil {
-				codec.Close()
-				logger.Logger().Debug().Err(err).Msg("WebSocket closed")
-				return
-			}
-		}
-
-		s.ServeCodec(codec, 0)
+		s.ServeCodec(codec, 0, onConnect)
 	})
 }
 

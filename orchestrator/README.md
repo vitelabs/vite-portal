@@ -76,7 +76,8 @@ websocat ws://localhost:57332/ -E
 ```
 
 ```
-{"jsonrpc": "2.0", "id": 2, "method": "public_version", "params": []}
+{"jsonrpc": "2.0", "id": 1, "result": "1234"}
+{"jsonrpc": "2.0", "id": 2, "method": "core_getAppInfo", "params": []}
 {"jsonrpc": "2.0", "id": 2, "method": "admin_getSecret", "params": []}
 ```
 
@@ -92,7 +93,7 @@ websocat ws://localhost:57332/ -E
     {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "public_version",
+      "method": "core_getAppInfo",
       "params": null
     }'
 

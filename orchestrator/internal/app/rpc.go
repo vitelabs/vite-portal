@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
 // Attach creates an RPC client attached to an in-process API handler.
@@ -101,31 +101,18 @@ func (a *OrchestratorApp) stopInProc() {
 	a.inprocHandler.Stop()
 }
 
-func (a *OrchestratorApp) OnConnect(c rpc.ServerCodec) error {
-	info := c.PeerInfo()
-	logger.Logger().Debug().Msg(jsonutil.ToString(info))
-	logger.Logger().Debug().Interface("conn", &c).Msg(a.config.Version)
-	err := c.WriteJSON(context.Background(), jsonrpcMessage{
-		Version: "2.0",
-		ID:      "1234",
-		Method:  "core_getAppInfo",
-	})
+func (a *OrchestratorApp) OnConnect(c *rpc.Client) error {
+	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	var resp interface{}
+	err := c.CallContext(ctx, &resp, "core_getAppInfo")
 	if err != nil {
-		msg := "writing on websocket connect failed"
+		msg := "calling context on connect failed"
 		logger.Logger().Error().Err(err).Msg(msg)
 		return errors.New(msg)
 	}
-	msgs, batch, err := c.ReadBatch()
-	logger.Logger().Debug().Err(err).Bool("batch", batch).Str("msgs", fmt.Sprintf("%#v", msgs[0])).Msg("read result")
-	//return nil
-	return errors.New("test")
-}
-
-type jsonrpcMessage struct {
-	Version string `json:"jsonrpc,omitempty"`
-	ID      string `json:"id,omitempty"`
-	Method  string `json:"method,omitempty"`
-	Params  []byte `json:"params,omitempty"`
-	//Error   *jsonError      `json:"error,omitempty"`
-	//Result  json.RawMessage `json:"result,omitempty"`
+	logger.Logger().Debug().Str("resp", fmt.Sprintf("%#v", resp)).Msg("onconnect result")
+	return nil
+	//return errors.New("test")
 }

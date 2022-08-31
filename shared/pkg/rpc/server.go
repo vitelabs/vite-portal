@@ -101,7 +101,7 @@ func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect On
 	defer c.Close()
 
 	if onConnect != nil {
-		err := onConnect(c)
+		err := onConnect(c, codec.PeerInfo())
 		if err != nil {
 			codec.Close()
 			logger.Logger().Debug().Err(err).Msg("WebSocket closed")
@@ -191,6 +191,7 @@ type PeerInfo struct {
 		UserAgent string
 		Origin    string
 		Host      string
+		Auth 			string
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	relayerservice "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/service"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
@@ -22,12 +23,13 @@ type OrchestratorApp struct {
 	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
 	state         int        // Tracks state of node lifecycle
 
-	lock          sync.Mutex
-	rpcAPIs       []rpc.API // List of APIs currently provided by the app
-	rpc           *rpc.HTTPServer
-	rpcAuth       *rpc.HTTPServer
-	inprocHandler *rpc.Server // In-process RPC request handler to process the API requests
-	context       *Context
+	lock           sync.Mutex
+	rpcAPIs        []rpc.API // List of APIs currently provided by the app
+	rpc            *rpc.HTTPServer
+	rpcAuth        *rpc.HTTPServer
+	inprocHandler  *rpc.Server // In-process RPC request handler to process the API requests
+	context        *Context
+	relayerService *relayerservice.Service
 }
 
 func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
@@ -38,6 +40,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
+	a.relayerService = relayerservice.NewService(c.relayerStore)
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)

@@ -1,6 +1,8 @@
 package interfaces
 
-import "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
+import (
+	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
+)
 
 type StoreI interface {
 	Clear()

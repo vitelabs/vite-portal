@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
 
@@ -25,9 +26,9 @@ func (a *OrchestratorApp) apis() []rpc.API {
 			Service:   &coreAPI{a},
 		},
 		{
-			Namespace: RpcAdminModule,
+			Namespace:     RpcAdminModule,
 			Authenticated: true,
-			Service:   &adminAPI{a},
+			Service:       &adminAPI{a},
 		},
 		// {
 		// 	Namespace: "debug",
@@ -41,8 +42,8 @@ type coreAPI struct {
 	app *OrchestratorApp
 }
 
-func (a *coreAPI) GetAppInfo() types.AppInfo {
-	return types.AppInfo{
+func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
+	return sharedtypes.RpcAppInfoResponse{
 		Id:      a.app.id,
 		Version: version.PROJECT_BUILD_VERSION,
 		Name:    types.AppName,

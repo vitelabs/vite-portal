@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+type Connection struct {
+	Type string
+	Id   string
+}
+
+func NewConnection(t string, id string) *Connection {
+	return &Connection{
+		Type: t,
+		Id: id,
+	}
+}
+
 // TransientConnection is a wrapper around net.Conn that sets read/write deadlines
 // before every Read() or Write() call.
 // Source: https://github.com/gobwas/ws-examples/blob/master/src/chat/main.go

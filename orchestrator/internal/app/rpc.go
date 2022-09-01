@@ -2,9 +2,12 @@ package app
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 // Attach creates an RPC client attached to an in-process API handler.
@@ -98,20 +101,25 @@ func (a *OrchestratorApp) stopInProc() {
 	a.inprocHandler.Stop()
 }
 
-func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) error {
+func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (sharedtypes.Connection, error) {
+	defaultConn := sharedtypes.Connection{}
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
 	if a.relayerService.IsRelayerConnection(peerInfo) {
-		err := a.relayerService.HandleConnect(timeout, c, peerInfo)
-		a.HandleOnConnectError(timeout, c.WriteConn, err)
-		return err
+		id, err := a.relayerService.HandleConnect(timeout, c, peerInfo)
+		if err != nil {
+			a.HandleOnConnectError(timeout, c.WriteConn, err)
+			return defaultConn, err
+		}
+		return *sharedtypes.NewConnection(types.ConnectionTypes.Relayer, id), nil
 	}
-	return nil
-	//return errors.New("test")
+	// TODO: handle node connections
+	return defaultConn, errors.New("unknown connection")
 }
 
-func (a *OrchestratorApp) OnDisconnect(peerInfo rpc.PeerInfo) {
-	if a.relayerService.IsRelayerConnection(peerInfo) {
-		a.relayerService.HandleDisconnect(peerInfo)
+func (a *OrchestratorApp) OnDisconnect(c sharedtypes.Connection) {
+	switch c.Type {
+	case types.ConnectionTypes.Relayer:
+		a.relayerService.HandleDisconnect(c.Id)
 	}
 }
 

@@ -24,6 +24,7 @@ import (
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 const MetadataApi = "rpc"
@@ -100,19 +101,21 @@ func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect On
 	c := initClient(codec, s.idgen, &s.services)
 	defer c.Close()
 
+	var connection types.Connection
 	if onConnect != nil {
-		err := onConnect(c, codec.PeerInfo())
+		conn, err := onConnect(c, codec.PeerInfo())
 		if err != nil {
 			codec.Close()
 			logger.Logger().Debug().Err(err).Msg("WebSocket closed")
 			return
 		}
+		connection = conn
 	}
 
 	<-codec.Closed()
 
 	if onDisconnect != nil {
-		onDisconnect(codec.PeerInfo())
+		onDisconnect(connection)
 	}
 }
 

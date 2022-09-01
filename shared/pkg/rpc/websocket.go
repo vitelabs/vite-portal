@@ -30,6 +30,7 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"github.com/gorilla/websocket"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 const (
@@ -43,8 +44,8 @@ const (
 
 var wsBufferPool = new(sync.Pool)
 
-type OnConnectFunc func(c *Client, peerInfo PeerInfo) error
-type OnDisconnectFunc func(peerInfo PeerInfo)
+type OnConnectFunc func(c *Client, peerInfo PeerInfo) (types.Connection, error)
+type OnDisconnectFunc func(conn types.Connection)
 
 // WebsocketHandler returns a handler that serves JSON-RPC to WebSocket connections.
 //

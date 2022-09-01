@@ -5,15 +5,18 @@ import (
 	"fmt"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 )
 
 type Relayer struct {
-	Id      string `json:"id"`
-	Version string `json:"version"`
+	Id        string
+	Version   string
+	RpcClient *rpc.Client
+	PeerInfo  rpc.PeerInfo
 }
 
 func (r *Relayer) IsValid() bool {
-	return r != nil && r.Id != ""
+	return r != nil && r.Id != "" && r.RpcClient != nil
 }
 
 func (r *Relayer) Validate() error {

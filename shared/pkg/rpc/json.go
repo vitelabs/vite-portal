@@ -345,3 +345,7 @@ func parseSubscriptionName(rawArgs json.RawMessage) (string, error) {
 	}
 	return method, nil
 }
+
+func NewJSONRPCErrorMessage(err error) *jsonrpcMessage {
+	return errorMessage(err)
+}

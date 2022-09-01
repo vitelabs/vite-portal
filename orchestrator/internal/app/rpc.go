@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
@@ -101,7 +102,7 @@ func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) error 
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
 	if a.relayerService.IsRelayerConnection(peerInfo) {
 		err := a.relayerService.HandleConnect(timeout, c, peerInfo)
-		a.HandleOnConnectError(err)
+		a.HandleOnConnectError(timeout, c.WriteConn, err)
 		return err
 	}
 	return nil
@@ -114,8 +115,10 @@ func (a *OrchestratorApp) OnDisconnect(peerInfo rpc.PeerInfo) {
 	}
 }
 
-func (a *OrchestratorApp) HandleOnConnectError(err error) {
+func (a *OrchestratorApp) HandleOnConnectError(timeout time.Duration, w rpc.JSONWriter, err error) {
 	if err != nil {
-		// TODO: send error message
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		w.WriteJSON(ctx, rpc.NewJSONRPCErrorMessage(err))
 	}
 }

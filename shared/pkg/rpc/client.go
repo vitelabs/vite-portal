@@ -82,10 +82,10 @@ type Client struct {
 	// This function, if non-nil, is called when the connection is lost.
 	reconnectFunc reconnectFunc
 
-	// writeConn is used for writing to the connection on the caller's goroutine. It should
+	// WriteConn is used for writing to the connection on the caller's goroutine. It should
 	// only be accessed outside of dispatch, with the write lock held. The write lock is
 	// taken by sending on reqInit and released by sending on reqSent.
-	writeConn JSONWriter
+	WriteConn JSONWriter
 
 	// for dispatch
 	close       chan struct{}
@@ -207,7 +207,7 @@ func initClient(conn ServerCodec, idgen func() ID, services *serviceRegistry) *C
 		isHTTP:      isHTTP,
 		idgen:       idgen,
 		services:    services,
-		writeConn:   conn,
+		WriteConn:   conn,
 		close:       make(chan struct{}),
 		closing:     make(chan struct{}),
 		didClose:    make(chan struct{}),
@@ -266,7 +266,7 @@ func (c *Client) SetHeader(key, value string) {
 	if !c.isHTTP {
 		return
 	}
-	conn := c.writeConn.(*httpConn)
+	conn := c.WriteConn.(*httpConn)
 	conn.mu.Lock()
 	conn.headers.Set(key, value)
 	conn.mu.Unlock()
@@ -491,15 +491,15 @@ func (c *Client) send(ctx context.Context, op *requestOp, msg interface{}) error
 }
 
 func (c *Client) write(ctx context.Context, msg interface{}, retry bool) error {
-	if c.writeConn == nil {
+	if c.WriteConn == nil {
 		// The previous write failed. Try to establish a new connection.
 		if err := c.reconnect(ctx); err != nil {
 			return err
 		}
 	}
-	err := c.writeConn.WriteJSON(ctx, msg)
+	err := c.WriteConn.WriteJSON(ctx, msg)
 	if err != nil {
-		c.writeConn = nil
+		c.WriteConn = nil
 		if !retry {
 			return c.write(ctx, msg, true)
 		}
@@ -524,7 +524,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 	}
 	select {
 	case c.reconnected <- newconn:
-		c.writeConn = newconn
+		c.WriteConn = newconn
 		return nil
 	case <-c.didClose:
 		newconn.Close()

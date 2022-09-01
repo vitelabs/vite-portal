@@ -44,12 +44,13 @@ const (
 var wsBufferPool = new(sync.Pool)
 
 type OnConnectFunc func(c *Client, peerInfo PeerInfo) error
+type OnDisconnectFunc func(peerInfo PeerInfo)
 
 // WebsocketHandler returns a handler that serves JSON-RPC to WebSocket connections.
 //
 // allowedOrigins should be a comma-separated list of allowed origin URLs.
 // To allow connections with any origin, pass "*".
-func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFunc) http.Handler {
+func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFunc, onDisconnect OnDisconnectFunc) http.Handler {
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:  wsReadBuffer,
 		WriteBufferSize: wsWriteBuffer,
@@ -65,7 +66,7 @@ func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFu
 
 		codec := newWebsocketCodec(conn, r.Host, r.Header)
 
-		s.ServeCodec(codec, 0, onConnect)
+		s.ServeCodec(codec, 0, onConnect, onDisconnect)
 	})
 }
 

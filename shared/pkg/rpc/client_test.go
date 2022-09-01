@@ -405,7 +405,7 @@ func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 	srv.RegisterName("nftest", new(notificationTestService))
 	p1, p2 := net.Pipe()
 	recorder := &unsubscribeRecorder{ServerCodec: NewCodec(p1)}
-	go srv.ServeCodec(recorder, OptionMethodInvocation|OptionSubscriptions, nil)
+	go srv.ServeCodec(recorder, OptionMethodInvocation|OptionSubscriptions, nil, nil)
 	defer srv.Stop()
 
 	// Create the client on the other end of the pipe.
@@ -438,7 +438,7 @@ func TestClientSubscriptionChannelClose(t *testing.T) {
 
 	var (
 		srv     = NewServer()
-		httpsrv = httptest.NewServer(srv.WebsocketHandler(nil, nil))
+		httpsrv = httptest.NewServer(srv.WebsocketHandler(nil, nil, nil))
 		wsURL   = "ws:" + strings.TrimPrefix(httpsrv.URL, "http:")
 	)
 	defer srv.Stop()
@@ -599,7 +599,7 @@ func TestClientReconnect(t *testing.T) {
 		if err != nil {
 			t.Fatal("can't listen:", err)
 		}
-		go http.Serve(l, srv.WebsocketHandler([]string{"*"}, nil))
+		go http.Serve(l, srv.WebsocketHandler([]string{"*"}, nil, nil))
 		return srv, l
 	}
 
@@ -665,7 +665,7 @@ func httpTestClient(srv *Server, transport string, fl *flakeyListener) (*Client,
 	var hs *httptest.Server
 	switch transport {
 	case "ws":
-		hs = httptest.NewUnstartedServer(srv.WebsocketHandler([]string{"*"}, nil))
+		hs = httptest.NewUnstartedServer(srv.WebsocketHandler([]string{"*"}, nil, nil))
 	case "http":
 		hs = httptest.NewUnstartedServer(srv)
 	default:

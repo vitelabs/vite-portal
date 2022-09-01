@@ -53,7 +53,7 @@ func (a *OrchestratorApp) startRPC() error {
 			Origins:   DefaultAllowedOrigins,
 			Prefix:    "",
 			JwtSecret: secret,
-		}, a.OnConnect); err != nil {
+		}, a.OnConnect, a.OnDisconnect); err != nil {
 			return err
 		}
 
@@ -100,12 +100,18 @@ func (a *OrchestratorApp) stopInProc() {
 func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) error {
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
 	if a.relayerService.IsRelayerConnection(peerInfo) {
-		err := a.relayerService.Handle(timeout, c, peerInfo)
+		err := a.relayerService.HandleConnect(timeout, c, peerInfo)
 		a.HandleOnConnectError(err)
 		return err
 	}
 	return nil
 	//return errors.New("test")
+}
+
+func (a *OrchestratorApp) OnDisconnect(peerInfo rpc.PeerInfo) {
+	if a.relayerService.IsRelayerConnection(peerInfo) {
+		a.relayerService.HandleDisconnect(peerInfo)
+	}
 }
 
 func (a *OrchestratorApp) HandleOnConnectError(err error) {

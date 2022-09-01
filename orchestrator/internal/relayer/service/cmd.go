@@ -10,7 +10,7 @@ import (
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-func (s *Service) Handle(timeout time.Duration, c *rpc.Client, peerInfo rpc.PeerInfo) error {
+func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo rpc.PeerInfo) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	var resp sharedtypes.RpcAppInfoResponse
@@ -19,6 +19,10 @@ func (s *Service) Handle(timeout time.Duration, c *rpc.Client, peerInfo rpc.Peer
 		logger.Logger().Error().Err(err).Msg("calling context failed")
 		return err
 	}
-	logger.Logger().Debug().Str("resp", fmt.Sprintf("%#v", resp)).Msg("onconnect result")
+	logger.Logger().Debug().Str("resp", fmt.Sprintf("%#v", resp)).Msg("handle connect result")
 	return nil
+}
+
+func (s *Service) HandleDisconnect(peerInfo rpc.PeerInfo) {
+	logger.Logger().Debug().Str("info", fmt.Sprintf("%#v", peerInfo)).Msg("handle disconnect called")
 }

@@ -47,7 +47,7 @@ func (o *Orchestrator) Start(s *rpc.Server) {
 	o.setStatus(ws.Connected)
 
 	codec := rpc.NewFuncCodec(o.client.Conn, o.client.Conn.WriteJSON, o.client.Conn.ReadJSON)
-	go s.ServeCodec(codec, 0, nil)
+	go s.ServeCodec(codec, 0, nil, nil)
 
 	go func() {
 		<-codec.Closed()

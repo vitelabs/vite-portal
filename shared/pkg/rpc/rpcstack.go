@@ -315,7 +315,7 @@ func (h *HTTPServer) disableRPC() bool {
 }
 
 // EnableWS turns on JSON-RPC over WebSocket on the server.
-func (h *HTTPServer) EnableWS(apis []API, config WSConfig, onConnect OnConnectFunc) error {
+func (h *HTTPServer) EnableWS(apis []API, config WSConfig, onConnect OnConnectFunc, onDisconnect OnDisconnectFunc) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -329,7 +329,7 @@ func (h *HTTPServer) EnableWS(apis []API, config WSConfig, onConnect OnConnectFu
 	}
 	h.wsConfig = config
 	h.wsHandler.Store(&rpcHandler{
-		Handler: NewWSHandlerStack(srv.WebsocketHandler(config.Origins, onConnect), config.JwtSecret),
+		Handler: NewWSHandlerStack(srv.WebsocketHandler(config.Origins, onConnect, onDisconnect), config.JwtSecret),
 		server:  srv,
 	})
 	return nil

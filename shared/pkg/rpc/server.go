@@ -68,7 +68,7 @@ func (s *Server) ServeListener(l net.Listener) error {
 			return err
 		}
 		logger.Logger().Trace().Interface("conn", conn.RemoteAddr()).Msg("Accepted RPC connection")
-		go s.ServeCodec(NewCodec(conn), 0, nil)
+		go s.ServeCodec(NewCodec(conn), 0, nil, nil)
 	}
 }
 
@@ -85,7 +85,7 @@ func (s *Server) RegisterName(name string, receiver interface{}) error {
 // server is stopped. In either case the codec is closed.
 //
 // Note that codec options are no longer supported.
-func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect OnConnectFunc) {
+func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect OnConnectFunc, onDisconnect OnDisconnectFunc) {
 	defer codec.Close()
 
 	// Don't serve if server is stopped.
@@ -110,6 +110,10 @@ func (s *Server) ServeCodec(codec ServerCodec, options CodecOption, onConnect On
 	}
 
 	<-codec.Closed()
+
+	if onDisconnect != nil {
+		onDisconnect(codec.PeerInfo())
+	}
 }
 
 // serveSingleRequest reads and processes a single RPC request from the given codec. This

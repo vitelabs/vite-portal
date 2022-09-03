@@ -10,9 +10,18 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
+	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
+
+func (a *RelayerApp) AppInfo(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	res := sharedtypes.RpcAppInfoResponse{
+		Id:      a.id,
+		Version: version.PROJECT_BUILD_VERSION,
+		Name:    types.AppName,
+	}
+	httputil.WriteJsonResponse(w, res)
+}
 
 func (a *RelayerApp) Relay(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	if cors(&w, r) {
@@ -75,26 +84,6 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 		relay.Host = r.Host
 	}
 	return relay, nil
-}
-
-func (a *RelayerApp) GetChains(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-	res := a.nodeService.GetChains()
-	httputil.WriteJsonResponse(w, res)
-}
-
-func (a *RelayerApp) GetNodes(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var params = nodetypes.GetNodesParams{}
-	if err := httputil.ExtractQuery(w, r, &params); err != nil {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	params.Offset, params.Limit = commonutil.CheckPagination(params.Offset, params.Limit)
-	res, err := a.nodeService.GetNodes(params.Chain, params.Offset, params.Limit)
-	if err != nil {
-		httputil.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	httputil.WriteJsonResponse(w, res)
 }
 
 func (a *RelayerApp) GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

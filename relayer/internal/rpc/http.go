@@ -19,18 +19,16 @@ type Route struct {
 }
 
 func StartHttpRpc(routes []Route, port int32, timeout time.Duration, debug, profile bool) {
-	routes = append(routes, []Route{
-		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: Name},
-		{Name: "AppName", Method: "GET", Path: "/api", HandlerFunc: Name},
-		{Name: "AppVersion", Method: "GET", Path: "/api/v1", HandlerFunc: Version},
-	}...)
-
 	if debug {
-		routes = append(routes, Route{Name: "DebugTest", Method: "GET", Path: "/debug/test", HandlerFunc: debugTest})
+		routes = append(routes, []Route{
+			{Name: "DebugTest", Method: "GET", Path: "/debug/test", HandlerFunc: debugTest},
+		}...)
 	}
 
 	if profile {
-		routes = append(routes, Route{Name: "ProfileMemStats", Method: "GET", Path: "/profile/memstats", HandlerFunc: debugMemStats})
+		routes = append(routes, []Route{
+			{Name: "ProfileMemStats", Method: "GET", Path: "/profile/memstats", HandlerFunc: debugMemStats},
+		}...)
 	}
 
 	srv := &http.Server{

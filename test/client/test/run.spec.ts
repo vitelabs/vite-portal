@@ -8,7 +8,7 @@ import { testNodes } from "./node"
 import { testOrchestrator } from "./orchestrator"
 import { testRaw } from "./raw"
 import { testRelay } from "./relay"
-import { testVersion } from "./version"
+import { testRelayer } from "./relayer"
 
 describe('run tests', () => {
   let common = new TestCommon()
@@ -34,6 +34,7 @@ describe('run tests', () => {
   })
 
   testEmpty(common)
+  testRelayer(common)
   testOrchestrator(common)
   testHeight(common)
   testHelloWorld(common)
@@ -41,5 +42,4 @@ describe('run tests', () => {
   testMockNodes(common)
   testRaw(common)
   testRelay(common)
-  testVersion(common)
 })

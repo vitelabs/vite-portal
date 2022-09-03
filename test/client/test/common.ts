@@ -32,7 +32,7 @@ export class TestCommon {
       rpcUrl: "http://127.0.0.1:56331",
       rpcAuthUrl: "http://127.0.0.1:56332",
       rpcRelayHttpUrl: "http://127.0.0.1:56333",
-      repcRelayWsUrl: "http://127.0.0.1:56334",
+      rpcRelayWsUrl: "http://127.0.0.1:56334",
     }
     this.providerUrl = this.relayerConfig.rpcRelayHttpUrl + "/api/v1/client/relay"
     this.nodeHttpUrl = config.networks.local.http

@@ -217,11 +217,7 @@ DELETE /api/v1/db/nodes/{id}
 
 ### Request
 
-```http
-GET /api/v1/db/chains
-```
-
-    curl -i -X GET http://localhost:56333/api/v1/db/chains
+    curl -i -X POST http://localhost:56331/ -d '{"jsonrpc": "2.0", "id": 1, "method": "db_getChains", "params": []}'
 
 ### Response
 

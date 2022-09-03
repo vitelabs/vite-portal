@@ -1,9 +1,12 @@
 package app
 
 import (
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
 
@@ -26,9 +29,9 @@ func (a *RelayerApp) apis() []rpc.API {
 			Service:   &coreAPI{a},
 		},
 		{
-			Namespace:     RpcNodesModule,
+			Namespace:     RpcDbModule,
 			Authenticated: true,
-			Service:       &nodesAPI{a},
+			Service:       &dbAPI{a},
 		},
 		// {
 		// 	Namespace: "debug",
@@ -50,11 +53,16 @@ func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
 	}
 }
 
-// nodesAPI exposes API methods related to nodes
-type nodesAPI struct {
+// dbAPI exposes API methods related to database
+type dbAPI struct {
 	app *RelayerApp
 }
 
-func (a *nodesAPI) GetSecret() string {
-	return "secret1234"
+func (a *dbAPI) GetChains() []string {
+	return a.app.nodeService.GetChains()
+}
+
+func (a *dbAPI) GetNodes(chain string, offset, limit int) (generics.GenericPage[nodetypes.Node], error) {
+	o, l := commonutil.CheckPagination(offset, limit)
+	return a.app.nodeService.GetNodes(chain, o, l)
 }

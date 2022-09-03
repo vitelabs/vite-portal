@@ -18,6 +18,12 @@ export type GenericPage<T> = {
   total: number
 }
 
+export type AppInfo = {
+  id: string
+  version: string
+  name: string
+}
+
 export type HttpInfo = {
   version: string
   userAgent: string
@@ -54,7 +60,7 @@ export type RelayerConfig = {
   rpcUrl: string
   rpcAuthUrl: string
   rpcRelayHttpUrl: string
-  repcRelayWsUrl: string
+  rpcRelayWsUrl: string
 }
 
 export type Relay = {

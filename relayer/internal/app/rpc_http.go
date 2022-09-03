@@ -8,9 +8,8 @@ import (
 
 func (a *RelayerApp) StartHttpRpc(profile bool) {
 	routes := []rpc.Route{
+		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: a.AppInfo},
 		{Name: "Relay", Method: "POST", Path: "/api/v1/client/relay", HandlerFunc: a.Relay},
-		{Name: "GetChains", Method: "GET", Path: "/api/v1/db/chains", HandlerFunc: a.GetChains},
-		{Name: "GetNodes", Method: "GET", Path: "/api/v1/db/nodes", HandlerFunc: a.GetNodes},
 		{Name: "GetNode", Method: "GET", Path: "/api/v1/db/nodes/:id", HandlerFunc: a.GetNode},
 		{Name: "PutNode", Method: "PUT", Path: "/api/v1/db/nodes", HandlerFunc: a.PutNode},
 		{Name: "DeleteNode", Method: "DELETE", Path: "/api/v1/db/nodes/:id", HandlerFunc: a.DeleteNode},

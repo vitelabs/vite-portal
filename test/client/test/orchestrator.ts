@@ -16,7 +16,6 @@ export function testOrchestrator(common: TestCommon) {
       expect(relayers.total).to.be.equal(1)
       const relayer = relayers.entries[0]
       const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
-      console.log(relayer)
       expect(relayer.version).to.be.equal(expectedVersion.trim())
       expect(relayer.id).to.not.be.empty
       expect(relayer.transport).to.be.equal("ws")

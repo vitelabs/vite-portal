@@ -1,4 +1,4 @@
-import { NodeEntity, GenericPage, RelayerConfig } from "./types"
+import { NodeEntity, GenericPage, RelayerConfig, AppInfo } from "./types"
 import { BaseApp } from "./app"
 
 export class Relayer extends BaseApp {
@@ -21,22 +21,19 @@ export class Relayer extends BaseApp {
     return response.data?.result?.name === "vite-portal-relayer"
   }
 
+  getAppInfo = async (): Promise<AppInfo> => {
+    const result = await this.axiosClient.get(`/`)
+    return result.data
+  }
+
   getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<NodeEntity>> => {
-    const params = new URLSearchParams({
-      chain
-    })
-    !!offset && params.append("offset", offset.toString())
-    !!limit && params.append("limit", limit.toString())
-    const response = await this.axiosClient.get(`/api/v1/db/nodes?${params.toString()}`)
-    return response.data
-  }
-
-  getName = () => {
-    return this.axiosClient.get("/")
-  }
-
-  getVersion = () => {
-    return this.axiosClient.get("/api/v1")
+    const params = [
+      chain,
+      !!offset ? offset : 0,
+      !!limit ? limit : 0
+    ]
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_getNodes", params)
+    return response.data.result
   }
 
   getNode = (id: string) => {

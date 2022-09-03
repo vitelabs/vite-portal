@@ -18,6 +18,14 @@ export type GenericPage<T> = {
   total: number
 }
 
+export type HttpInfo = {
+  version: string
+  userAgent: string
+  origin: string
+  host: string
+  auth: string
+}
+
 export type NodeEntity = {
   id: string
   chain: string
@@ -36,6 +44,10 @@ export type NodeResponse = {
 
 export type RelayerEntity = {
   id: string
+  version: string
+  transport: string
+  remoteAddress: string
+  httpInfo: HttpInfo
 }
 
 export type RelayerConfig = {

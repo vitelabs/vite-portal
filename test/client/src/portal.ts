@@ -1,4 +1,6 @@
+import { exec } from "child_process"
 import { BaseApp } from "./app"
+import { TestContants } from "./constants"
 import { Orchestrator } from "./orchestrator"
 import { Relayer } from "./relayer"
 import { RelayerConfig } from "./types"
@@ -14,6 +16,15 @@ export abstract class VitePortal {
     process.on("SIGQUIT", async function () {
       await app.stop()
     })
+  }
+
+  public static startCleanup() {
+    exec(
+      `./start_cleanup.sh`,
+      {
+        cwd: TestContants.DefaultBinPath
+      },
+    )
   }
 
   public static async startOrchestrator(url: string, authUrl: string, timeout: number) {

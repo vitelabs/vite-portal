@@ -43,6 +43,7 @@ export class TestCommon {
 
   startAsync = async () => {
     const timeout = 2100
+    VitePortal.startCleanup()
     this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, this.orchestratorAuthUrl, timeout)
     this.relayer = await VitePortal.startRelayer(this.relayerConfig, timeout)
     this.provider = vite.newProvider(this.providerUrl)

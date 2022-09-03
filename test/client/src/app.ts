@@ -1,14 +1,8 @@
 import { exec } from "child_process"
-import path from "path"
 import axios, { AxiosInstance } from "axios"
 import { CommonUtil } from "./utils"
 import { RpcClient } from "./client"
-
-const defaultBinPath = path.join(path.dirname(__dirname), "bin")
-
-export function binPath() {
-  return defaultBinPath
-}
+import { TestContants } from "./constants"
 
 export abstract class BaseApp {
   url: string
@@ -17,9 +11,9 @@ export abstract class BaseApp {
   rpcClient: RpcClient
   axiosClient: AxiosInstance
 
-  constructor(url: string, timeout: number, binPath: string = defaultBinPath) {
+  constructor(url: string, timeout: number) {
     this.url = url
-    this.binPath = binPath
+    this.binPath = TestContants.DefaultBinPath
     this.stopped = false
     this.rpcClient = new RpcClient(timeout)
     this.axiosClient = axios.create({
@@ -48,7 +42,7 @@ export abstract class BaseApp {
 
     console.log("Binary:", this.binPath)
     exec(
-      `./startup_${this.name()}.sh`,
+      `./start_${this.name()}.sh`,
       {
         cwd: this.binPath
       },
@@ -63,7 +57,7 @@ export abstract class BaseApp {
     if (this.stopped) return
     console.log(`[${this.name()}] Stopping.`)
     exec(
-      `./shutdown_${this.name()}.sh`,
+      `./stop_${this.name()}.sh`,
       {
         cwd: this.binPath
       },

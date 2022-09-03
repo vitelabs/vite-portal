@@ -11,6 +11,14 @@ export function testOrchestrator(common: TestCommon) {
   })
 
   describe("testOrchestrator", () => {
+    it('test getAppInfo', async function () {
+      const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
+      const actual = await common.orchestrator.getAppInfo()
+      expect(actual.id).to.not.be.empty
+      expect(actual.version).to.be.equal(expectedVersion.trim())
+      expect(actual.name).to.be.equal("vite-portal-orchestrator")
+    })
+
     it('test getPaginated relayers', async function () {
       const relayers = await common.orchestrator.getRelayers()
       expect(relayers.total).to.be.equal(1)

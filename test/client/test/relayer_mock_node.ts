@@ -4,7 +4,7 @@ import { TestCommon } from "./common"
 import { DefaultMockNode } from "../src/mock_node"
 import { CommonUtil } from "../src/utils"
 
-export function testMockNodes(common: TestCommon) {
+export function testRelayerMockNodes(common: TestCommon) {
   it('test DefaultMockNode client.send', async function () {
     const url = common.defaultMockNode.entity.rpcHttpUrl
     const result = await common.client.send(url, "test_method")

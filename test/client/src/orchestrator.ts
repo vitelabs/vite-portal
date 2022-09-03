@@ -1,6 +1,5 @@
 import { BaseApp } from "./app"
-import { CommonUtil } from "./utils"
-import { GenericPage, RelayerEntity } from "../src/types"
+import { AppInfo, GenericPage, RelayerEntity } from "../src/types"
 
 export class Orchestrator extends BaseApp {
   authUrl: string
@@ -20,6 +19,11 @@ export class Orchestrator extends BaseApp {
     }
     const response = await this.rpcClient.send(this.url, "core_getAppInfo")
     return response.data?.result?.name === "vite-portal-orchestrator"
+  }
+
+  getAppInfo = async (): Promise<AppInfo> => {
+    const response = await this.rpcClient.send(this.authUrl, "core_getAppInfo")
+    return response.data.result
   }
 
   getRelayers = async (offset?: number, limit?: number): Promise<GenericPage<RelayerEntity>> => {

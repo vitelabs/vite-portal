@@ -21,9 +21,14 @@ export class Relayer extends BaseApp {
     return response.data?.result?.name === "vite-portal-relayer"
   }
 
-  getAppInfo = async (): Promise<AppInfo> => {
-    const result = await this.axiosClient.get(`/`)
-    return result.data
+  getAppInfo1 = async (): Promise<AppInfo> => {
+    const response = await this.axiosClient.get(`/`)
+    return response.data
+  }
+
+  getAppInfo2 = async (): Promise<AppInfo> => {
+    const response = await this.rpcClient.send(this.config.rpcUrl, "core_getAppInfo")
+    return response.data.result
   }
 
   getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<NodeEntity>> => {

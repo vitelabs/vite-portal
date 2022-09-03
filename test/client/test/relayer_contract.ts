@@ -5,8 +5,8 @@ import { TestCommon } from "./common"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
-export function testHelloWorld(common: TestCommon) {
-  describe("testHelloWorld", () => {
+export function testRelayerContract(common: TestCommon) {
+  describe("testRelayerContract", () => {
     let node: NodeEntity
 
     before(async function () {

@@ -5,7 +5,7 @@ import { TestContants } from "./constants"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
-export function testNodes(common: TestCommon) {
+export function testRelayerNodes(common: TestCommon) {
   it('test insert invalid node', async function () {
     const node = {}
     const result = await common.relayer.putNode(node as NodeEntity)

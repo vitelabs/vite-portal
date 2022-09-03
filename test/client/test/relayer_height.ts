@@ -4,8 +4,8 @@ import { TestCommon } from "./common"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
-export function testHeight(common: TestCommon) {
-  describe("testHeight", () => {
+export function testRelayerHeight(common: TestCommon) {
+  describe("testRelayerHeight", () => {
     let node: NodeEntity
 
     before(async function () {

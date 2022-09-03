@@ -1,14 +1,14 @@
 import { describe } from "mocha"
 import { TestCommon } from "./common"
 import { testEmpty } from "./empty"
-import { testHeight } from "./height"
-import { testHelloWorld } from "./HelloWorld"
-import { testMockNodes } from "./mock_node"
-import { testNodes } from "./node"
 import { testOrchestrator } from "./orchestrator"
-import { testRaw } from "./raw"
-import { testRelay } from "./relay"
 import { testRelayer } from "./relayer"
+import { testRelayerHeight } from "./relayer_height"
+import { testRelayerContract } from "./relayer_contract"
+import { testRelayerNodes } from "./relayer_node"
+import { testRelayerMockNodes } from "./relayer_mock_node"
+import { testRelayerRaw } from "./relayer_raw"
+import { testRelayerRelay } from "./relayer_relay"
 
 describe('run tests', () => {
   let common = new TestCommon()
@@ -36,10 +36,10 @@ describe('run tests', () => {
   testEmpty(common)
   testRelayer(common)
   testOrchestrator(common)
-  testHeight(common)
-  testHelloWorld(common)
-  testNodes(common)
-  testMockNodes(common)
-  testRaw(common)
-  testRelay(common)
+  testRelayerHeight(common)
+  testRelayerContract(common)
+  testRelayerNodes(common)
+  testRelayerMockNodes(common)
+  testRelayerRaw(common)
+  testRelayerRelay(common)
 })

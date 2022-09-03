@@ -6,8 +6,8 @@ import { DefaultMockNode } from "../src/mock_node"
 import { NodeEntity, NodeResponse, RelayResult } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
-export function testRelay(common: TestCommon) {
-  describe("testRelay", () => {
+export function testRelayerRelay(common: TestCommon) {
+  describe("testRelayerRelay", () => {
     let nodes: NodeEntity[]
 
     before(async function () {

@@ -40,7 +40,7 @@ export abstract class MockNode {
 }
 
 export class DefaultMockNode extends MockNode {
-  static DEFAULT_RESPONSE: JsonRpcResponse = {
+  static DEFAULT_RESPONSE: JsonRpcResponse<string> = {
     jsonrpc: "2.0",
     id: 1,
     result: "This is a test response!"

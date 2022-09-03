@@ -1,6 +1,8 @@
 package app
 
 import (
+	"errors"
+
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
@@ -65,4 +67,24 @@ func (a *dbAPI) GetChains() []string {
 func (a *dbAPI) GetNodes(chain string, offset, limit int) (generics.GenericPage[nodetypes.Node], error) {
 	o, l := commonutil.CheckPagination(offset, limit)
 	return a.app.nodeService.GetNodes(chain, o, l)
+}
+
+func (a *dbAPI) GetNode(id string) (nodetypes.Node, error) {
+	res, found := a.app.nodeService.GetNode(id)
+	if !found {
+		return nodetypes.Node{}, errors.New("node does not exist")
+	}
+	return res, nil
+}
+
+// PutNode enables the orchestrator to add or update a node
+func (a *dbAPI) PutNode(node nodetypes.Node) error {
+	// TODO: auth
+	return a.app.nodeService.PutNode(node)
+}
+
+// DeleteNode enables the orchestrator to delete a node
+func (a *dbAPI) DeleteNode(id string) error {
+	// TODO: auth
+	return a.app.nodeService.DeleteNode(id)
 }

@@ -1,4 +1,4 @@
-import { NodeEntity, GenericPage, RelayerConfig, AppInfo } from "./types"
+import { NodeEntity, GenericPage, RelayerConfig, AppInfo, JsonRpcResponse } from "./types"
 import { BaseApp } from "./app"
 
 export class Relayer extends BaseApp {
@@ -41,15 +41,18 @@ export class Relayer extends BaseApp {
     return response.data.result
   }
 
-  getNode = (id: string) => {
-    return this.axiosClient.get(`/api/v1/db/nodes/${id}`)
+  getNode = async (id: string): Promise<JsonRpcResponse<NodeEntity>> => {
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_getNode", [id])
+    return response.data
   }
 
-  putNode = (node: NodeEntity) => {
-    return this.axiosClient.put(`/api/v1/db/nodes`, node)
+  putNode = async (node: NodeEntity): Promise<JsonRpcResponse<any>> => {
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_putNode", [node])
+    return response.data
   }
 
-  deleteNode = (id: string) => {
-    return this.axiosClient.delete(`/api/v1/db/nodes/${id}`)
+  deleteNode = async (id: string): Promise<JsonRpcResponse<any>> => {
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_deleteNode", [id])
+    return response.data
   }
 }

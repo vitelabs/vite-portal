@@ -8,18 +8,19 @@ import { CommonUtil } from "../src/utils"
 export function testRelayerNodes(common: TestCommon) {
   it('test insert invalid node', async function () {
     const node = {}
-    const result = await common.relayer.putNode(node as NodeEntity)
-    expect(result.status).to.be.equal(400)
-    expect(result.data.code).to.be.equal(400)
-    expect(result.data.message).to.be.equal("node is invalid")
+    const response = await common.relayer.putNode(node as NodeEntity)
+    expect(response.result).to.be.undefined
+    expect(response.error).to.not.be.undefined
+    expect(response.error?.code).to.be.equal(-32000)
+    expect(response.error?.message).to.be.equal("node is invalid")
   })
 
   it('test get nonexistent node', async function () {
-    const result = await common.relayer.getNode(CommonUtil.uuid())
-    expect("application/json; charset=UTF-8").to.be.equal(result.headers["content-type"])
-    expect(result.status).to.be.equal(404)
-    expect(result.data.code).to.be.equal(404)
-    expect(result.data.message).to.be.equal("node does not exist")
+    const response = await common.relayer.getNode(CommonUtil.uuid())
+    expect(response.result).to.be.undefined
+    expect(response.error).to.not.be.undefined
+    expect(response.error?.code).to.be.equal(-32000)
+    expect(response.error?.message).to.be.equal("node does not exist")
   })
 
   it('test insert and delete node', async function () {
@@ -29,36 +30,38 @@ export function testRelayerNodes(common: TestCommon) {
 
     const node = common.createRandomNode(chain)
     const getNodeBefore = await common.relayer.getNode(node.id)
-    expect(getNodeBefore.status).to.be.equal(404)
+    expect(getNodeBefore.error).to.not.be.undefined
+    expect(getNodeBefore.error?.code).to.be.equal(-32000)
 
-    const putResult = await common.relayer.putNode(node)
-    expect(putResult.status).to.be.equal(200)
+    const putResponse = await common.relayer.putNode(node)
+    expect(putResponse.error).to.be.undefined
 
     const nodesAfter = await common.relayer.getNodes(chain)
     expect(nodesAfter.total).to.be.equal(nodesBefore.total + 1)
 
     const getNodeAfter = await common.relayer.getNode(node.id)
-    expect(getNodeAfter.status).to.be.equal(200)
-    const nodeAfter: NodeEntity = getNodeAfter.data
+    expect(getNodeAfter.error).to.be.undefined
+    const nodeAfter: NodeEntity = getNodeAfter.result
     expect(node.id).to.be.equal(nodeAfter.id)
     expect(node.chain).to.be.equal(nodeAfter.chain)
     expect(node.rpcHttpUrl).to.be.equal(nodeAfter.rpcHttpUrl)
     expect(node.rpcWsUrl).to.be.equal(nodeAfter.rpcWsUrl)
 
-    const deleteResult = await common.relayer.deleteNode(node.id)
-    expect(deleteResult.status).to.be.equal(200)
+    const deleteResponse = await common.relayer.deleteNode(node.id)
+    expect(deleteResponse.error).to.be.undefined
 
     const nodesAfterDelete = await common.relayer.getNodes(chain)
     expect(nodesAfterDelete.total).to.be.equal(nodesAfter.total - 1)
 
     const getNodeAfterDelete = await common.relayer.getNode(node.id)
-    expect(getNodeAfterDelete.status).to.be.equal(404)
+    expect(getNodeAfterDelete.error).to.not.be.undefined
+    expect(getNodeAfterDelete.error?.code).to.be.equal(-32000)
   })
 
   it('test delete nonexistent node', async function () {
-    const result = await common.relayer.deleteNode(CommonUtil.uuid())
-    expect(result.status).to.be.equal(200)
-    expect(result.data).to.be.null
+    const response = await common.relayer.deleteNode(CommonUtil.uuid())
+    expect(response.error).to.be.undefined
+    expect(response.result).to.be.null
   })
 
   it('test get paginated nodes', async function () {
@@ -70,8 +73,8 @@ export function testRelayerNodes(common: TestCommon) {
     for (let index = 0; index < 10; index++) {
       const node = common.createRandomNode(chain)
       nodes.push(node)
-      const putResult = await common.relayer.putNode(node)
-      expect(putResult.status).to.be.equal(200)
+      const putResponse = await common.relayer.putNode(node)
+      expect(putResponse.error).to.be.undefined
     }
 
     const nodesAfter = await common.relayer.getNodes(chain)
@@ -95,8 +98,8 @@ export function testRelayerNodes(common: TestCommon) {
     expect(page2.entries[0].id).to.equal(nodes[6].id)
 
     for (const node of nodes) {
-      const deleteResult = await common.relayer.deleteNode(node.id)
-      expect(deleteResult.status).to.be.equal(200)
+      const deleteResponse = await common.relayer.deleteNode(node.id)
+      expect(deleteResponse.error).to.be.undefined
     }
   })
 }

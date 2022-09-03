@@ -6,7 +6,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
-	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
@@ -84,48 +83,4 @@ func extractRelay(w http.ResponseWriter, r *http.Request, p httprouter.Params) (
 		relay.Host = r.Host
 	}
 	return relay, nil
-}
-
-func (a *RelayerApp) GetNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
-	if id == "" {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, "invalid identifier")
-		return
-	}
-	res, found := a.nodeService.GetNode(id)
-	if !found {
-		httputil.WriteErrorResponse(w, http.StatusNotFound, "node does not exist")
-		return
-	}
-	httputil.WriteJsonResponse(w, res)
-}
-
-// PutNode enables the orchestrator to add or update a node
-func (a *RelayerApp) PutNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	// TODO: auth
-	var node = nodetypes.Node{}
-	if err := httputil.ExtractModel(w, r, &node, sharedtypes.MaxPayloadSize); err != nil {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if err := a.nodeService.PutNode(node); err != nil {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	httputil.WriteJsonResponse(w, nil)
-}
-
-// DeleteNode enables the orchestrator to delete a node
-func (a *RelayerApp) DeleteNode(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	// TODO: auth
-	id := p.ByName("id")
-	if id == "" {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, "invalid identifier")
-		return
-	}
-	if err := a.nodeService.DeleteNode(id); err != nil {
-		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	httputil.WriteJsonResponse(w, nil)
 }

@@ -5,10 +5,16 @@ export type JsonRpcRequest = {
   params: any[]
 }
 
-export type JsonRpcResponse = {
+export type JsonRpcResponse<T> = {
   jsonrpc: string
   id: number
-  result: string
+  result: T
+  error?: JsonRpcErrorResponse
+}
+
+export type JsonRpcErrorResponse = {
+  code: number
+  message: string
 }
 
 export type GenericPage<T> = {

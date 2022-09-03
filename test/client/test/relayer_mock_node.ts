@@ -7,21 +7,21 @@ import { CommonUtil } from "../src/utils"
 export function testRelayerMockNodes(common: TestCommon) {
   it('test DefaultMockNode client.send', async function () {
     const url = common.defaultMockNode.entity.rpcHttpUrl
-    const result = await common.client.send(url, "test_method")
-    expect(result.status).to.be.equal(200)
-    expect(result.data.result).to.be.equal(DefaultMockNode.DEFAULT_RESPONSE.result)
+    const response = await common.client.send(url, "test_method")
+    expect(response.status).to.be.equal(200)
+    expect(response.data.result).to.be.equal(DefaultMockNode.DEFAULT_RESPONSE.result)
   })
 
   it('test DefaultMockNode provider.request', async function () {
     const url = common.defaultMockNode.entity.rpcHttpUrl
     const node = common.createRandomNode("mockchain")
     node.rpcHttpUrl = url
-    const putResult = await common.relayer.putNode(node)
-    expect(putResult.status).to.be.equal(200)
-    const result = await common.provider.request("test_method")
-    expect(result).to.be.equal(DefaultMockNode.DEFAULT_RESPONSE.result)
-    const deleteResult = await common.relayer.deleteNode(node.id)
-    expect(deleteResult.status).to.be.equal(200)
+    const putResponse = await common.relayer.putNode(node)
+    expect(putResponse.error).to.be.undefined
+    const response = await common.provider.request("test_method")
+    expect(response).to.be.equal(DefaultMockNode.DEFAULT_RESPONSE.result)
+    const deleteResponse = await common.relayer.deleteNode(node.id)
+    expect(deleteResponse.error).to.be.undefined
   })
 
   it('test TimeoutMockNode client.send', async function () {
@@ -33,11 +33,11 @@ export function testRelayerMockNodes(common: TestCommon) {
     const url = common.timeoutMockNode.entity.rpcHttpUrl
     const node = common.createRandomNode("mockchain")
     node.rpcHttpUrl = url
-    const putResult = await common.relayer.putNode(node)
-    expect(putResult.status).to.be.equal(200)
-    const result = await CommonUtil.expectThrowsAsync(() => common.provider.request(url, "test_method"))
-    expect(result.error).to.be.equal("error executing the http request: relay timed out")
-    const deleteResult = await common.relayer.deleteNode(node.id)
-    expect(deleteResult.status).to.be.equal(200)
+    const putResponse = await common.relayer.putNode(node)
+    expect(putResponse.error).to.be.undefined
+    const response = await CommonUtil.expectThrowsAsync(() => common.provider.request(url, "test_method"))
+    expect(response.error).to.be.equal("error executing the http request: relay timed out")
+    const deleteResponse = await common.relayer.deleteNode(node.id)
+    expect(deleteResponse.error).to.be.undefined
   })
 }

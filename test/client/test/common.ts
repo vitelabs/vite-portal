@@ -73,8 +73,8 @@ export class TestCommon {
 
   insertNodeAsync = async (chain: string): Promise<NodeEntity> => {
     const node = this.createRandomNode(chain)
-    const result = await this.relayer.putNode(node)
-    if (result.status != 200) {
+    const response = await this.relayer.putNode(node)
+    if (response.error) {
       throw new Error("node could not be inserted")
     }
     return node

@@ -34,6 +34,10 @@ export type NodeResponse = {
   error: string
 }
 
+export type RelayerEntity = {
+  id: string
+}
+
 export type RelayerConfig = {
   rpcUrl: string
   rpcAuthUrl: string

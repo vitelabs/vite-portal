@@ -1,9 +1,12 @@
 package app
 
 import (
+	relayertypes "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/version"
 )
 
@@ -26,9 +29,9 @@ func (a *OrchestratorApp) apis() []rpc.API {
 			Service:   &coreAPI{a},
 		},
 		{
-			Namespace:     RpcAdminModule,
+			Namespace:     RpcRelayersModule,
 			Authenticated: true,
-			Service:       &adminAPI{a},
+			Service:       &relayersAPI{a},
 		},
 		// {
 		// 	Namespace: "debug",
@@ -50,13 +53,11 @@ func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
 	}
 }
 
-// adminAPI is the collection of administrative API methods exposed over
-// both secure and unsecure RPC channels.
-type adminAPI struct {
+// relayersAPI expoeses API methods related to relayers
+type relayersAPI struct {
 	app *OrchestratorApp
 }
 
-// GetSecrect returns the app secret
-func (a *adminAPI) GetSecret() string {
-	return "secret1234"
+func (a *relayersAPI) GetPaginated(offset int, limit int) (generics.GenericPage[relayertypes.RelayerEntity], error) {
+	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
 }

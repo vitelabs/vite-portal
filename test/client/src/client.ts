@@ -12,7 +12,7 @@ export class RpcClient {
     })
   }
 
-  send = async (url: string, method: string, params?: [], id?: number): Promise<AxiosResponse<any, any>> => {
+  send = async (url: string, method: string, params?: any[], id?: number): Promise<AxiosResponse<any, any>> => {
     const response = await this.provider.post(url, this.createJsonRpcRequest(method, params, id), {
       headers: {
         "True-Client-IP": "1.2.3.4"

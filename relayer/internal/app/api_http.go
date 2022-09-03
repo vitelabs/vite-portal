@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
@@ -87,7 +88,7 @@ func (a *RelayerApp) GetNodes(w http.ResponseWriter, r *http.Request, p httprout
 		httputil.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	params.Offset, params.Limit = checkPagination(params.Offset, params.Limit)
+	params.Offset, params.Limit = commonutil.CheckPagination(params.Offset, params.Limit)
 	res, err := a.nodeService.GetNodes(params.Chain, params.Offset, params.Limit)
 	if err != nil {
 		httputil.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -138,14 +139,4 @@ func (a *RelayerApp) DeleteNode(w http.ResponseWriter, r *http.Request, p httpro
 		return
 	}
 	httputil.WriteJsonResponse(w, nil)
-}
-
-func checkPagination(offset, limit int) (int, int) {
-	if offset < 0 {
-		offset = 0
-	}
-	if limit <= 0 || limit > 1000 {
-		limit = 1000
-	}
-	return offset, limit
 }

@@ -16,8 +16,8 @@ export abstract class VitePortal {
     })
   }
 
-  public static async startOrchestrator(url: string, timeout: number) {
-    const app = new Orchestrator(url, timeout)
+  public static async startOrchestrator(url: string, authUrl: string, timeout: number) {
+    const app = new Orchestrator(url, authUrl, timeout)
     this.handleShutdown(app)
     await app.start()
     return app

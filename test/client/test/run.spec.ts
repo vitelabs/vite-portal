@@ -5,6 +5,7 @@ import { testHeight } from "./height"
 import { testHelloWorld } from "./HelloWorld"
 import { testMockNodes } from "./mock_node"
 import { testNodes } from "./node"
+import { testOrchestrator } from "./orchestrator"
 import { testRaw } from "./raw"
 import { testRelay } from "./relay"
 import { testVersion } from "./version"
@@ -33,6 +34,7 @@ describe('run tests', () => {
   })
 
   testEmpty(common)
+  testOrchestrator(common)
   testHeight(common)
   testHelloWorld(common)
   testNodes(common)

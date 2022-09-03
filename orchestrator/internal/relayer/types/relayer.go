@@ -6,6 +6,7 @@ import (
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type Relayer struct {
@@ -13,6 +14,14 @@ type Relayer struct {
 	Version   string
 	RpcClient *rpc.Client
 	PeerInfo  rpc.PeerInfo
+}
+
+type RelayerEntity struct {
+	Id            string               `json:"id"`
+	Version       string               `json:"version"`
+	Transport     string               `json:"transport"`
+	RemoteAddress string               `json:"remoteAddress"`
+	HttpInfo      sharedtypes.HttpInfo `json:"httpInfo"`
 }
 
 func (r *Relayer) IsValid() bool {

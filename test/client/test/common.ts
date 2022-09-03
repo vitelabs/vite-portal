@@ -12,6 +12,7 @@ import { Orchestrator } from "../src/orchestrator"
 
 export class TestCommon {
   orchestratorUrl: string
+  orchestratorAuthUrl: string
   relayerConfig: RelayerConfig
   providerUrl: string
   nodeHttpUrl: string
@@ -26,6 +27,7 @@ export class TestCommon {
 
   constructor() {
     this.orchestratorUrl = "http://127.0.0.1:57331"
+    this.orchestratorAuthUrl = "http://127.0.0.1:57332"
     this.relayerConfig = {
       rpcUrl: "http://127.0.0.1:56331",
       rpcAuthUrl: "http://127.0.0.1:56332",
@@ -41,7 +43,7 @@ export class TestCommon {
 
   startAsync = async () => {
     const timeout = 2100
-    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, timeout)
+    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, this.orchestratorAuthUrl, timeout)
     this.relayer = await VitePortal.startRelayer(this.relayerConfig, timeout)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)

@@ -8,7 +8,7 @@ type StoreI interface {
 	Clear()
 	Close()
 	Count() int
-	GetAll() []types.Relayer
+	GetByIndex(index int) (r types.Relayer, found bool)
 	GetById(id string) (r types.Relayer, found bool)
 	Upsert(r types.Relayer) error
 	Remove(id string) error

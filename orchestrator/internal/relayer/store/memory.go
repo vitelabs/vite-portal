@@ -1,15 +1,14 @@
 package store
 
 import (
-	"sort"
 	"sync"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/collections"
 )
 
 type MemoryStore struct {
-	db   map[string]types.Relayer
+	db    collections.NameObjectCollectionI
 	lock sync.RWMutex
 }
 
@@ -28,7 +27,7 @@ func (s *MemoryStore) Clear() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.db = map[string]types.Relayer{}
+	s.db = collections.NewNameObjectCollection()
 }
 
 func (s *MemoryStore) Close() {
@@ -36,40 +35,29 @@ func (s *MemoryStore) Close() {
 }
 
 func (s *MemoryStore) Count() int {
-	return len(s.db)
+	return s.db.Count()
 }
 
-func (s *MemoryStore) GetAll() []types.Relayer {
-	relayers := make([]types.Relayer, len(s.db))
-
-	i := 0
-	for _, r := range s.db {
-		relayers[i] = r
-		i++
-	}
-
-	sort.Slice(relayers, func(i, j int) bool {
-		return relayers[i].Id < relayers[j].Id
-	})
-
-	return relayers
-}
-
-func (s *MemoryStore) GetById(id string) (r types.Relayer, found bool) {
+func (s *MemoryStore) GetByIndex(index int) (r types.Relayer, found bool) {
 	// Assign default return values
 	r = *new(types.Relayer)
 	found = false
 
-	if id == "" {
+	node := s.db.GetByIndex(index)
+	if node == nil {
 		return
 	}
 
-	relayer := s.db[id]
-	if commonutil.IsZero(relayer) {
+	return node.(types.Relayer), true
+}
+
+func (s *MemoryStore) GetById(id string) (r types.Relayer, found bool) {
+	e := s.db.Get(id)
+	if e == nil {
 		return
 	}
 
-	return relayer, true
+	return e.(types.Relayer), true
 }
 
 func (s *MemoryStore) Upsert(r types.Relayer) error {
@@ -81,7 +69,7 @@ func (s *MemoryStore) Upsert(r types.Relayer) error {
 		return err
 	}
 
-	s.db[r.Id] = r
+	s.db.Set(r.Id, r)
 
 	return nil
 }
@@ -94,7 +82,7 @@ func (s *MemoryStore) Remove(id string) error {
 		return nil
 	}
 
-	delete(s.db, id)
+	s.db.Remove(id)
 
 	return nil
 }

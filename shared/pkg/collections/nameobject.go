@@ -17,6 +17,8 @@ type NameObjectCollectionI interface {
 	Count() int
 }
 
+// Implementation based on:
+// https://github.com/microsoft/referencesource/blob/master/System/compmod/system/collections/specialized/nameobjectcollectionbase.cs
 type NameObjectCollection struct {
 	NameObjectCollectionI
 	entriesMap   map[string]*nameObjectEntry

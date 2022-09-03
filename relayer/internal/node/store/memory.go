@@ -5,8 +5,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/vitelabs/vite-portal/relayer/internal/collections"
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/collections"
 )
 
 type MemoryStore struct {

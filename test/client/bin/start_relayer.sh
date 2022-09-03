@@ -4,4 +4,5 @@ cd $SCRIPT_DIR
 cd ../../../relayer
 go build cmd/relayer/main.go 
 mv main $SCRIPT_DIR/relayer
-$SCRIPT_DIR/relayer start --debug > $SCRIPT_DIR/logs/relayer_test.log
+cd $SCRIPT_DIR
+./relayer start --debug > logs/relayer_test.log

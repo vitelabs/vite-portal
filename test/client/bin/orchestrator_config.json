@@ -1,0 +1,23 @@
+{
+    "version": "v0.1",
+    "debug": false,
+    "rpcPort": 57331,
+    "rpcAuthPort": 57332,
+    "rpcTimeout": 5000,
+    "userAgent": "",
+    "headerTrueClientIp": "True-Client-Ip",
+    "defaultChain": "vite_mainnet",
+    "supportedChains": [
+        "vite_mainnet",
+        "vite_testnet"
+    ],
+    "logging": {
+        "consoleOutputEnabled": true,
+        "fileOutputEnabled": true,
+        "directory": "logs",
+        "filename": "orchestrator.log",
+        "maxSize": 100,
+        "maxBackups": 10,
+        "maxAge": 28
+    }
+}

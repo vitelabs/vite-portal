@@ -4,4 +4,5 @@ cd $SCRIPT_DIR
 cd ../../../orchestrator
 go build cmd/orchestrator/main.go 
 mv main $SCRIPT_DIR/orchestrator
-$SCRIPT_DIR/orchestrator start --debug > $SCRIPT_DIR/logs/orchestrator_test.log
+cd $SCRIPT_DIR
+./orchestrator start --debug > logs/orchestrator_test.log

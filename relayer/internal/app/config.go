@@ -18,14 +18,14 @@ var (
 	DefaultModules        = []string{RpcCoreModule, RpcAdminModule}
 )
 
-func InitApp(debug bool, configPath string) (*RelayerApp, error) {
+func InitApp(debug bool, configPath string, configOverrides string) (*RelayerApp, error) {
 	logger.Init(debug)
 	p := configPath
 	if p == "" {
 		p = types.DefaultConfigFilename
 	}
 	cfg := types.NewDefaultConfig()
-	err := configutil.InitConfig(&cfg, debug, p, types.DefaultConfigVersion)
+	err := configutil.InitConfig(&cfg, debug, p, configOverrides, types.DefaultConfigVersion)
 	if err != nil {
 		return nil, err
 	}

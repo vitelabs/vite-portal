@@ -14,9 +14,10 @@ import (
 )
 
 var (
-	debug      bool
-	profile    bool
-	configPath string
+	debug           bool
+	profile         bool
+	configPath      string
+	configOverrides string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -37,6 +38,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "sets log level to debug")
 	startCmd.Flags().BoolVar(&profile, "profile", false, "expose cpu & memory profiling")
 	startCmd.Flags().StringVar(&configPath, "config", "", "path to the configuration file")
+	startCmd.Flags().StringVar(&configOverrides, "config-overrides", "", "configuration options in JSON format")
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(versionCmd)
 }
@@ -46,7 +48,7 @@ var startCmd = &cobra.Command{
 	Short: fmt.Sprintf("Starts %s daemon", types.AppName),
 	Long:  fmt.Sprintf(`Starts the %s daemon, picks up the config from %s`, types.AppName, types.DefaultConfigFilename),
 	Run: func(command *cobra.Command, args []string) {
-		a, err := app.InitApp(debug, configPath)
+		a, err := app.InitApp(debug, configPath, configOverrides)
 		if err != nil {
 			cmd.Exit("init error", err)
 		}

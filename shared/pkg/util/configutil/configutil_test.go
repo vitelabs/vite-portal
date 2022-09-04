@@ -17,9 +17,25 @@ func TestInitConfig(t *testing.T) {
 	defer os.RemoveAll(dir)
 	actual := newTestConfig()
 	actual.Debug = false
-	err := InitConfig(&actual, true, p, actual.Version)
+	err := InitConfig(&actual, true, p, "", actual.Version)
 	assert.NoError(t, err)
 	assert.Equal(t, true, actual.Debug)
+	assert.Equal(t, "test", actual.Name)
+	assert.Equal(t, 1, actual.Port)
+}
+
+func TestConfigOverrides(t *testing.T) {
+	t.Parallel()
+	p := path.Join("test", idutil.NewGuid(), "test.json")
+	dir := path.Dir(p)
+	defer os.RemoveAll(dir)
+	actual := newTestConfig()
+	actual.Debug = false
+	err := InitConfig(&actual, true, p, "{\"port\": 2}", actual.Version)
+	assert.NoError(t, err)
+	assert.Equal(t, true, actual.Debug)
+	assert.Equal(t, "test", actual.Name)
+	assert.Equal(t, 2, actual.Port)
 }
 
 func TestConfigFile(t *testing.T) {
@@ -63,6 +79,8 @@ func TestConfigFileBackup(t *testing.T) {
 type testConfig struct {
 	Version        string            `json:"version"`
 	Debug          bool              `json:"debug"`
+	Name           string            `json:"name"`
+	Port           int               `json:"port"`
 	HostToChainMap map[string]string `json:"hostToChainMap"`
 }
 
@@ -90,6 +108,8 @@ func newTestConfig() testConfig {
 	return testConfig{
 		Version:        "v0.1",
 		Debug:          true,
+		Name:           "test",
+		Port:           1,
 		HostToChainMap: map[string]string{},
 	}
 }

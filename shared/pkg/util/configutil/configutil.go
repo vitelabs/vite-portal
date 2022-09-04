@@ -14,14 +14,17 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
-func InitConfig[T interfaces.ConfigI](c T, debug bool, configPath, version string) error {
+func InitConfig[T interfaces.ConfigI](c T, debug bool, configPath, configOverrides, version string) error {
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("DefaultConfig")
 
 	// 1. Load config file
 	LoadConfigFromFile(configPath, version, c)
 	logger.Logger().Info().RawJSON("config", jsonutil.ToByteOrExit(c)).Msg("After loading config file")
 
-	// 2. Apply flags, overwrite the loaded file configuration
+	// 2. Apply flags, override the loaded file configuration
+	if configOverrides != "" {
+		jsonutil.FromByteOrExit([]byte(configOverrides), &c)
+	}
 	if debug {
 		c.SetDebug(debug)
 	}

@@ -25,7 +25,7 @@ func InitApp(debug bool, configPath string) (*OrchestratorApp, error) {
 		p = types.DefaultConfigFilename
 	}
 	cfg := types.NewDefaultConfig()
-	err := configutil.InitConfig(&cfg, debug, p, types.DefaultConfigVersion)
+	err := configutil.InitConfig(&cfg, debug, p, "", types.DefaultConfigVersion)
 	if err != nil {
 		return nil, err
 	}

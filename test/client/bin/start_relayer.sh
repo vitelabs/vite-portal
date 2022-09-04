@@ -5,4 +5,5 @@ cd ../../../relayer
 go build cmd/relayer/main.go 
 mv main $SCRIPT_DIR/relayer
 cd $SCRIPT_DIR
-./relayer start --debug > logs/relayer_test.log
+echo "--config-overrides: $1";
+./relayer start --debug --config-overrides=$1 > logs/relayer_test.log

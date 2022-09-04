@@ -21,6 +21,16 @@ export class Relayer extends BaseApp {
     return response.data?.result?.name === "vite-portal-relayer"
   }
 
+  getConfigOverrides(): string {
+    const overrides = {
+      rpcPort: this.extractPort(this.config.rpcUrl),
+      rpcAuthPort: this.extractPort(this.config.rpcAuthUrl),
+      rpcRelayHttpPort: this.extractPort(this.config.rpcRelayHttpUrl),
+      rpcRelayWsPort: this.extractPort(this.config.rpcRelayWsUrl)
+    }
+    return JSON.stringify(overrides)
+  }
+
   getAppInfo1 = async (): Promise<AppInfo> => {
     const response = await this.axiosClient.get(`/`)
     return response.data

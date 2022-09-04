@@ -21,6 +21,10 @@ export class Orchestrator extends BaseApp {
     return response.data?.result?.name === "vite-portal-orchestrator"
   }
 
+  getConfigOverrides(): string {
+    return ""
+  }
+
   getAppInfo = async (): Promise<AppInfo> => {
     const response = await this.rpcClient.send(this.authUrl, "core_getAppInfo")
     return response.data.result

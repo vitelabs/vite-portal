@@ -11,6 +11,7 @@ import { CommonUtil } from "../src/utils"
 import { Orchestrator } from "../src/orchestrator"
 
 export class TestCommon {
+  timeout: number
   orchestratorUrl: string
   orchestratorAuthUrl: string
   relayerConfig: RelayerConfig
@@ -26,6 +27,7 @@ export class TestCommon {
   timeoutMockNode: MockNode
 
   constructor() {
+    this.timeout = 2100
     this.orchestratorUrl = "http://127.0.0.1:57331"
     this.orchestratorAuthUrl = "http://127.0.0.1:57332"
     this.relayerConfig = {
@@ -42,13 +44,12 @@ export class TestCommon {
   }
 
   startAsync = async () => {
-    const timeout = 2100
     VitePortal.startCleanup()
-    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, this.orchestratorAuthUrl, timeout)
-    this.relayer = await VitePortal.startRelayer(this.relayerConfig, timeout)
+    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, this.orchestratorAuthUrl, this.timeout)
+    this.relayer = await VitePortal.startRelayer(this.relayerConfig, this.timeout)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
-    this.client = new RpcClient(timeout)
+    this.client = new RpcClient(this.timeout)
     this.httpMockCollector.start()
     this.defaultMockNode.start()
     this.timeoutMockNode.start()

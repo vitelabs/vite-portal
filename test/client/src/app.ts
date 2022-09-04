@@ -1,11 +1,11 @@
-import { ChildProcess, exec, spawn } from "child_process"
+import { ChildProcessWithoutNullStreams, spawn } from "child_process"
 import axios, { AxiosInstance } from "axios"
 import { CommonUtil } from "./utils"
 import { RpcClient } from "./client"
 import { TestContants } from "./constants"
 
 export abstract class BaseApp {
-  process?: ChildProcess
+  process?: ChildProcessWithoutNullStreams
   url: string
   binPath: string
   stopped: boolean
@@ -28,14 +28,25 @@ export abstract class BaseApp {
 
   abstract name(): string
   abstract isUp(): Promise<boolean>
+  abstract getConfigOverrides(): string
 
-  private execCallback = (error: any | null, stdout: string, stderr: string): void => {
-    if (error) {
-      console.error(`[${this.name()}] exec error: ${error}`)
-      return
-    }
-    console.log(`[${this.name()}] stdout: ${stdout}`)
-    console.error(`[${this.name()}] stderr: ${stderr}`)
+  protected extractPort = (url: string): number => {
+    const temp = new URL(url)
+    return parseInt(temp.port)
+  }
+
+  private handleProcessOutput = (): void => {
+    this.process?.on('error', (error) => {
+      console.error(`[${this.name()}] error: ${error}`)
+    })
+
+    this.process?.stdout.on('data', (data) => {
+      console.log(`[${this.name()}] stdout: ${data}`)
+    });
+
+    this.process?.stderr.on('data', (data) => {
+      console.error(`[${this.name()}] stderr: ${data}`)
+    });
   }
 
   async start() {
@@ -44,12 +55,15 @@ export abstract class BaseApp {
     console.log("Binary:", this.binPath)
     this.process = spawn(
       `./start_${this.name()}.sh`,
+      [
+        this.getConfigOverrides()
+      ],
       {
         cwd: this.binPath,
         detached: true
       },
-      //this.execCallback
     )
+    this.handleProcessOutput()
 
     await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`)
     console.log(`[${this.name()}] Started.`)

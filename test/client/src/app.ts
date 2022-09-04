@@ -1,10 +1,11 @@
-import { exec } from "child_process"
+import { ChildProcess, exec, spawn } from "child_process"
 import axios, { AxiosInstance } from "axios"
 import { CommonUtil } from "./utils"
 import { RpcClient } from "./client"
 import { TestContants } from "./constants"
 
 export abstract class BaseApp {
+  process?: ChildProcess
   url: string
   binPath: string
   stopped: boolean
@@ -41,10 +42,11 @@ export abstract class BaseApp {
     console.log(`[${this.name()}] Starting...`)
 
     console.log("Binary:", this.binPath)
-    exec(
+    this.process = spawn(
       `./start_${this.name()}.sh`,
       {
-        cwd: this.binPath
+        cwd: this.binPath,
+        detached: true
       },
       //this.execCallback
     )
@@ -56,13 +58,12 @@ export abstract class BaseApp {
   async stop() {
     if (this.stopped) return
     console.log(`[${this.name()}] Stopping.`)
-    exec(
-      `./stop_${this.name()}.sh`,
-      {
-        cwd: this.binPath
-      },
-      //this.execCallback
-    )
+    if (this.process?.pid) {
+      /* The - in front of the PID instructs process.kill 
+         to kill the process group the PID belongs to 
+         instead of just the process the PID belongs to. */
+      process.kill(-this.process.pid)
+    }
     this.stopped = true
     console.log(`[${this.name()}] Stopped.`)
   }

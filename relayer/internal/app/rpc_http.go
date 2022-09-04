@@ -9,7 +9,7 @@ import (
 func (a *RelayerApp) StartHttpRpc(profile bool) {
 	routes := []rpc.Route{
 		{Name: "Default", Method: "GET", Path: "/", HandlerFunc: a.AppInfo},
-		{Name: "Relay", Method: "POST", Path: "/api/v1/client/relay", HandlerFunc: a.Relay},
+		{Name: "Relay", Method: "POST", Path: "/relay", HandlerFunc: a.Relay},
 	}
 
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond

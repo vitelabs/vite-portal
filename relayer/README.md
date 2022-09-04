@@ -98,37 +98,46 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 
 ### Request
 
-```http
-GET /api/v1/db/nodes
-```
-
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `chain` | `string` | **Required**. The identifier of the chain |
 | `offset` | `number` | The pagination offset |
 | `limit` | `number` | The pagination limit |
 
-    curl -i -X GET http://localhost:56333/api/v1/db/nodes?chain=vite_testnet
+    curl -i -X POST http://localhost:56332/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getNodes", 
+        "params": ["vite_testnet",0,0]
+    }'
 
 ### Response
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 08:10:50 GMT
-    Content-Length: 169
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 07:02:04 GMT
+    Content-Length: 204
 
     {
-      "entries":[
-          {
-            "id":"n1",
-            "chain":"vite_testnet",
-            "rpcHttpUrl":"https://buidl.vite.net/gvite",
-            "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
-          }
-      ],
-      "limit":1000,
-      "offset":0,
-      "total":1
+        "jsonrpc":"2.0",
+        "id":1,
+        "result":{
+            "entries":[
+                {
+                    "id":"n1",
+                    "chain":"vite_testnet",
+                    "rpcHttpUrl":"https://buidl.vite.net/gvite",
+                    "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
+                }
+            ],
+            "limit":1000,
+            "offset":0,
+            "total":1
+        }
     }
 
 ## Create or update a node <a name="put_node"></a>
@@ -137,55 +146,68 @@ TODO: add authorization to restrict access to orchestrator
 
 ### Request
 
-```http
-PUT /api/v1/db/nodes
-```
-
-    curl -i -X PUT http://localhost:56333/api/v1/db/nodes \
+    curl -i -X POST http://localhost:56332/ \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
-        "id": "n1",
-        "chain": "vite_testnet",
-        "rpcHttpUrl": "https://buidl.vite.net/gvite",
-        "rpcWsUrl": "wss://buidl.vite.net/gvite/ws"
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_putNode", 
+        "params": [
+            {
+                "id": "n1",
+                "chain": "vite_testnet",
+                "rpcHttpUrl": "https://buidl.vite.net/gvite",
+                "rpcWsUrl": "wss://buidl.vite.net/gvite/ws"
+            }
+        ]
     }'
 
 ### Response
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 08:55:01 GMT
-    Content-Length: 4
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 06:48:36 GMT
+    Content-Length: 39
 
-    null
+    {"jsonrpc":"2.0","id":1,"result":null}
 
 ## Get a node by identifier <a name="get_node"></a>
 
 ### Request
 
-```http
-GET /api/v1/db/nodes/{id}
-```
-
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `id` | `string` | **Required**. The unique identifier of the node |
 
-    curl -i -X GET http://localhost:56333/api/v1/db/nodes/n1
+    curl -i -X POST http://localhost:56332/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getNode", 
+        "params": ["n1"]
+    }'
 
 ### Response
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 09:00:17 GMT
-    Content-Length: 121
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 07:05:20 GMT
+    Content-Length: 156
 
     {
-      "id":"n1",
-      "chain":"vite_testnet",
-      "rpcHttpUrl":"https://buidl.vite.net/gvite",
-      "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
+        "jsonrpc":"2.0",
+        "id":1,
+        "result":{
+            "id":"n1",
+            "chain":"vite_testnet",
+            "rpcHttpUrl":"https://buidl.vite.net/gvite",
+            "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
+        }
     }
 
 ## Delete a node <a name="delete_node"></a>
@@ -194,39 +216,53 @@ TODO: add authorization to restrict access to orchestrator
 
 ### Request
 
-```http
-DELETE /api/v1/db/nodes/{id}
-```
-
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `id` | `string` | **Required**. The unique identifier of the node |
 
-    curl -i -X DELETE http://localhost:56333/api/v1/db/nodes/n1
+    curl -i -X POST http://localhost:56332/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_deleteNode", 
+        "params": ["n1"]
+    }'
 
 ### Response
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 08:58:01 GMT
-    Content-Length: 4
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 07:06:52 GMT
+    Content-Length: 39
 
-    null
+    {"jsonrpc":"2.0","id":1,"result":null}
 
 ## Get list of chains <a name="get_chains"></a>
 
 ### Request
 
-    curl -i -X POST http://localhost:56331/ -d '{"jsonrpc": "2.0", "id": 1, "method": "db_getChains", "params": []}'
+    curl -i -X POST http://localhost:56332/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getChains", 
+        "params": []
+    }'
 
 ### Response
 
     HTTP/1.1 200 OK
-    Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 09:02:26 GMT
-    Content-Length: 16
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 06:58:59 GMT
+    Content-Length: 51
 
-    ["vite_testnet"]
+    {"jsonrpc":"2.0","id":1,"result":["vite_testnet"]}
 
 ## Relay request <a name="post_relay"></a> ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 
@@ -235,10 +271,10 @@ The load balancer should forward all incoming HTTP requests to this endpoint giv
 ### Request
 
 ```http
-POST /api/v1/client/relay
+POST /relay
 ```
 
-    curl -i -X POST http://localhost:56333/api/v1/client/relay \
+    curl -i -X POST http://localhost:56333/relay \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -254,7 +290,7 @@ POST /api/v1/client/relay
     Access-Control-Allow-Methods: POST
     Access-Control-Allow-Origin: *
     Content-Type: application/json; charset=UTF-8
-    Date: Fri, 12 Aug 2022 09:52:44 GMT
+    Date: Sun, 04 Sep 2022 07:08:21 GMT
     Content-Length: 44
 
-    {"id":1,"jsonrpc":"2.0","result":"22293675"}
+    {"jsonrpc":"2.0","id":1,"result":"22875395"}

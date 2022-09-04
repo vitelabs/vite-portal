@@ -34,7 +34,7 @@ export class TestCommon {
       rpcRelayHttpUrl: "http://127.0.0.1:56333",
       rpcRelayWsUrl: "http://127.0.0.1:56334",
     }
-    this.providerUrl = this.relayerConfig.rpcRelayHttpUrl + "/api/v1/client/relay"
+    this.providerUrl = this.relayerConfig.rpcRelayHttpUrl + "/relay"
     this.nodeHttpUrl = config.networks.local.http
     this.httpMockCollector = new HttpMockCollector(23460)
     this.defaultMockNode = new DefaultMockNode(TestContants.DefaultChain, 23470)

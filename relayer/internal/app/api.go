@@ -31,9 +31,9 @@ func (a *RelayerApp) apis() []rpc.API {
 			Service:   &coreAPI{a},
 		},
 		{
-			Namespace:     RpcDbModule,
+			Namespace:     RpcAdminModule,
 			Authenticated: true,
-			Service:       &dbAPI{a},
+			Service:       &adminAPI{a},
 		},
 		// {
 		// 	Namespace: "debug",
@@ -55,21 +55,21 @@ func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
 	}
 }
 
-// dbAPI exposes API methods related to database
-type dbAPI struct {
+// adminAPI exposes API methods related to administrative tasks
+type adminAPI struct {
 	app *RelayerApp
 }
 
-func (a *dbAPI) GetChains() []string {
+func (a *adminAPI) GetChains() []string {
 	return a.app.nodeService.GetChains()
 }
 
-func (a *dbAPI) GetNodes(chain string, offset, limit int) (generics.GenericPage[nodetypes.Node], error) {
+func (a *adminAPI) GetNodes(chain string, offset, limit int) (generics.GenericPage[nodetypes.Node], error) {
 	o, l := commonutil.CheckPagination(offset, limit)
 	return a.app.nodeService.GetNodes(chain, o, l)
 }
 
-func (a *dbAPI) GetNode(id string) (nodetypes.Node, error) {
+func (a *adminAPI) GetNode(id string) (nodetypes.Node, error) {
 	res, found := a.app.nodeService.GetNode(id)
 	if !found {
 		return nodetypes.Node{}, errors.New("node does not exist")
@@ -78,13 +78,13 @@ func (a *dbAPI) GetNode(id string) (nodetypes.Node, error) {
 }
 
 // PutNode enables the orchestrator to add or update a node
-func (a *dbAPI) PutNode(node nodetypes.Node) error {
+func (a *adminAPI) PutNode(node nodetypes.Node) error {
 	// TODO: auth
 	return a.app.nodeService.PutNode(node)
 }
 
 // DeleteNode enables the orchestrator to delete a node
-func (a *dbAPI) DeleteNode(id string) error {
+func (a *adminAPI) DeleteNode(id string) error {
 	// TODO: auth
 	return a.app.nodeService.DeleteNode(id)
 }

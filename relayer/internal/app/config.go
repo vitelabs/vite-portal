@@ -8,14 +8,14 @@ import (
 
 const (
 	RpcCoreModule  = "core"
-	RpcDbModule    = "db"
+	RpcAdminModule = "admin"
 	RpcDebugModule = "debug"
 )
 
 var (
 	DefaultAllowedOrigins = []string{"*"}
 	DefaultVhosts         = []string{"localhost"}
-	DefaultModules        = []string{RpcCoreModule, RpcDbModule}
+	DefaultModules        = []string{RpcCoreModule, RpcAdminModule}
 )
 
 func InitApp(debug bool, configPath string) (*RelayerApp, error) {

@@ -37,22 +37,22 @@ export class Relayer extends BaseApp {
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_getNodes", params)
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_getNodes", params)
     return response.data.result
   }
 
   getNode = async (id: string): Promise<JsonRpcResponse<NodeEntity>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_getNode", [id])
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_getNode", [id])
     return response.data
   }
 
   putNode = async (node: NodeEntity): Promise<JsonRpcResponse<any>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_putNode", [node])
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_putNode", [node])
     return response.data
   }
 
   deleteNode = async (id: string): Promise<JsonRpcResponse<any>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "db_deleteNode", [id])
+    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_deleteNode", [id])
     return response.data
   }
 }

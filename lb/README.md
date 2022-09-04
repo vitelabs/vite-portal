@@ -2,7 +2,7 @@
 
 ## HTTP
 
-Map all incoming HTTP requests to the following model and forward to `/api/v1/client/relay`:
+Map all incoming HTTP requests to the following model and forward to `/relay`:
 
 ```json
 {

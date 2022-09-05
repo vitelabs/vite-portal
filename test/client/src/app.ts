@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams, spawn } from "child_process"
 import axios, { AxiosInstance } from "axios"
 import { CommonUtil } from "./utils"
-import { RpcClient } from "./client"
+import { RpcHttpClient } from "./client"
 import { TestContants } from "./constants"
 
 export abstract class BaseApp {
@@ -9,14 +9,14 @@ export abstract class BaseApp {
   url: string
   binPath: string
   stopped: boolean
-  rpcClient: RpcClient
+  rpcClient: RpcHttpClient
   axiosClient: AxiosInstance
 
   constructor(url: string, timeout: number) {
     this.url = url
     this.binPath = TestContants.DefaultBinPath
     this.stopped = false
-    this.rpcClient = new RpcClient(timeout)
+    this.rpcClient = new RpcHttpClient(timeout)
     this.axiosClient = axios.create({
       baseURL: url,
       timeout: timeout,

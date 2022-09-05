@@ -2,7 +2,7 @@ import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
 import { TestContants } from "./constants"
 import { VitePortal } from "../src/portal"
-import { RpcClient } from "../src/client"
+import { RpcHttpClient } from "../src/client"
 import { HttpMockCollector } from "../src/mock_collector"
 import { DefaultMockNode, MockNode, TimeoutMockNode } from "../src/mock_node"
 import { Relayer } from "../src/relayer"
@@ -21,7 +21,7 @@ export class TestCommon {
   relayer!: Relayer
   provider: any
   deployer: any
-  client!: RpcClient
+  client!: RpcHttpClient
   httpMockCollector: HttpMockCollector
   defaultMockNode: MockNode
   timeoutMockNode: MockNode
@@ -49,7 +49,7 @@ export class TestCommon {
     this.relayer = await VitePortal.startRelayer(this.relayerConfig, this.timeout)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
-    this.client = new RpcClient(this.timeout)
+    this.client = new RpcHttpClient(this.timeout)
     this.httpMockCollector.start()
     this.defaultMockNode.start()
     this.timeoutMockNode.start()

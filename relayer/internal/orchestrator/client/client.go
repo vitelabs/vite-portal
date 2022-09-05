@@ -25,7 +25,9 @@ func (c *Client) Connect() error {
 		Proxy: http.ProxyFromEnvironment,
 		HandshakeTimeout: c.timeout,
 	}
-	conn, _, err := dialer.Dial(c.url, nil)
+	headers := make(http.Header, 1)
+	headers.Set("authorization", "Bearer test1234")
+	conn, _, err := dialer.Dial(c.url, headers)
 	if err != nil {
 		return err
 	}

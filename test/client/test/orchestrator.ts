@@ -44,7 +44,7 @@ export function testOrchestrator(common: TestCommon) {
         await relayer.stop()
       })
 
-      it('test spawn relayer', async function () {
+      it('test spawn/despawn relayer', async function () {
         const relayersBefore = await common.orchestrator.getRelayers()
         expect(relayersBefore.total).to.be.equal(1)
         const config: RelayerConfig = {
@@ -55,10 +55,15 @@ export function testOrchestrator(common: TestCommon) {
         }
         relayer = new Relayer(config, common.timeout)
         await relayer.start()
-        const relayersAfter = await common.orchestrator.getRelayers()
-        expect(relayersAfter.total).to.be.equal(2)
-        expect(relayersAfter.entries[0].id).to.be.equal(relayersBefore.entries[0].id)
-        expect(relayersAfter.entries[0].id).to.not.be.equal(relayersAfter.entries[1].id)
+        const relayersAfter1 = await common.orchestrator.getRelayers()
+        expect(relayersAfter1.total).to.be.equal(2)
+        expect(relayersAfter1.entries[0].id).to.be.equal(relayersBefore.entries[0].id)
+        expect(relayersAfter1.entries[0].id).to.not.be.equal(relayersAfter1.entries[1].id)
+        await relayer.stop()
+        await CommonUtil.sleep(100)
+        const relayersAfter2 = await common.orchestrator.getRelayers()
+        expect(relayersAfter2.total).to.be.equal(1)
+        expect(relayersAfter2.entries[0].id).to.be.equal(relayersBefore.entries[0].id)
       })
     })
   })

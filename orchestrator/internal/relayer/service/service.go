@@ -19,5 +19,5 @@ func NewService(store interfaces.StoreI) *Service {
 
 func (s *Service) IsRelayerConnection(peerInfo rpc.PeerInfo) bool {
 	// TODO: verify peerInfo.Auth extracted from header
-	return true
+	return peerInfo.HTTP.Auth != ""
 }

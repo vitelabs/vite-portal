@@ -36,7 +36,6 @@ func (s *Service) Get(offset, limit int) (generics.GenericPage[types.RelayerEnti
 				UserAgent: item.PeerInfo.HTTP.UserAgent,
 				Origin:    item.PeerInfo.HTTP.Origin,
 				Host:      item.PeerInfo.HTTP.Host,
-				Auth:      item.PeerInfo.HTTP.Auth,
 			},
 		}
 		current++

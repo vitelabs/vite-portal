@@ -23,8 +23,8 @@ export function testRelayerRaw(common: TestCommon) {
         common.client.createJsonRpcRequest(method)
       ]
       const promises: Promise<any>[] = [
-        common.client.provider.post(common.nodeHttpUrl, batch),
-        common.client.provider.post(common.providerUrl, batch)
+        common.client.http.post(common.nodeHttpUrl, batch),
+        common.client.http.post(common.providerUrl, batch)
       ]
       const results = await Promise.all(promises)
 

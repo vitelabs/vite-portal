@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	nodeservice "github.com/vitelabs/vite-portal/orchestrator/internal/node/service"
 	relayerservice "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/service"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -29,6 +30,7 @@ type OrchestratorApp struct {
 	rpcAuth        *rpc.HTTPServer
 	inprocHandler  *rpc.Server // In-process RPC request handler to process the API requests
 	context        *Context
+	nodeService    *nodeservice.Service
 	relayerService *relayerservice.Service
 }
 
@@ -40,6 +42,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
+	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.relayerService = relayerservice.NewService(c.relayerStore)
 
 	// Register built-in APIs.

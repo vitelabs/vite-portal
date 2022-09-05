@@ -3,7 +3,7 @@ package store
 import (
 	"sync"
 
-	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
+	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/collections"
 )
 
@@ -38,9 +38,9 @@ func (s *MemoryStore) Count() int {
 	return s.db.Count()
 }
 
-func (s *MemoryStore) GetByIndex(index int) (r types.Relayer, found bool) {
+func (s *MemoryStore) GetByIndex(index int) (n types.Node, found bool) {
 	// Assign default return values
-	r = *new(types.Relayer)
+	n = *new(types.Node)
 	found = false
 
 	e := s.db.GetByIndex(index)
@@ -48,28 +48,28 @@ func (s *MemoryStore) GetByIndex(index int) (r types.Relayer, found bool) {
 		return
 	}
 
-	return e.(types.Relayer), true
+	return e.(types.Node), true
 }
 
-func (s *MemoryStore) GetById(id string) (r types.Relayer, found bool) {
+func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
 	e := s.db.Get(id)
 	if e == nil {
 		return
 	}
 
-	return e.(types.Relayer), true
+	return e.(types.Node), true
 }
 
-func (s *MemoryStore) Upsert(r types.Relayer) error {
+func (s *MemoryStore) Upsert(n types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	err := r.Validate()
+	err := n.Validate()
 	if err != nil {
 		return err
 	}
 
-	s.db.Set(r.Id, r)
+	s.db.Set(n.Id, n)
 
 	return nil
 }

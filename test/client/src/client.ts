@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios"
+import WebSocket from "ws"
 import { JsonRpcRequest } from "./types"
 
 export abstract class RpcClient {
@@ -25,21 +26,30 @@ export abstract class RpcClient {
 }
 
 export class RpcHttpClient extends RpcClient {
-  provider: AxiosInstance
+  http: AxiosInstance
 
   constructor(timeout: number) {
     super(timeout)
-    this.provider = axios.create({
+    this.http = axios.create({
       timeout: timeout,
     })
   }
 
   send = async (url: string, method: string, params?: any[], id?: number): Promise<AxiosResponse<any, any>> => {
-    const response = await this.provider.post(url, this.createJsonRpcRequest(method, params, id), {
+    const response = await this.http.post(url, this.createJsonRpcRequest(method, params, id), {
       headers: {
         "True-Client-IP": "1.2.3.4"
       }
     })
     return response
+  }
+}
+
+export class RpcWsClient extends RpcClient {
+  ws: WebSocket
+
+  constructor(timeout: number, url: string) {
+    super(timeout)
+    this.ws = new WebSocket(url)
   }
 }

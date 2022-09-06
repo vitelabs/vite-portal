@@ -3,7 +3,7 @@
     "debug": false,
     "rpcPort": 57331,
     "rpcAuthPort": 57332,
-    "rpcTimeout": 5000,
+    "rpcTimeout": 2000,
     "userAgent": "",
     "headerTrueClientIp": "True-Client-Ip",
     "defaultChain": "vite_main",

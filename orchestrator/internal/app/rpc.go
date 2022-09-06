@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
@@ -112,8 +111,13 @@ func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (share
 		}
 		return *sharedtypes.NewConnection(types.ConnectionTypes.Relayer, id), nil
 	}
-	// TODO: handle node connections
-	return defaultConn, errors.New("unknown connection")
+	// By default it is assumed the connection has been initiated by a node
+	id, err := a.nodeService.HandleConnect(timeout, c, peerInfo)
+	if err != nil {
+		a.HandleOnConnectError(timeout, c.WriteConn, err)
+		return defaultConn, err
+	}
+	return *sharedtypes.NewConnection(types.ConnectionTypes.Node, id), nil
 }
 
 func (a *OrchestratorApp) OnDisconnect(c sharedtypes.Connection) {

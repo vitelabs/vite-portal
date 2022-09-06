@@ -45,8 +45,8 @@ func TestConfigFile(t *testing.T) {
 	defer os.RemoveAll(dir)
 	expected := newTestConfig()
 	expected.HostToChainMap = map[string]string{
-		"buidl.vite.net": "vite_testnet",
-		"node.vite.net":  "vite_mainnet",
+		"buidl.vite.net": "vite_buidl",
+		"node.vite.net":  "vite_main",
 	}
 	WriteConfigFile(p, &expected)
 	actual := newTestConfig()
@@ -55,8 +55,8 @@ func TestConfigFile(t *testing.T) {
 	files, _ := os.ReadDir(dir)
 	assert.Equal(t, 1, len(files))
 	assert.Equal(t, 2, len(actual.HostToChainMap))
-	assert.Equal(t, actual.HostToChainMap["buidl.vite.net"], "vite_testnet")
-	assert.Equal(t, actual.HostToChainMap["node.vite.net"], "vite_mainnet")
+	assert.Equal(t, actual.HostToChainMap["buidl.vite.net"], "vite_buidl")
+	assert.Equal(t, actual.HostToChainMap["node.vite.net"], "vite_main")
 }
 
 func TestConfigFileBackup(t *testing.T) {

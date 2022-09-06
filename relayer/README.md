@@ -111,7 +111,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
         "jsonrpc": "2.0", 
         "id": 1, 
         "method": "admin_getNodes", 
-        "params": ["vite_testnet",0,0]
+        "params": ["vite_buidl",0,0]
     }'
 
 ### Response
@@ -129,7 +129,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
             "entries":[
                 {
                     "id":"n1",
-                    "chain":"vite_testnet",
+                    "chain":"vite_buidl",
                     "rpcHttpUrl":"https://buidl.vite.net/gvite",
                     "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
                 }
@@ -156,7 +156,7 @@ TODO: add authorization to restrict access to orchestrator
         "params": [
             {
                 "id": "n1",
-                "chain": "vite_testnet",
+                "chain": "vite_buidl",
                 "rpcHttpUrl": "https://buidl.vite.net/gvite",
                 "rpcWsUrl": "wss://buidl.vite.net/gvite/ws"
             }
@@ -204,7 +204,7 @@ TODO: add authorization to restrict access to orchestrator
         "id":1,
         "result":{
             "id":"n1",
-            "chain":"vite_testnet",
+            "chain":"vite_buidl",
             "rpcHttpUrl":"https://buidl.vite.net/gvite",
             "rpcWsUrl":"wss://buidl.vite.net/gvite/ws"
         }
@@ -262,7 +262,7 @@ TODO: add authorization to restrict access to orchestrator
     Date: Sun, 04 Sep 2022 06:58:59 GMT
     Content-Length: 51
 
-    {"jsonrpc":"2.0","id":1,"result":["vite_testnet"]}
+    {"jsonrpc":"2.0","id":1,"result":["vite_buidl"]}
 
 ## Relay request <a name="post_relay"></a> ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 

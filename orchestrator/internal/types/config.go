@@ -12,7 +12,6 @@ const (
 	DefaultRpcTimeout                  = 5000
 	DefaultUserAgent                   = ""
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
-	DefaultChain                       = "vite_mainnet"
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -23,7 +22,11 @@ const (
 )
 
 var (
-	DefaultSupportedChains = []string{"vite_mainnet", "vite_testnet"}
+	DefaultChain           = sharedtypes.Chains.ViteMain.Name
+	DefaultSupportedChains = []string{
+		sharedtypes.Chains.ViteMain.Name,
+		sharedtypes.Chains.ViteBuidl.Name,
+	}
 )
 
 type Config struct {

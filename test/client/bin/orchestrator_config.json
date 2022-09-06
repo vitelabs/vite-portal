@@ -6,10 +6,10 @@
     "rpcTimeout": 5000,
     "userAgent": "",
     "headerTrueClientIp": "True-Client-Ip",
-    "defaultChain": "vite_mainnet",
+    "defaultChain": "vite_main",
     "supportedChains": [
-        "vite_mainnet",
-        "vite_testnet"
+        "vite_main",
+        "vite_buidl"
     ],
     "logging": {
         "consoleOutputEnabled": true,

@@ -50,6 +50,9 @@ export class RpcWsClient extends RpcClient {
 
   constructor(timeout: number, url: string) {
     super(timeout)
-    this.ws = new WebSocket(url)
+    this.ws = new WebSocket(url, {
+      handshakeTimeout: timeout,
+      timeout: timeout
+    })
   }
 }

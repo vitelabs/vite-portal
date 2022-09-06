@@ -6,7 +6,7 @@ import { RpcWsClient } from "../src/client"
 export function testNode(common: TestCommon) {
   describe("testNode", () => {
     it('test connect', async function () {
-      const client = new RpcWsClient(0, "ws://127.0.0.1:57331")
+      const client = new RpcWsClient(common.timeout, "ws://127.0.0.1:57331")
       client.ws.on('open', function open() {
         console.log('connected');
         client.ws.send(Date.now());
@@ -16,11 +16,12 @@ export function testNode(common: TestCommon) {
         console.log(`disconnected: ${code} ${reason}`);
       });
 
-      client.ws.on('message', function message(data: any) {
-        console.log(`Round-trip time: ${Date.now() - data} ms`);
-        setTimeout(function timeout() {
-          client.ws.send(Date.now());
-        }, 500);
+      client.ws.on('message', function message(data: Buffer) {
+        console.log(JSON.parse(data.toString()))
+        //console.log(`Round-trip time: ${Date.now() - data} ms`);
+        // setTimeout(function timeout() {
+        //   client.ws.send(Date.now());
+        // }, 500);
       });
       expect(true).to.be.true
     })

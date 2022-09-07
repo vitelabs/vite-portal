@@ -6,7 +6,6 @@
     "rpcTimeout": 2000,
     "userAgent": "",
     "headerTrueClientIp": "True-Client-Ip",
-    "defaultChain": "vite_main",
     "supportedChains": [
         "vite_main",
         "vite_buidl"

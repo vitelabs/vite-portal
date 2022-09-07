@@ -9,8 +9,13 @@ import { TestContants } from "./constants"
 export function testOrchestratorNode(common: TestCommon) {
   describe("testOrchestratorNode", () => {
     it('test local node', async function () {
+      // TODO: try starting a node with `npx vuilder node --config <config.json>`
+      // Set "Single": false in the config otherwise net_nodeInfo returns mock data (invalid netId, node id, etc.)
+      await CommonUtil.expectAsync(async () => {
+        const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
+        return nodes.total === 1
+      }, common.timeout)
       const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
-      expect(nodes.total).to.be.equal(1)
       const node = nodes.entries[0]
       expect(node.id).to.not.be.empty
     })
@@ -20,7 +25,7 @@ export function testOrchestratorNode(common: TestCommon) {
       let requests: JsonRpcRequest[] = []
       let errors: JsonRpcResponse<any>[] = []
 
-      const client = new RpcWsClient(common.timeout, "ws://127.0.0.1:57331")
+      const client = new RpcWsClient(common.timeout, "ws://127.0.0.1:57331/ws/gvite/1@0000000000000000000000000000000000000000000000000000000000000000")
       client.ws.on('open', function open() {
         console.log('connected');
         connected = true
@@ -41,10 +46,10 @@ export function testOrchestratorNode(common: TestCommon) {
         }
       });
 
-      await CommonUtil.expectAsync(() => connected === true, common.timeout)
-      await CommonUtil.expectAsync(() => requests.length === 1, common.timeout)
+      await CommonUtil.expectAsync(async () => connected === true, common.timeout)
+      await CommonUtil.expectAsync(async () => requests.length === 1, common.timeout)
       expect(requests[0].method).to.be.equal("net_nodeInfo")
-      await CommonUtil.expectAsync(() => connected === false, 6000)
+      await CommonUtil.expectAsync(async () => connected === false, 6000)
       expect(errors.length).to.be.equal(1)
       expect(errors[0].error?.code).to.be.equal(-32000)
       expect(errors[0].error?.message).to.be.equal("failed to call 'net_nodeInfo'")

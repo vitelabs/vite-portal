@@ -68,17 +68,17 @@ export abstract class CommonUtil {
     return error
   }
 
-  public static expectAsync = async (method: () => boolean, timeout: number) => {
+  public static expectAsync = async (method: () => Promise<boolean>, timeout: number) => {
     const start = Date.now()
     while (true) {
       if (Date.now() > start + timeout) {
         throw new Error("timed out")
       }
-      if (method()) {
+      if (await method()) {
         break
       }
       await CommonUtil.sleep(100)
     }
-    expect(method()).to.be.true
+    expect(await method()).to.be.true
   }
 }

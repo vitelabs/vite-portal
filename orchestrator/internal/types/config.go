@@ -22,7 +22,6 @@ const (
 )
 
 var (
-	DefaultChain           = sharedtypes.Chains.ViteMain.Name
 	DefaultSupportedChains = []string{
 		sharedtypes.Chains.ViteMain.Name,
 		sharedtypes.Chains.ViteBuidl.Name,
@@ -44,8 +43,6 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
-	// The default chain name
-	DefaultChain string `json:"defaultChain"`
 	// A list of supported chain names
 	SupportedChains []string `json:"supportedChains"`
 	// Logging related configurtion
@@ -61,7 +58,6 @@ func NewDefaultConfig() Config {
 		RpcTimeout:         DefaultRpcTimeout,
 		UserAgent:          DefaultUserAgent,
 		HeaderTrueClientIp: DefaultHeaderTrueClientIp,
-		DefaultChain:       DefaultChain,
 		SupportedChains:    DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,

@@ -36,10 +36,10 @@ export function testRelayerRelay(common: TestCommon) {
       expect(result).to.not.be.undefined
       // check if all mock nodes received a request
       const timeout = TestContants.DefaultRpcNodeTimeout + 200
-      await CommonUtil.expectAsync(() => common.defaultMockNode.requests.length == 1, timeout)
-      await CommonUtil.expectAsync(() => common.timeoutMockNode.requests.length == 1, timeout)
+      await CommonUtil.expectAsync(async () => common.defaultMockNode.requests.length == 1, timeout)
+      await CommonUtil.expectAsync(async () => common.timeoutMockNode.requests.length == 1, timeout)
       const relayResults = common.httpMockCollector.results
-      await CommonUtil.expectAsync(() => relayResults.length == 1, timeout)
+      await CommonUtil.expectAsync(async () => relayResults.length == 1, timeout)
       const relayResult: RelayResult = relayResults[0]
       expect(relayResult.sessionKey).to.be.equal("cb8b30cecd1857c59530f8bda15fab91")
       expect(relayResult.relay.host).to.be.equal("127.0.0.1:56333")

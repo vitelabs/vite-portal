@@ -54,7 +54,7 @@ func (a *OrchestratorApp) startRPC() error {
 		if err := server.EnableWS(apis, rpc.WSConfig{
 			Modules:   DefaultModules,
 			Origins:   DefaultAllowedOrigins,
-			Prefix:    "",
+			Prefix:    "/", // accept all URLs (e.g. /ws/gvite/...)
 			JwtSecret: secret,
 		}, a.OnConnect, a.OnDisconnect); err != nil {
 			return err

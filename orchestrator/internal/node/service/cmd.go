@@ -25,7 +25,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		return s.returnConnectError(fmt.Sprintf("chain id '%d' is not supported", nodeInfo.NetID), nil)
 	}
 	var processInfo sharedtypes.RpcViteProcessInfoResponse
-	if err := c.CallContext(ctx, &processInfo, "dashboard_processInfo"); err != nil {
+	if err := c.CallContext(ctx, &processInfo, "dashboard_processInfo", "param1"); err != nil {
 		return s.returnConnectError("failed to call 'dashboard_processInfo'", err)
 	}
 	n := types.Node{
@@ -47,7 +47,8 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		},
 	}
 	if err := s.store.Add(n); err != nil {
-		return s.returnConnectError("failed to add node", err)
+		// TODO: returning an error here seems to trigger infinite loop
+		logger.Logger().Error().Err(err).Msg("failed to add node")
 	}
 	return n.Id, nil
 }

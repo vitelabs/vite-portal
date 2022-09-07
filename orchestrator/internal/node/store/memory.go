@@ -11,8 +11,8 @@ import (
 )
 
 type MemoryStore struct {
-	idMap map[string]string
-	db    map[string]collections.NameObjectCollectionI
+	idMap     map[string]string
+	db        map[string]collections.NameObjectCollectionI
 	addresses mapset.Set[string]
 	lock      sync.RWMutex
 }
@@ -98,7 +98,7 @@ func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
 	return s.Get(s.idMap[id], id)
 }
 
-func (s *MemoryStore) Upsert(n types.Node) error {
+func (s *MemoryStore) Add(n types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -109,15 +109,14 @@ func (s *MemoryStore) Upsert(n types.Node) error {
 
 	c := s.initChain(n.Chain)
 
-	// TODO: replace with "True-Client-Ip"
-	addr := n.PeerInfo.RemoteAddr
+	if _, found := s.GetById(n.Id); found {
+		return errors.New("a node with the same id already exists")
+	}
 
-	if existing, found := s.GetById(n.Id); found {
-		if existing.PeerInfo.RemoteAddr != addr && s.addresses.Contains(addr) {
-			return errors.New("another node with the same ip address already exists")
-		}
-		// Close existing RPC connection
-		go existing.RpcClient.Close()
+	// TODO: replace with "True-Client-Ip"
+	addr := n.RemoteAddress
+	if s.addresses.Contains(addr) {
+		return errors.New("a node with the same ip address already exists")
 	}
 
 	c.Add(n.Id, n)
@@ -143,7 +142,7 @@ func (s *MemoryStore) Remove(chain string, id string) error {
 	s.db[chain].Remove(id)
 	delete(s.idMap, id)
 	// TODO: replace with "True-Client-Ip"
-	s.addresses.Remove(existing.PeerInfo.RemoteAddr)
+	s.addresses.Remove(existing.RemoteAddress)
 
 	if s.Count(chain) == 0 {
 		delete(s.db, chain)

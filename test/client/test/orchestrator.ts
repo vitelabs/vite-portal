@@ -34,7 +34,7 @@ export function testOrchestrator(common: TestCommon) {
       expect(relayer.httpInfo.userAgent).to.be.equal("Go-http-client/1.1")
       expect(relayer.httpInfo.origin).to.be.empty
       expect(relayer.httpInfo.host).to.be.equal("127.0.0.1:57331")
-      expect(relayer.httpInfo.auth).to.be.empty
+      expect(relayer.httpInfo.auth).to.be.undefined
     })
 
     describe("testOrchestrator1.1", () => {

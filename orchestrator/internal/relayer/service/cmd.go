@@ -51,10 +51,18 @@ func (s *Service) validateRelayerResponse(r sharedtypes.RpcAppInfoResponse) erro
 
 func (s *Service) insertRelayer(c *rpc.Client, peerInfo rpc.PeerInfo, r sharedtypes.RpcAppInfoResponse) (id string, err error) {
 	relayer := types.Relayer{
-		Id: r.Id,
-		Version: r.Version,
-		RpcClient: c,
-		PeerInfo: peerInfo,
+		Id:            r.Id,
+		Version:       r.Version,
+		Transport:     peerInfo.Transport,
+		RemoteAddress: peerInfo.RemoteAddr,
+		RpcClient:     c,
+		HTTPInfo: sharedtypes.HTTPInfo{
+			Version:   peerInfo.HTTP.Version,
+			UserAgent: peerInfo.HTTP.UserAgent,
+			Origin:    peerInfo.HTTP.Origin,
+			Host:      peerInfo.HTTP.Host,
+			Auth:      peerInfo.HTTP.Auth,
+		},
 	}
 	if err := s.store.Upsert(relayer); err != nil {
 		return "", err

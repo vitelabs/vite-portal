@@ -1,6 +1,7 @@
 package app
 
 import (
+	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	relayertypes "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
@@ -58,6 +59,11 @@ type adminAPI struct {
 	app *OrchestratorApp
 }
 
-func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.RelayerEntity], error) {
+func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.Relayer], error) {
 	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
+}
+
+func (a *adminAPI) GetNodes(chain string, offset int, limit int) (generics.GenericPage[nodetypes.Node], error) {
+	o, l := commonutil.CheckPagination(offset, limit)
+	return a.app.nodeService.GetNodes(chain, o, l)
 }

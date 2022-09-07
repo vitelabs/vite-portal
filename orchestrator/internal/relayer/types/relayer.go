@@ -10,18 +10,12 @@ import (
 )
 
 type Relayer struct {
-	Id        string
-	Version   string
-	RpcClient *rpc.Client
-	PeerInfo  rpc.PeerInfo
-}
-
-type RelayerEntity struct {
 	Id            string               `json:"id"`
 	Version       string               `json:"version"`
 	Transport     string               `json:"transport"`
 	RemoteAddress string               `json:"remoteAddress"`
-	HttpInfo      sharedtypes.HttpInfo `json:"httpInfo"`
+	RpcClient     *rpc.Client          `json:"-"`
+	HTTPInfo      sharedtypes.HTTPInfo `json:"httpInfo"`
 }
 
 func (r *Relayer) IsValid() bool {

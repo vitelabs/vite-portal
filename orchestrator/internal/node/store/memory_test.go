@@ -17,12 +17,14 @@ func TestGetChains(t *testing.T) {
 	c := s.GetChains()
 	assert.Empty(t, c)
 	assert.Equal(t, 0, len(c))
-	require.NoError(t, s.Upsert(node))
+	require.NoError(t, s.Add(node))
 
 	c = s.GetChains()
 	assert.Equal(t, 1, len(c))
 	node.Chain = "chain2"
-	require.NoError(t, s.Upsert(node))
+	err := s.Add(node)
+	require.Error(t, err)
+	assert.Equal(t, "a node with the same id already exists", err.Error())
 
 	c = s.GetChains()
 	assert.Equal(t, 2, len(c))
@@ -36,7 +38,7 @@ func TestGet(t *testing.T) {
 	n, found := s.Get(node.Chain, node.Id)
 	assert.Empty(t, n)
 	assert.False(t, found)
-	require.NoError(t, s.Upsert(node))
+	require.NoError(t, s.Add(node))
 
 	n, found = s.Get(node.Chain, node.Id)
 	assert.NotEmpty(t, n)
@@ -54,7 +56,7 @@ func TestGetById(t *testing.T) {
 	n, found := s.GetById(node.Id)
 	assert.Empty(t, n)
 	assert.False(t, found)
-	require.NoError(t, s.Upsert(node))
+	require.NoError(t, s.Add(node))
 
 	n, found = s.GetById(node.Id)
 	assert.NotEmpty(t, n)
@@ -69,15 +71,17 @@ func TestCount(t *testing.T) {
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 0, s.Count(node.Chain))
 
-	require.Error(t, s.Upsert(*new(types.Node)))
+	require.Error(t, s.Add(*new(types.Node)))
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 0, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(node))
+	require.NoError(t, s.Add(node))
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 1, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(node))
+	err := s.Add(node)
+	require.Error(t, err)
+	assert.Equal(t, "a node with the same id already exists", err.Error())
 	assert.Equal(t, 0, s.Count(""))
 	assert.Equal(t, 1, s.Count(node.Chain))
 }
@@ -111,7 +115,7 @@ func TestUpsertInvalid(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			s := NewMemoryStore()
-			err := s.Upsert(*tc.node)
+			err := s.Add(*tc.node)
 			require.Error(t, err)
 			require.Equal(t, "node is invalid", err.Error())
 		})
@@ -125,13 +129,13 @@ func TestRemove(t *testing.T) {
 
 	assert.Equal(t, 0, s.Count(node1.Chain))
 	assert.Equal(t, 0, len(s.GetChains()))
-	require.NoError(t, s.Upsert(node1))
+	require.NoError(t, s.Add(node1))
 	assert.Equal(t, 1, s.Count(node1.Chain))
 	assert.Equal(t, 1, len(s.GetChains()))
 
 	node2 := testutil.NewNode("chain1")
 
-	require.NoError(t, s.Upsert(node2))
+	require.NoError(t, s.Add(node2))
 	assert.Equal(t, 2, s.Count(node2.Chain))
 	assert.Equal(t, 1, len(s.GetChains()))
 
@@ -151,13 +155,15 @@ func TestClear(t *testing.T) {
 	s.Clear()
 	assert.Equal(t, 0, s.Count(node.Chain))
 
-	require.NoError(t, s.Upsert(node))
+	require.NoError(t, s.Add(node))
 	assert.Equal(t, 1, s.Count(node.Chain))
 
 	node.Id = "2"
 
-	require.NoError(t, s.Upsert(node))
-	assert.Equal(t, 2, s.Count(node.Chain))
+	err := s.Add(node)
+	require.Error(t, err)
+	assert.Equal(t, "a node with the same ip address already exists", err.Error())
+	assert.Equal(t, 1, s.Count(node.Chain))
 
 	s.Clear()
 	assert.Equal(t, 0, s.Count(node.Chain))

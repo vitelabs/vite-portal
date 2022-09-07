@@ -35,11 +35,19 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		Version:       processInfo.BuildVersion,
 		Commit:        processInfo.CommitVersion,
 		RewardAddress: processInfo.RewardAddress,
+		Transport:     peerInfo.Transport,
+		RemoteAddress: peerInfo.RemoteAddr,
 		RpcClient:     c,
-		PeerInfo:      peerInfo,
+		HTTPInfo: sharedtypes.HTTPInfo{
+			Version:   peerInfo.HTTP.Version,
+			UserAgent: peerInfo.HTTP.UserAgent,
+			Origin:    peerInfo.HTTP.Origin,
+			Host:      peerInfo.HTTP.Host,
+			Auth:      peerInfo.HTTP.Auth,
+		},
 	}
-	if err := s.store.Upsert(n); err != nil {
-		return s.returnConnectError("failed to upsert node", err)
+	if err := s.store.Add(n); err != nil {
+		return s.returnConnectError("failed to add node", err)
 	}
 	return n.Id, nil
 }

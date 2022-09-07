@@ -23,3 +23,11 @@ type RpcViteNodeInfoResponse struct {
 	Latency               []int64 `json:"latency"` // [0,1,12,24]
 	BroadCheckFailedRatio float32 `json:"broadCheckFailedRatio"`
 }
+
+type RpcViteProcessInfoResponse struct {
+	BuildVersion  string `json:"build_version"`
+	CommitVersion string `json:"commit_version"`
+	NodeName      string `json:"nodeName"`
+	RewardAddress string `json:"rewardAddress"`
+	Pid           int    `json:"pid"`
+}

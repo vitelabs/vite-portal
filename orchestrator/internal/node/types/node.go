@@ -9,10 +9,13 @@ import (
 )
 
 type Node struct {
-	Id        string
-	Version   string
-	RpcClient *rpc.Client
-	PeerInfo  rpc.PeerInfo
+	Id            string
+	Name          string
+	Version       string
+	Commit        string
+	RewardAddress string
+	RpcClient     *rpc.Client
+	PeerInfo      rpc.PeerInfo
 }
 
 func (n *Node) IsValid() bool {

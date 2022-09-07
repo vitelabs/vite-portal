@@ -198,7 +198,7 @@ type PeerInfo struct {
 		UserAgent string
 		Origin    string
 		Host      string
-		Auth 			string
+		Auth      string
 	}
 }
 

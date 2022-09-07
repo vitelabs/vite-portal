@@ -30,6 +30,16 @@ export class Orchestrator extends BaseApp {
     return response.data.result
   }
 
+  getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<RelayerEntity>> => {
+    const params = [
+      chain,
+      !!offset ? offset : 0,
+      !!limit ? limit : 0
+    ]
+    const response = await this.rpcClient.send(this.authUrl, "admin_getNodes", params)
+    return response.data.result
+  }
+
   getRelayers = async (offset?: number, limit?: number): Promise<GenericPage<RelayerEntity>> => {
     const params = [
       !!offset ? offset : 0,

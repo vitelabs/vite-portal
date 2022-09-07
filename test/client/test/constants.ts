@@ -3,4 +3,8 @@ export abstract class TestContants {
   static DefaultIpAddress = "0.0.0.0"
   static DefaultRpcNodeTimeout = 2000
   static DefaultPageLimit = 1000
+  static SupportedChains = {
+    ViteMain: "vite_main",
+    ViteBuidl: "vite_buidl"
+  }
 }

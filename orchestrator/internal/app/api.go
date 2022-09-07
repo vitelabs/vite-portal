@@ -65,5 +65,5 @@ func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[rela
 
 func (a *adminAPI) GetNodes(chain string, offset int, limit int) (generics.GenericPage[nodetypes.Node], error) {
 	o, l := commonutil.CheckPagination(offset, limit)
-	return a.app.nodeService.GetNodes(chain, o, l)
+	return a.app.nodeService.Get(chain, o, l)
 }

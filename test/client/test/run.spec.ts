@@ -2,6 +2,7 @@ import { describe } from "mocha"
 import { TestCommon } from "./common"
 import { testEmpty } from "./empty"
 import { testOrchestratorNode } from "./orchestrator_node"
+import { testOrchestratorRelayer } from "./orchestrator_relayer"
 import { testOrchestrator } from "./orchestrator"
 import { testRelayer } from "./relayer"
 import { testRelayerHeight } from "./relayer_height"
@@ -37,6 +38,7 @@ describe('run tests', () => {
   testEmpty(common)
   testRelayer(common)
   testOrchestratorNode(common)
+  testOrchestratorRelayer(common)
   testOrchestrator(common)
   testRelayerHeight(common)
   testRelayerContract(common)

@@ -8,7 +8,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
-func (s *Service) GetNodes(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
+func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
 	total := s.store.Count(chain)
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset

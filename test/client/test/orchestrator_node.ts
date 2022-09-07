@@ -4,11 +4,15 @@ import { TestCommon } from "./common"
 import { JsonRpcRequest, JsonRpcResponse } from "../src/types"
 import { RpcWsClient } from "../src/client"
 import { CommonUtil } from "../src/utils"
+import { TestContants } from "./constants"
 
 export function testOrchestratorNode(common: TestCommon) {
   describe("testOrchestratorNode", () => {
     it('test local node', async function () {
-      common.client.createJsonRpcRequest("admin_getNodes")
+      const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
+      expect(nodes.total).to.be.equal(1)
+      const node = nodes.entries[0]
+      expect(node.id).to.not.be.empty
     })
 
     it('test connect/disconnect', async function () {

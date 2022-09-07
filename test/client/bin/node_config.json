@@ -9,7 +9,8 @@
   "BootNodes": [],
   "PublicModules": [
     "ledger",
-    "contract"
+    "contract",
+    "dashboard"
   ],
   "Port": 8487,
   "RPCEnabled": true,
@@ -27,6 +28,7 @@
   "Single": true,
   "EntropyStorePath": "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
   "EntropyStorePassword": "123",
+  "DashboardTargetURL": "ws://127.0.0.1:57331",
   "VMTestEnabled": true,
   "VMDebug": true,
   "DataDir": "ledger",

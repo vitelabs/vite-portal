@@ -7,6 +7,10 @@ import { CommonUtil } from "../src/utils"
 
 export function testOrchestratorNode(common: TestCommon) {
   describe("testOrchestratorNode", () => {
+    it('test local node', async function () {
+      common.client.createJsonRpcRequest("admin_getNodes")
+    })
+
     it('test connect/disconnect', async function () {
       let connected = false
       let requests: JsonRpcRequest[] = []

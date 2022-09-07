@@ -11,6 +11,7 @@ import (
 type Node struct {
 	Id            string
 	Name          string
+	Chain         string
 	Version       string
 	Commit        string
 	RewardAddress string
@@ -19,7 +20,7 @@ type Node struct {
 }
 
 func (n *Node) IsValid() bool {
-	return n != nil && n.Id != "" && n.RpcClient != nil
+	return n != nil && n.Id != "" && n.Chain != "" && n.RpcClient != nil && n.PeerInfo.RemoteAddr != ""
 }
 
 func (n *Node) Validate() error {

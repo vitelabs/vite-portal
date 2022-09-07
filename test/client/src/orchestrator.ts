@@ -35,7 +35,7 @@ export class Orchestrator extends BaseApp {
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
-    const response = await this.rpcClient.send(this.authUrl, "relayers_getPaginated", params)
+    const response = await this.rpcClient.send(this.authUrl, "admin_getRelayers", params)
     return response.data.result
   }
 }

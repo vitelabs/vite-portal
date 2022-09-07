@@ -31,6 +31,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 	n := types.Node{
 		Id:            nodeInfo.ID,
 		Name:          nodeInfo.Name,
+		Chain:         chain.Name,
 		Version:       processInfo.BuildVersion,
 		Commit:        processInfo.CommitVersion,
 		RewardAddress: processInfo.RewardAddress,

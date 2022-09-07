@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	RpcCoreModule     = "core"
-	RpcRelayersModule = "relayers"
-	RpcDebugModule    = "debug"
+	RpcCoreModule  = "core"
+	RpcAdminModule = "admin"
+	RpcDebugModule = "debug"
 )
 
 var (
 	DefaultAllowedOrigins = []string{"*"}
 	DefaultVhosts         = []string{"localhost"}
-	DefaultModules        = []string{RpcCoreModule, RpcRelayersModule}
+	DefaultModules        = []string{RpcCoreModule, RpcAdminModule}
 )
 
 func InitApp(debug bool, configPath string) (*OrchestratorApp, error) {

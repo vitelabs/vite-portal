@@ -79,7 +79,7 @@ websocat ws://localhost:57332/ -E
 {"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": "v0.1", "name": "hello"}}
 {"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": "v0.1", "name": "vite-portal-relayer"}}
 {"jsonrpc": "2.0", "id": 2, "method": "core_getAppInfo", "params": []}
-{"jsonrpc": "2.0", "id": 2, "method": "relayers_getPaginated", "params": []}
+{"jsonrpc": "2.0", "id": 2, "method": "admin_getRelayers", "params": []}
 ```
 
 # API

@@ -29,9 +29,9 @@ func (a *OrchestratorApp) apis() []rpc.API {
 			Service:   &coreAPI{a},
 		},
 		{
-			Namespace:     RpcRelayersModule,
+			Namespace:     RpcAdminModule,
 			Authenticated: true,
-			Service:       &relayersAPI{a},
+			Service:       &adminAPI{a},
 		},
 		// {
 		// 	Namespace: "debug",
@@ -53,11 +53,11 @@ func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
 	}
 }
 
-// relayersAPI expoeses API methods related to relayers
-type relayersAPI struct {
+// adminAPI expoeses API methods related to relayers
+type adminAPI struct {
 	app *OrchestratorApp
 }
 
-func (a *relayersAPI) GetPaginated(offset int, limit int) (generics.GenericPage[relayertypes.RelayerEntity], error) {
+func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.RelayerEntity], error) {
 	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
 }

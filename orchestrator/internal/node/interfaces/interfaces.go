@@ -7,9 +7,11 @@ import (
 type StoreI interface {
 	Clear()
 	Close()
-	Count() int
-	GetByIndex(index int) (n types.Node, found bool)
+	Count(chain string) int
+	GetChains() []string
+	Get(chain string, id string) (types.Node, bool)
+	GetByIndex(chain string, index int) (n types.Node, found bool)
 	GetById(id string) (n types.Node, found bool)
 	Upsert(n types.Node) error
-	Remove(id string) error
+	Remove(chain string, id string) error
 }

@@ -1,38 +1,18 @@
 import { ChildProcessWithoutNullStreams, spawn } from "child_process"
-import axios, { AxiosInstance } from "axios"
-import { CommonUtil } from "./utils"
-import { RpcHttpClient } from "./client"
 import { TestContants } from "./constants"
 
-export abstract class BaseApp {
+export class VuilderNode {
   process?: ChildProcessWithoutNullStreams
-  url: string
   binPath: string
   stopped: boolean
-  rpcClient: RpcHttpClient
-  axiosClient: AxiosInstance
 
-  constructor(url: string, timeout: number) {
-    this.url = url
+  constructor() {
     this.binPath = TestContants.DefaultBinPath
     this.stopped = false
-    this.rpcClient = new RpcHttpClient(timeout)
-    this.axiosClient = axios.create({
-      baseURL: url,
-      timeout: timeout,
-      validateStatus: function () {
-        return true
-      }
-    })
   }
 
-  abstract name(): string
-  abstract isUp(): Promise<boolean>
-  abstract getConfigOverrides(): string
-
-  protected extractPort = (url: string): number => {
-    const temp = new URL(url)
-    return parseInt(temp.port)
+  private name(): string {
+    return "node"
   }
 
   private handleProcessOutput = (): void => {
@@ -54,9 +34,10 @@ export abstract class BaseApp {
 
     console.log("Binary:", this.binPath)
     this.process = spawn(
-      `./start_${this.name()}.sh`,
+      `npx`,
       [
-        this.getConfigOverrides()
+        "vuilder",
+        "--version"
       ],
       {
         cwd: this.binPath,
@@ -65,7 +46,6 @@ export abstract class BaseApp {
     )
     this.handleProcessOutput()
 
-    await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`)
     console.log(`[${this.name()}] Started.`)
   }
 
@@ -73,9 +53,6 @@ export abstract class BaseApp {
     if (this.stopped) return
     console.log(`[${this.name()}] Stopping.`)
     if (this.process?.pid) {
-      /* The - in front of the PID instructs process.kill 
-         to kill the process group the PID belongs to 
-         instead of just the process the PID belongs to. */
       process.kill(-this.process.pid)
     }
     this.stopped = true

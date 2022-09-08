@@ -1,16 +1,29 @@
-import { BaseApp } from "./app"
+import { BaseProcess } from "./process"
 import { AppInfo, GenericPage, RelayerEntity } from "../src/types"
+import { RpcHttpClient } from "./client"
 
-export class Orchestrator extends BaseApp {
+export class Orchestrator extends BaseProcess {
+  url: string
   authUrl: string
+  rpcClient: RpcHttpClient
 
   constructor(url: string, authUrl: string, timeout: number) {
-    super(url, timeout)
+    super()
+    this.url = url
     this.authUrl = authUrl
+    this.rpcClient = new RpcHttpClient(timeout)
   }
 
   name(): string {
     return "orchestrator"
+  }
+
+  command(): string {
+    return "./start_orchestrator.sh"
+  }
+
+  args(): string[] {
+    return []
   }
 
   isUp = async (): Promise<boolean> => {

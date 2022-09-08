@@ -1,16 +1,45 @@
+import axios, { AxiosInstance } from "axios"
 import { NodeEntity, GenericPage, RelayerConfig, AppInfo, JsonRpcResponse } from "./types"
-import { BaseApp } from "./app"
+import { BaseProcess } from "./process"
+import { RpcHttpClient } from "./client"
 
-export class Relayer extends BaseApp {
+export class Relayer extends BaseProcess {
   config: RelayerConfig
+  rpcClient: RpcHttpClient
+  axiosClient: AxiosInstance
 
   constructor(config: RelayerConfig, timeout: number) {
-    super(config.rpcRelayHttpUrl, timeout)
+    super()
     this.config = config
+    this.rpcClient = new RpcHttpClient(timeout)
+    this.axiosClient = axios.create({
+      baseURL: config.rpcRelayHttpUrl,
+      timeout: timeout,
+      validateStatus: function () {
+        return true
+      }
+    })
   }
 
   name(): string {
     return "relayer"
+  }
+
+  command(): string {
+    return "./start_relayer.sh"
+  }
+
+  args(): string[] {
+    const overrides = {
+      rpcPort: this.extractPort(this.config.rpcUrl),
+      rpcAuthPort: this.extractPort(this.config.rpcAuthUrl),
+      rpcRelayHttpPort: this.extractPort(this.config.rpcRelayHttpUrl),
+      rpcRelayWsPort: this.extractPort(this.config.rpcRelayWsUrl)
+    }
+    const args = [
+      JSON.stringify(overrides)
+    ]
+    return args
   }
 
   isUp = async (): Promise<boolean> => {
@@ -19,16 +48,6 @@ export class Relayer extends BaseApp {
     }
     const response = await this.rpcClient.send(this.config.rpcUrl, "core_getAppInfo")
     return response.data?.result?.name === "vite-portal-relayer"
-  }
-
-  getConfigOverrides(): string {
-    const overrides = {
-      rpcPort: this.extractPort(this.config.rpcUrl),
-      rpcAuthPort: this.extractPort(this.config.rpcAuthUrl),
-      rpcRelayHttpPort: this.extractPort(this.config.rpcRelayHttpUrl),
-      rpcRelayWsPort: this.extractPort(this.config.rpcRelayWsUrl)
-    }
-    return JSON.stringify(overrides)
   }
 
   getAppInfo1 = async (): Promise<AppInfo> => {

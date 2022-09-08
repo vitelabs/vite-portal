@@ -1,14 +1,20 @@
 import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
-import { JsonRpcRequest, JsonRpcResponse } from "../src/types"
-import { RpcWsClient } from "../src/client"
-import { CommonUtil } from "../src/utils"
 import { TestContants } from "./constants"
+import { RpcWsClient } from "../src/client"
+import { JsonRpcRequest, JsonRpcResponse } from "../src/types"
+import { CommonUtil } from "../src/utils"
+import { VuilderNode } from "../src/node"
 
 export function testOrchestratorNode(common: TestCommon) {
   describe("testOrchestratorNode", () => {
     it('test local node', async function () {
+      const node = new VuilderNode()
+      await node.start()
+    })
+
+    xit('test local node', async function () {
       // TODO: try starting a node with `npx vuilder node --config <config.json>`
       // Set "Single": false in the config otherwise net_nodeInfo returns mock data (invalid netId, node id, etc.)
       await CommonUtil.expectAsync(async () => {

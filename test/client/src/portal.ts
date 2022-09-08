@@ -1,20 +1,20 @@
 import { exec } from "child_process"
-import { BaseApp } from "./app"
+import { BaseProcess } from "./process"
 import { TestContants } from "./constants"
 import { Orchestrator } from "./orchestrator"
 import { Relayer } from "./relayer"
 import { RelayerConfig } from "./types"
 
 export abstract class VitePortal {
-  static handleShutdown(app: BaseApp) {
+  static handleShutdown(p: BaseProcess) {
     process.on("SIGINT", async function () {
-      await app.stop()
+      await p.stop()
     })
     process.on("SIGTERM", async function () {
-      await app.stop()
+      await p.stop()
     })
     process.on("SIGQUIT", async function () {
-      await app.stop()
+      await p.stop()
     })
   }
 

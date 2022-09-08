@@ -22,8 +22,16 @@ export class Orchestrator extends BaseProcess {
     return "./start_orchestrator.sh"
   }
 
+  killCommand(): string {
+    return "./stop_orchestrator.sh"
+  }
+
   args(): string[] {
     return []
+  }
+
+  initAsync = async (): Promise<void> => {
+    return Promise.resolve()
   }
 
   isUp = async (): Promise<boolean> => {
@@ -32,10 +40,6 @@ export class Orchestrator extends BaseProcess {
     }
     const response = await this.rpcClient.send(this.url, "core_getAppInfo")
     return response.data?.result?.name === "vite-portal-orchestrator"
-  }
-
-  getConfigOverrides(): string {
-    return ""
   }
 
   getAppInfo = async (): Promise<AppInfo> => {

@@ -54,12 +54,17 @@ export abstract class CommonUtil {
   }
 
   public static expectThrowsAsync = async (method: () => Promise<any>, errorMessage?: string) => {
+    let result: any
     let error: any
+
     try {
-      await method()
+      result = await method()
     }
     catch (err) {
       error = err
+    }
+    if (!error) {
+      console.log("unexpected result", result)
     }
     expect(error).to.not.be.undefined
     if (errorMessage) {

@@ -1,4 +1,4 @@
-import { ChildProcessWithoutNullStreams, spawn } from "child_process"
+import { ChildProcess, ChildProcessWithoutNullStreams, exec, spawn } from "child_process"
 import { CommonUtil } from "./utils"
 import { TestContants } from "./constants"
 
@@ -14,7 +14,9 @@ export abstract class BaseProcess {
 
   abstract name(): string
   abstract command(): string
+  abstract killCommand(): string
   abstract args(): string[]
+  abstract initAsync(): Promise<void>
   abstract isUp(): Promise<boolean>
 
   protected extractPort = (url: string): number => {
@@ -22,22 +24,23 @@ export abstract class BaseProcess {
     return parseInt(temp.port)
   }
 
-  private handleProcessOutput = (): void => {
-    this.process?.on('error', (error) => {
+  private handleProcessOutput = (process: ChildProcess): void => {
+    process?.on('error', (error) => {
       console.error(`[${this.name()}] error: ${error}`)
     })
 
-    this.process?.stdout.on('data', (data) => {
+    process?.stdout?.on('data', (data) => {
       console.log(`[${this.name()}] stdout: ${data}`)
     });
 
-    this.process?.stderr.on('data', (data) => {
+    process?.stderr?.on('data', (data) => {
       console.error(`[${this.name()}] stderr: ${data}`)
     });
   }
 
   async start() {
     console.log(`[${this.name()}] Starting...`)
+    await this.initAsync()
 
     console.log("Binary:", this.binPath)
     this.process = spawn(
@@ -48,7 +51,7 @@ export abstract class BaseProcess {
         detached: true
       },
     )
-    this.handleProcessOutput()
+    this.handleProcessOutput(this.process)
 
     await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`)
     console.log(`[${this.name()}] Started.`)
@@ -61,9 +64,27 @@ export abstract class BaseProcess {
       /* The - in front of the PID instructs process.kill 
          to kill the process group the PID belongs to 
          instead of just the process the PID belongs to. */
-      process.kill(-this.process.pid)
+      try {
+        process.kill(-this.process.pid)
+      } catch (error) {
+        // If this happens the process most likely did not start properly -> old process still running
+        // Possible solution: pgrep <name> | xargs kill -9
+        console.log(error)
+        await this.killAsync()
+      }
     }
     this.stopped = true
     console.log(`[${this.name()}] Stopped.`)
+  }
+
+  async killAsync() {
+    const command = this.killCommand()
+    if (CommonUtil.isNullOrWhitespace(command)) {
+      return
+    }
+    const process = exec(command, {
+      cwd: this.binPath,
+    })
+    this.handleProcessOutput(process)
   }
 }

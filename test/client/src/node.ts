@@ -1,61 +1,57 @@
-import { ChildProcessWithoutNullStreams, spawn } from "child_process"
-import { TestContants } from "./constants"
+import path from "path"
+import { RpcHttpClient } from "./client"
+import { BaseProcess } from "./process"
+import { CommonUtil, FileUtil, getLocalFileUtil } from "./utils"
 
-export class VuilderNode {
-  process?: ChildProcessWithoutNullStreams
-  binPath: string
-  stopped: boolean
+export class VuilderNode extends BaseProcess {
+  fileUtil: FileUtil
+  url?: string
+  rpcClient: RpcHttpClient
 
-  constructor() {
-    this.binPath = TestContants.DefaultBinPath
-    this.stopped = false
+  constructor(timeout: number) {
+    super()
+    this.fileUtil = getLocalFileUtil()
+    this.rpcClient = new RpcHttpClient(timeout)
   }
 
-  private name(): string {
+  name(): string {
     return "node"
   }
 
-  private handleProcessOutput = (): void => {
-    this.process?.on('error', (error) => {
-      console.error(`[${this.name()}] error: ${error}`)
-    })
-
-    this.process?.stdout.on('data', (data) => {
-      console.log(`[${this.name()}] stdout: ${data}`)
-    });
-
-    this.process?.stderr.on('data', (data) => {
-      console.error(`[${this.name()}] stderr: ${data}`)
-    });
+  command(): string {
+    return "npx"
   }
 
-  async start() {
-    console.log(`[${this.name()}] Starting...`)
-
-    console.log("Binary:", this.binPath)
-    this.process = spawn(
-      `npx`,
-      [
-        "vuilder",
-        "--version"
-      ],
-      {
-        cwd: this.binPath,
-        detached: true
-      },
-    )
-    this.handleProcessOutput()
-
-    console.log(`[${this.name()}] Started.`)
+  killCommand(): string {
+    return ""
   }
 
-  async stop() {
-    if (this.stopped) return
-    console.log(`[${this.name()}] Stopping.`)
-    if (this.process?.pid) {
-      process.kill(-this.process.pid)
+  args(): string[] {
+    return [
+      "vuilder",
+      "node",
+      "--config",
+      "node_config_vuilder.json"
+    ]
+  }
+
+  initAsync = async (): Promise<void> => {
+    let cfg = await this.fileUtil.readFileAsync(path.join(this.binPath, "node_config_vuilder.json"))
+    cfg = JSON.parse(cfg)
+    const nodeCfg = (cfg.nodes as any)[cfg.defaultNode];
+    this.url = nodeCfg.http
+    return Promise.resolve()
+  }
+
+  isUp = async (): Promise<boolean> => {
+    if (this.stopped) {
+      process.exit(1)
     }
-    this.stopped = true
-    console.log(`[${this.name()}] Stopped.`)
+    if (CommonUtil.isNullOrWhitespace(this.url)) {
+      console.log(`[${this.name()}] error: url is not initialized`)
+      process.exit(1)
+    }
+    const response = await this.rpcClient.send(this.url!, "ledger_getSnapshotChainHeight")
+    return response.data?.result > 0
   }
 }

@@ -14,7 +14,7 @@ export function testRelayerMockNodes(common: TestCommon) {
 
   it('test DefaultMockNode provider.request', async function () {
     const url = common.defaultMockNode.entity.rpcHttpUrl
-    const node = common.createRandomNode("mockchain")
+    const node = common.createRandomNode("mockchain1")
     node.rpcHttpUrl = url
     const putResponse = await common.relayer.putNode(node)
     expect(putResponse.error).to.be.undefined
@@ -31,11 +31,11 @@ export function testRelayerMockNodes(common: TestCommon) {
 
   it('test TimeoutMockNode provider.request', async function () {
     const url = common.timeoutMockNode.entity.rpcHttpUrl
-    const node = common.createRandomNode("mockchain")
+    const node = common.createRandomNode("mockchain2")
     node.rpcHttpUrl = url
     const putResponse = await common.relayer.putNode(node)
     expect(putResponse.error).to.be.undefined
-    const response = await CommonUtil.expectThrowsAsync(() => common.provider.request(url, "test_method"))
+    const response = await CommonUtil.expectThrowsAsync(() => common.provider.request("test_method"))
     expect(response.error).to.be.equal("error executing the http request: relay timed out")
     const deleteResponse = await common.relayer.deleteNode(node.id)
     expect(deleteResponse.error).to.be.undefined

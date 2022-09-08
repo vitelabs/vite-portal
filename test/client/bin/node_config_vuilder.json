@@ -1,0 +1,11 @@
+{
+  "nodes": {
+    "latest": {
+      "name": "gvite",
+      "version": "v2.12.0",
+      "http": "http://127.0.0.1:21456",
+      "config": "/home/anon/Projects/vitelabs/vite-portal/test/client/bin/node_config_test.json"
+    }
+  },
+  "defaultNode": "latest"
+}

@@ -29,6 +29,10 @@ export class Relayer extends BaseProcess {
     return "./start_relayer.sh"
   }
 
+  killCommand(): string {
+    return "./stop_relayer.sh"
+  }
+
   args(): string[] {
     const overrides = {
       rpcPort: this.extractPort(this.config.rpcUrl),
@@ -40,6 +44,10 @@ export class Relayer extends BaseProcess {
       JSON.stringify(overrides)
     ]
     return args
+  }
+
+  initAsync = async (): Promise<void> => {
+    return Promise.resolve()
   }
 
   isUp = async (): Promise<boolean> => {

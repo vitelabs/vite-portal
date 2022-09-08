@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vite/vuilder": "^0.1.0-alpha.16",
+    "@vite/vuilder": "^0.1.0-alpha.18",
     "axios": "^0.27.2",
     "express": "^4.18.1",
     "node-fetch": "2",

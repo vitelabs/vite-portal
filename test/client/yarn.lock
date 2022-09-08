@@ -280,10 +280,10 @@
     websocket "^1.0.34"
     xhr2 "^0.2.1"
 
-"@vite/vuilder@^0.1.0-alpha.16":
-  version "0.1.0-alpha.16"
-  resolved "https://registry.yarnpkg.com/@vite/vuilder/-/vuilder-0.1.0-alpha.16.tgz#d5b73004b151b8508038b9883b05e71ac0b9a832"
-  integrity sha512-DSJqM7+64/j+zHlDbcKBN62SOpiXWUxSUADPKlPvGNDeXbrTmBXo6+lmxBrvvfIiR4+XQl8X88o3tUU6YZ25oQ==
+"@vite/vuilder@^0.1.0-alpha.18":
+  version "0.1.0-alpha.18"
+  resolved "https://registry.yarnpkg.com/@vite/vuilder/-/vuilder-0.1.0-alpha.18.tgz#73806371a1fcf607635018a9612419f2777feca8"
+  integrity sha512-+1eDGvBiLnPdr0likGGC0+yXjA2TwyiDsr5dwK1vrVRwKuTvoZLyjFphBXJsi0pV35IN8330gOrQBdanWyBurg==
   dependencies:
     "@types/mocha" "^9.1.0"
     "@vite/solppc" "^0.8.0-alpha.4"

@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  s1:
+    restart: always
+    image: niklr/gvite:latest
+    ports:
+      - 48132:48132
+      - 41420:41420
+    expose:
+      - 8483
+      - 8484
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./bin/gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node1 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node1/node_config.json"
+  s2:
+    restart: always
+    image: niklr/gvite:latest
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node2 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node2/node_config.json"
+  s3:
+    restart: always
+    image: niklr/gvite:latest
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node3 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node3/node_config.json"
+
+volumes:
+  gvite_data:

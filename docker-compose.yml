@@ -16,3 +16,4 @@ services:
     entrypoint: /bin/bash -c "cp -R /root/relayer-bin/r1 /root/.relayer && ./relayer start --config /root/.relayer/r1/relayer_config.json"
 volumes:
   relayer_data:
+    name: vite-portal_relayer_data

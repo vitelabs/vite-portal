@@ -18,15 +18,16 @@ services:
     image: niklr/gvite:latest
     volumes:
       - gvite_data:/root/.gvite
-      - ./gvite:/root/gvite-bin
+      - ./bin/gvite:/root/gvite-bin
     entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node2 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node2/node_config.json"
   s3:
     restart: always
     image: niklr/gvite:latest
     volumes:
       - gvite_data:/root/.gvite
-      - ./gvite:/root/gvite-bin
+      - ./bin/gvite:/root/gvite-bin
     entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node3 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node3/node_config.json"
 
 volumes:
   gvite_data:
+    name: vite-portal_gvite_data

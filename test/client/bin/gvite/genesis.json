@@ -6,7 +6,7 @@
   "GovernanceInfo": {
     "ConsensusGroupInfoMap": {
       "00000000000000000001": {
-        "NodeCount": 1,
+        "NodeCount": 3,
         "Interval": 1,
         "PerCount": 3,
         "RandCount": 0,
@@ -16,7 +16,7 @@
         "CountingTokenId": "tti_5649544520544f4b454e6e40",
         "RegisterConditionId": 1,
         "RegisterConditionParam": {
-          "StakeAmount": 500000000000000000000000,
+          "StakeAmount": 100000000000000000000000,
           "StakeHeight": 1,
           "StakeToken": "tti_5649544520544f4b454e6e40"
         },
@@ -27,7 +27,7 @@
         "ExpirationHeight": 1
       },
       "00000000000000000002": {
-        "NodeCount": 1,
+        "NodeCount": 3,
         "Interval": 3,
         "PerCount": 1,
         "RandCount": 0,
@@ -37,7 +37,8 @@
         "CountingTokenId": "tti_5649544520544f4b454e6e40",
         "RegisterConditionId": 1,
         "RegisterConditionParam": {
-          "StakeAmount": 500000000000000000000000,
+          "StakeAmount": 100000000000000000000000,
+          "StakeHeight": 1,
           "StakeToken": "tti_5649544520544f4b454e6e40"
         },
         "VoteConditionId": 1,
@@ -52,25 +53,34 @@
         "s1": {
           "BlockProducingAddress": "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
           "StakeAddress": "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
-          "Amount": 500000000000000000000000,
+          "Amount": 100000000000000000000000,
           "ExpirationHeight": 7776000,
           "RewardTime": 1,
           "RevokeTime": 0,
           "HistoryAddressList": [
             "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906"
           ]
-        }
-      },
-      "00000000000000000002": {
-        "s1": {
-          "BlockProducingAddress": "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
-          "StakeAddress": "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
-          "Amount": 500000000000000000000000,
+        },
+        "s2": {
+          "BlockProducingAddress": "vite_5273aafbc48052660eb773db77574f6f1d7e89bd9dec8f756e",
+          "StakeAddress": "vite_5273aafbc48052660eb773db77574f6f1d7e89bd9dec8f756e",
+          "Amount": 100000000000000000000000,
           "ExpirationHeight": 7776000,
           "RewardTime": 1,
           "RevokeTime": 0,
           "HistoryAddressList": [
-            "vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906"
+            "vite_5273aafbc48052660eb773db77574f6f1d7e89bd9dec8f756e"
+          ]
+        },
+        "s3": {
+          "BlockProducingAddress": "vite_4ee811a78a98b8c1540a9480d49d3b4df6d710cf576681b076",
+          "StakeAddress": "vite_4ee811a78a98b8c1540a9480d49d3b4df6d710cf576681b076",
+          "Amount": 100000000000000000000000,
+          "ExpirationHeight": 7776000,
+          "RewardTime": 1,
+          "RevokeTime": 0,
+          "HistoryAddressList": [
+            "vite_4ee811a78a98b8c1540a9480d49d3b4df6d710cf576681b076"
           ]
         }
       }

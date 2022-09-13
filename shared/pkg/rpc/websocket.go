@@ -44,6 +44,7 @@ const (
 
 var wsBufferPool = new(sync.Pool)
 
+type BeforeConnectFunc func(w http.ResponseWriter, r *http.Request) error
 type OnConnectFunc func(c *Client, peerInfo PeerInfo) (types.Connection, error)
 type OnDisconnectFunc func(conn types.Connection)
 
@@ -51,7 +52,7 @@ type OnDisconnectFunc func(conn types.Connection)
 //
 // allowedOrigins should be a comma-separated list of allowed origin URLs.
 // To allow connections with any origin, pass "*".
-func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFunc, onDisconnect OnDisconnectFunc) http.Handler {
+func (s *Server) WebsocketHandler(allowedOrigins []string, beforeConnect BeforeConnectFunc, onConnect OnConnectFunc, onDisconnect OnDisconnectFunc) http.Handler {
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:  wsReadBuffer,
 		WriteBufferSize: wsWriteBuffer,
@@ -59,11 +60,18 @@ func (s *Server) WebsocketHandler(allowedOrigins []string, onConnect OnConnectFu
 		CheckOrigin:     wsHandshakeValidator(allowedOrigins),
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if beforeConnect != nil {
+			if err := beforeConnect(w, r); err != nil {
+				logger.Logger().Debug().Err(err).Msg("before connect failed")
+				return
+			}
+		}
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			logger.Logger().Debug().Err(err).Msg("WebSocket upgrade failed")
 			return
 		}
+		logger.Logger().Debug().Msg("connection upgraded")
 
 		codec := newWebsocketCodec(conn, r.Host, r.Header)
 

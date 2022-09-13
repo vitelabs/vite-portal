@@ -49,8 +49,9 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		},
 	}
 	if err := s.store.Add(n); err != nil {
-		// TODO: returning an error here seems to trigger infinite loop
-		logger.Logger().Error().Err(err).Msg("failed to add node")
+		msg := "failed to add node"
+		logger.Logger().Error().Err(err).Msg(msg)
+		return s.returnConnectError(msg, err)
 	}
 	return n.Id, nil
 }

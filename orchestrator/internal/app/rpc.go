@@ -2,6 +2,8 @@ package app
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
@@ -56,7 +58,7 @@ func (a *OrchestratorApp) startRPC() error {
 			Origins:   DefaultAllowedOrigins,
 			Prefix:    "/", // accept all URLs (e.g. /ws/gvite/...)
 			JwtSecret: secret,
-		}, a.OnConnect, a.OnDisconnect); err != nil {
+		}, a.BeforeConnect, a.OnConnect, a.OnDisconnect); err != nil {
 			return err
 		}
 
@@ -100,6 +102,16 @@ func (a *OrchestratorApp) stopInProc() {
 	a.inprocHandler.Stop()
 }
 
+func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) error {
+	// TODO: check temporary blacklist
+	if false {
+		msg := "too many requests"
+		http.Error(w, msg, http.StatusTooManyRequests)
+		return errors.New(msg)
+	}
+	return nil
+}
+
 func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (sharedtypes.Connection, error) {
 	defaultConn := sharedtypes.Connection{}
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
@@ -114,6 +126,7 @@ func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (share
 	// By default it is assumed the connection has been initiated by a node
 	id, err := a.nodeService.HandleConnect(timeout, c, peerInfo)
 	if err != nil {
+		// TODO: add to temporary blacklist
 		a.HandleOnConnectError(timeout, c.WriteConn, err)
 		return defaultConn, err
 	}
@@ -128,9 +141,7 @@ func (a *OrchestratorApp) OnDisconnect(c sharedtypes.Connection) {
 }
 
 func (a *OrchestratorApp) HandleOnConnectError(timeout time.Duration, w rpc.JSONWriter, err error) {
-	if err != nil {
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-		w.WriteJSON(ctx, rpc.NewJSONRPCErrorMessage(err))
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	w.WriteJSON(ctx, rpc.NewJSONRPCErrorMessage(err))
 }

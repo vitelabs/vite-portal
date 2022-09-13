@@ -10,7 +10,7 @@ export function testOrchestratorCluster(common: TestCommon) {
     let cluster: NodeCluster
 
     before(async function () {
-      cluster = new NodeCluster(10000)
+      cluster = new NodeCluster(20000)
       cluster.url = "http://127.0.0.1:48132"
       await cluster.start()
     })

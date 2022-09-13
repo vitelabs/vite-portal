@@ -27,9 +27,10 @@ export abstract class CommonUtil {
       try {
         // Make sure we don't wait on the first attempt
         if (retries > 0) {
-          const timeToWait = 2 ** retries * 100;
-          process.stdout.write(`waiting for ${timeToWait}ms...\n`);
-          await CommonUtil.sleep(timeToWait);
+          //const timeToWait = 2 ** retries * 100
+          const timeToWait = 1500
+          process.stdout.write(`waiting for ${timeToWait}ms...\n`)
+          await CommonUtil.sleep(timeToWait)
         }
         const result = await conditionFn()
         if (result) {
@@ -40,13 +41,13 @@ export abstract class CommonUtil {
         }
       } catch (e) {
         if (timeout > 0 && Date.now() - startTime > timeout) {
-          process.stdout.write("Max retries reached. Bubbling the error up\n");
-          throw e;
+          process.stdout.write("Max retries reached. Bubbling the error up\n")
+          throw e
         }
-        return retryWithBackoff(retries + 1);
+        return retryWithBackoff(retries + 1)
       }
     }
-    return retryWithBackoff(0);
+    return retryWithBackoff(0)
   }
 
   public static uuid(): string {

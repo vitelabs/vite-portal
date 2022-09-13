@@ -12,7 +12,7 @@ export class NodeCluster extends BaseProcess {
   }
 
   name(): string {
-    return "node"
+    return "cluster"
   }
 
   startCommand(): string {

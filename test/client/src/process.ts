@@ -55,7 +55,12 @@ export abstract class BaseProcess {
     )
     this.handleProcessOutput(this.process)
 
-    await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`, this.timeout)
+    try {
+      await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`, this.timeout)
+    } catch (error) {
+      console.log(error)
+      throw new Error(`[${this.name()}] Start failed.`)
+    }
     this.stopped = false
     console.log(`[${this.name()}] Started.`)
   }

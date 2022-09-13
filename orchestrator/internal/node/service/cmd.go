@@ -20,6 +20,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 	if err := c.CallContext(ctx, &nodeInfo, "net_nodeInfo"); err != nil {
 		return s.returnConnectError("failed to call 'net_nodeInfo'", err)
 	}
+	logger.Logger().Debug().Str("nodeInfo", fmt.Sprintf("%#v", nodeInfo)).Msg("handle connect response")
 	chain := sharedtypes.Chains.GetById(nodeInfo.NetID)
 	if chain.Id == sharedtypes.Chains.Unknown.Id || !sliceutil.Contains(s.config.SupportedChains, chain.Name) {
 		return s.returnConnectError(fmt.Sprintf("chain id '%d' is not supported", nodeInfo.NetID), nil)
@@ -28,6 +29,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 	if err := c.CallContext(ctx, &processInfo, "dashboard_processInfo", "param1"); err != nil {
 		return s.returnConnectError("failed to call 'dashboard_processInfo'", err)
 	}
+	logger.Logger().Debug().Str("processInfo", fmt.Sprintf("%#v", processInfo)).Msg("handle connect response")
 	n := types.Node{
 		Id:            nodeInfo.ID,
 		Name:          nodeInfo.Name,

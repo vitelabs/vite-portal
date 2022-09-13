@@ -20,3 +20,15 @@
       "method": "ledger_getSnapshotChainHeight",
       "params": null
     }'
+
+### Get node info
+
+    curl -i -X POST http://localhost:48132 \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "net_nodeInfo",
+      "params": null
+    }'

@@ -1,14 +1,14 @@
 import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
 import { TestContants } from "./constants"
-import { VitePortal } from "../src/portal"
 import { RpcHttpClient } from "../src/client"
 import { HttpMockCollector } from "../src/mock_collector"
 import { DefaultMockNode, MockNode, TimeoutMockNode } from "../src/mock_node"
+import { Orchestrator } from "../src/orchestrator"
+import { VitePortal } from "../src/portal"
 import { Relayer } from "../src/relayer"
 import { NodeEntity, RelayerConfig } from "../src/types"
 import { CommonUtil } from "../src/utils"
-import { Orchestrator } from "../src/orchestrator"
 
 export class TestCommon {
   timeout: number

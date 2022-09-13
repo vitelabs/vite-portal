@@ -9,7 +9,7 @@ export class Relayer extends BaseProcess {
   axiosClient: AxiosInstance
 
   constructor(config: RelayerConfig, timeout: number) {
-    super()
+    super(timeout)
     this.config = config
     this.rpcClient = new RpcHttpClient(timeout)
     this.axiosClient = axios.create({
@@ -25,7 +25,7 @@ export class Relayer extends BaseProcess {
     return "relayer"
   }
 
-  command(): string {
+  startCommand(): string {
     return "./start_relayer.sh"
   }
 
@@ -33,7 +33,7 @@ export class Relayer extends BaseProcess {
     return "./stop_relayer.sh"
   }
 
-  args(): string[] {
+  startArgs(): string[] {
     const overrides = {
       rpcPort: this.extractPort(this.config.rpcUrl),
       rpcAuthPort: this.extractPort(this.config.rpcAuthUrl),
@@ -46,7 +46,7 @@ export class Relayer extends BaseProcess {
     return args
   }
 
-  initAsync = async (): Promise<void> => {
+  init = async (): Promise<void> => {
     return Promise.resolve()
   }
 

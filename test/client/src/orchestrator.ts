@@ -8,7 +8,7 @@ export class Orchestrator extends BaseProcess {
   rpcClient: RpcHttpClient
 
   constructor(url: string, authUrl: string, timeout: number) {
-    super()
+    super(timeout)
     this.url = url
     this.authUrl = authUrl
     this.rpcClient = new RpcHttpClient(timeout)
@@ -18,7 +18,7 @@ export class Orchestrator extends BaseProcess {
     return "orchestrator"
   }
 
-  command(): string {
+  startCommand(): string {
     return "./start_orchestrator.sh"
   }
 
@@ -26,11 +26,11 @@ export class Orchestrator extends BaseProcess {
     return "./stop_orchestrator.sh"
   }
 
-  args(): string[] {
+  startArgs(): string[] {
     return []
   }
 
-  initAsync = async (): Promise<void> => {
+  init = async (): Promise<void> => {
     return Promise.resolve()
   }
 

@@ -5,16 +5,9 @@ import { TestContants } from "./constants"
 import { RpcWsClient } from "../src/client"
 import { JsonRpcRequest, JsonRpcResponse } from "../src/types"
 import { CommonUtil } from "../src/utils"
-import { VuilderNode } from "../src/node"
 
 export function testOrchestratorNode(common: TestCommon) {
   describe("testOrchestratorNode", () => {
-    it('test local node', async function () {
-      const node = new VuilderNode(common.timeout)
-      // await node.start()
-      // await node.stop()
-    })
-
     xit('test local node', async function () {
       // TODO: try starting a node with `npx vuilder node --config <config.json>`
       // Set "Single": false in the config otherwise net_nodeInfo returns mock data (invalid netId, node id, etc.)

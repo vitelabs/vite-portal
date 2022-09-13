@@ -20,7 +20,7 @@
   "Miner": true,
   "EntropyStorePath": "/root/.gvite/node1/vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
   "EntropyStorePassword": "123",
-  "DashboardTargetURL": "ws://127.0.0.1:57331",
+  "DashboardTargetURL": "ws://host.docker.internal:57331",
   "CoinBase": "0:vite_e41be57d38c796984952fad618a9bc91637329b5255cb18906",
   "Topology": [],
   "DataDir": "/root/.gvite/node1",

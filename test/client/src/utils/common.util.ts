@@ -20,8 +20,9 @@ export abstract class CommonUtil {
     })
   }
 
-  public static retry(conditionFn: () => Promise<boolean>, description: string = '', maxRetries: number = 5) {
+  public static retry(conditionFn: () => Promise<boolean>, description: string = '', timeout: number = 5000) {
     process.stdout.write(description + "\n")
+    const startTime = Date.now()
     async function retryWithBackoff(retries: number): Promise<any> {
       try {
         // Make sure we don't wait on the first attempt
@@ -38,12 +39,11 @@ export abstract class CommonUtil {
           throw new Error("retry failed")
         }
       } catch (e) {
-        if (retries < maxRetries) {
-          return retryWithBackoff(retries + 1);
-        } else {
+        if (timeout > 0 && Date.now() - startTime > timeout) {
           process.stdout.write("Max retries reached. Bubbling the error up\n");
           throw e;
         }
+        return retryWithBackoff(retries + 1);
       }
     }
     return retryWithBackoff(0);

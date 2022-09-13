@@ -2,6 +2,7 @@ version: "3.8"
 services:
   r1:
     restart: always
+    container_name: vite-portal_r1
     build:
       context: .
       dockerfile: relayer.Dockerfile

@@ -2,7 +2,8 @@ version: "3.8"
 services:
   s1:
     restart: always
-    image: niklr/gvite:latest
+    container_name: vite-portal_s1
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
     ports:
       - 48132:48132
       - 41420:41420
@@ -13,16 +14,20 @@ services:
       - gvite_data:/root/.gvite
       - ./bin/gvite:/root/gvite-bin
     entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node1 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node1/node_config.json"
+    extra_hosts:
+        - "host.docker.internal:host-gateway"  
   s2:
     restart: always
-    image: niklr/gvite:latest
+    container_name: vite-portal_s2
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
     volumes:
       - gvite_data:/root/.gvite
       - ./bin/gvite:/root/gvite-bin
     entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node2 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node2/node_config.json"
   s3:
     restart: always
-    image: niklr/gvite:latest
+    container_name: vite-portal_s3
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
     volumes:
       - gvite_data:/root/.gvite
       - ./bin/gvite:/root/gvite-bin

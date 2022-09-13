@@ -4,19 +4,21 @@ import { TestContants } from "./constants"
 
 export abstract class BaseProcess {
   process?: ChildProcessWithoutNullStreams
+  timeout: number
   binPath: string
   stopped: boolean
 
-  constructor() {
+  constructor(timeout: number) {
+    this.timeout = timeout
     this.binPath = TestContants.DefaultBinPath
     this.stopped = false
   }
 
   abstract name(): string
-  abstract command(): string
+  abstract startCommand(): string
   abstract killCommand(): string
-  abstract args(): string[]
-  abstract initAsync(): Promise<void>
+  abstract startArgs(): string[]
+  abstract init(): Promise<void>
   abstract isUp(): Promise<boolean>
 
   protected extractPort = (url: string): number => {
@@ -40,12 +42,12 @@ export abstract class BaseProcess {
 
   async start() {
     console.log(`[${this.name()}] Starting...`)
-    await this.initAsync()
+    await this.init()
 
     console.log("Binary:", this.binPath)
     this.process = spawn(
-      this.command(),
-      this.args(),
+      this.startCommand(),
+      this.startArgs(),
       {
         cwd: this.binPath,
         detached: true
@@ -53,7 +55,8 @@ export abstract class BaseProcess {
     )
     this.handleProcessOutput(this.process)
 
-    await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`)
+    await CommonUtil.retry(this.isUp, `Wait for [${this.name()}]`, this.timeout)
+    this.stopped = false
     console.log(`[${this.name()}] Started.`)
   }
 
@@ -70,14 +73,14 @@ export abstract class BaseProcess {
         // If this happens the process most likely did not start properly -> old process still running
         // Possible solution: pgrep <name> | xargs kill -9
         console.log(error)
-        await this.killAsync()
+        await this.kill()
       }
     }
     this.stopped = true
     console.log(`[${this.name()}] Stopped.`)
   }
 
-  async killAsync() {
+  async kill() {
     const command = this.killCommand()
     if (CommonUtil.isNullOrWhitespace(command)) {
       return

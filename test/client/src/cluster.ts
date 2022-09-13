@@ -1,16 +1,13 @@
-import path from "path"
 import { RpcHttpClient } from "./client"
 import { BaseProcess } from "./process"
-import { CommonUtil, FileUtil, getLocalFileUtil } from "./utils"
+import { CommonUtil } from "./utils"
 
-export class VuilderNode extends BaseProcess {
-  fileUtil: FileUtil
+export class NodeCluster extends BaseProcess {
   url?: string
   rpcClient: RpcHttpClient
 
   constructor(timeout: number) {
     super(timeout)
-    this.fileUtil = getLocalFileUtil()
     this.rpcClient = new RpcHttpClient(timeout)
   }
 
@@ -19,27 +16,18 @@ export class VuilderNode extends BaseProcess {
   }
 
   startCommand(): string {
-    return "npx"
+    return "./start_cluster.sh"
   }
 
   killCommand(): string {
-    return ""
+    return "./stop_cluster.sh"
   }
 
   startArgs(): string[] {
-    return [
-      "vuilder",
-      "node",
-      "--config",
-      "node_config_vuilder.json"
-    ]
+    return []
   }
 
   init = async (): Promise<void> => {
-    let cfg = await this.fileUtil.readFileAsync(path.join(this.binPath, "node_config_vuilder.json"))
-    cfg = JSON.parse(cfg)
-    const nodeCfg = (cfg.nodes as any)[cfg.defaultNode];
-    this.url = nodeCfg.http
     return Promise.resolve()
   }
 
@@ -52,6 +40,11 @@ export class VuilderNode extends BaseProcess {
       process.exit(1)
     }
     const response = await this.rpcClient.send(this.url!, "ledger_getSnapshotChainHeight")
-    return response.data?.result > 0
+    return response.data?.result > 1
+  }
+
+  async stop() {
+    await super.kill()
+    await super.stop()
   }
 }

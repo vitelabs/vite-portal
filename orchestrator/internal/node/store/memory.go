@@ -105,8 +105,7 @@ func (s *MemoryStore) Add(n types.Node) error {
 		return errors.New("a node with the same id already exists")
 	}
 
-	// TODO: replace with "True-Client-Ip"
-	addr := n.RemoteAddress
+	addr := n.ClientIp
 	if s.addresses.Contains(addr) {
 		return errors.New("a node with the same ip address already exists")
 	}
@@ -133,8 +132,7 @@ func (s *MemoryStore) Remove(chain string, id string) error {
 
 	s.db[chain].Remove(id)
 	delete(s.idMap, id)
-	// TODO: replace with "True-Client-Ip"
-	s.addresses.Remove(existing.RemoteAddress)
+	s.addresses.Remove(existing.ClientIp)
 
 	if s.Count(chain) == 0 {
 		delete(s.db, chain)

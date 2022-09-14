@@ -5,7 +5,7 @@
     "rpcAuthPort": 57332,
     "rpcTimeout": 2000,
     "userAgent": "",
-    "headerTrueClientIp": "True-Client-Ip",
+    "headerTrueClientIp": "CF-Connecting-IP",
     "supportedChains": [
         "vite_main",
         "vite_buidl"

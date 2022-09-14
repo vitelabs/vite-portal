@@ -106,7 +106,7 @@ func (a *OrchestratorApp) stopInProc() {
 func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) error {
 	httputil.SetFallbackClientIp(r.Header, r.RemoteAddr)
 	// a blacklist seems to be required because closing a go-vite WebSocket connection causes an instant re-connect
-	clientIp := a.getClientIp(r.Header)
+	clientIp := httputil.GetClientIp(r.Header, a.config.HeaderTrueClientIp)
 	if _, found := a.context.ipBlacklist.Get(clientIp, a.config.MaxIpBlacklistDuration); !found {
 		return nil
 	}
@@ -150,7 +150,7 @@ func (a *OrchestratorApp) HandleOnConnectError(timeout time.Duration, w rpc.JSON
 }
 
 func (a *OrchestratorApp) addToIpBlacklist(h http.Header) {
-	clientIp := a.getClientIp(h)
+	clientIp := httputil.GetClientIp(h, a.config.HeaderTrueClientIp)
 	item := types.IpBlacklistItem{
 		Key: clientIp,
 		Timestamp: time.Now().UnixMilli(),

@@ -13,7 +13,7 @@ const (
 	DefaultMaxIpBlacklistEntries       = 10000
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
-	DefaultHeaderTrueClientIp          = "True-Client-Ip"
+	DefaultHeaderTrueClientIp          = "CF-Connecting-IP"
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"

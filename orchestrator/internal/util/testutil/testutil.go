@@ -10,7 +10,7 @@ func NewNode(chain string) nodetypes.Node {
 	return nodetypes.Node{
 		Id: idutil.NewGuid(),
 		Chain: chain,
-		RemoteAddress: idutil.NewGuid(),
+		ClientIp: idutil.NewGuid(),
 		RpcClient: &rpc.Client{},
 	}
 }

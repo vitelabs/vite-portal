@@ -1,6 +1,6 @@
 import { ChildProcess, ChildProcessWithoutNullStreams, exec, spawn } from "child_process"
 import { CommonUtil } from "./utils"
-import { TestContants } from "./constants"
+import { TestConstants } from "./constants"
 
 export abstract class BaseProcess {
   process?: ChildProcessWithoutNullStreams
@@ -10,7 +10,7 @@ export abstract class BaseProcess {
 
   constructor(timeout: number) {
     this.timeout = timeout
-    this.binPath = TestContants.DefaultBinPath
+    this.binPath = TestConstants.DefaultBinPath
     this.stopped = false
   }
 

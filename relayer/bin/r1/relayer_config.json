@@ -13,7 +13,7 @@
     "sessionNodeCount": 24,
     "maxSessionCacheEntries": 10000,
     "maxSessionDuration": 3600000,
-    "headerTrueClientIp": "True-Client-Ip",
+    "headerTrueClientIp": "CF-Connecting-IP",
     "hostToChainMap": {},
     "logging": {
         "consoleOutputEnabled": true,

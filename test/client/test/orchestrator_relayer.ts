@@ -45,7 +45,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
           rpcRelayHttpUrl: "http://127.0.0.1:56343",
           rpcRelayWsUrl: "http://127.0.0.1:56344",
         }
-        relayer = new Relayer(config, common.timeout)
+        relayer = new Relayer(config, common.timeout, "1.1.1.2")
         await relayer.start()
         const relayersAfter1 = await common.orchestrator.getRelayers()
         expect(relayersAfter1.total).to.be.equal(2)

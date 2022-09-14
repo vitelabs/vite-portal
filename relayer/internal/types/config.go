@@ -22,7 +22,7 @@ const (
 	DefaultSessionNodeCount            = 24
 	DefaultMaxSessionCacheEntries      = 10000
 	DefaultMaxSessionDuration          = 3600000
-	DefaultHeaderTrueClientIp          = "True-Client-Ip"
+	DefaultHeaderTrueClientIp          = "CF-Connecting-IP"
 	DefaultOrchestratorWsUrl           = ""
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true

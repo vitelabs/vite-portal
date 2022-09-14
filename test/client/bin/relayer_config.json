@@ -13,7 +13,7 @@
     "sessionNodeCount": 24,
     "maxSessionCacheEntries": 100,
     "maxSessionDuration": 3600000,
-    "headerTrueClientIp": "True-Client-Ip",
+    "headerTrueClientIp": "CF-Connecting-IP",
     "httpCollectorUrl": "http://127.0.0.1:23460",
     "orchestratorWsUrl": "ws://127.0.0.1:57331",
     "hostToChainMap": {

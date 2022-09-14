@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 )
 
@@ -30,6 +31,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		return s.returnConnectError("failed to call 'dashboard_processInfo'", err)
 	}
 	logger.Logger().Debug().Str("processInfo", fmt.Sprintf("%#v", processInfo)).Msg("handle connect response")
+	clientIp := httputil.GetClientIp(peerInfo.HTTP.Header, s.config.HeaderTrueClientIp)
 	n := types.Node{
 		Id:            nodeInfo.ID,
 		Name:          nodeInfo.Name,
@@ -39,6 +41,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		RewardAddress: processInfo.RewardAddress,
 		Transport:     peerInfo.Transport,
 		RemoteAddress: peerInfo.RemoteAddr,
+		ClientIp:      clientIp,
 		RpcClient:     c,
 		HTTPInfo: sharedtypes.HTTPInfo{
 			Version:   peerInfo.HTTP.Version,

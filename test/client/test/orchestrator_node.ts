@@ -25,7 +25,8 @@ export function testOrchestratorNode(common: TestCommon) {
       let requests: JsonRpcRequest[] = []
       let errors: JsonRpcResponse<any>[] = []
 
-      const client = new RpcWsClient(common.timeout, "ws://127.0.0.1:57331/ws/gvite/1@0000000000000000000000000000000000000000000000000000000000000000")
+      const url = "ws://127.0.0.1:57331/ws/gvite/1@0000000000000000000000000000000000000000000000000000000000000000"
+      const client = new RpcWsClient(common.timeout, url, "2.2.2.2")
       client.ws.on('open', function open() {
         console.log('connected');
         connected = true

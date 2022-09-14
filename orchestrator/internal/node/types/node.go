@@ -18,12 +18,13 @@ type Node struct {
 	RewardAddress string               `json:"rewardAddress"`
 	Transport     string               `json:"transport"`
 	RemoteAddress string               `json:"remoteAddress"`
+	ClientIp      string               `json:"clientIp"`
 	HTTPInfo      sharedtypes.HTTPInfo `json:"httpInfo"`
 	RpcClient     *rpc.Client          `json:"-"`
 }
 
 func (n *Node) IsValid() bool {
-	return n != nil && n.Id != "" && n.Chain != "" && n.RpcClient != nil && n.RemoteAddress != ""
+	return n != nil && n.Id != "" && n.Chain != "" && n.RpcClient != nil && n.ClientIp != ""
 }
 
 func (n *Node) Validate() error {

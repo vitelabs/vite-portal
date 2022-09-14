@@ -17,6 +17,15 @@ const (
 	ContentTypeJson      = "application/json; charset=UTF-8"
 )
 
+func GetClientIp(h http.Header, key string) string {
+	clientIp := h.Get(key)
+	if clientIp == "" {
+		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
+		clientIp = GetFallbackClientIp(h)
+	}
+	return clientIp
+}
+
 func SetFallbackClientIp(h http.Header, value string) {
 	host, _, err := net.SplitHostPort(value)
 	if err != nil || host == "" {

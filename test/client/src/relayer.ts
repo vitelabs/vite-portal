@@ -1,20 +1,24 @@
 import axios, { AxiosInstance } from "axios"
 import { NodeEntity, GenericPage, RelayerConfig, AppInfo, JsonRpcResponse } from "./types"
-import { BaseProcess } from "./process"
 import { RpcHttpClient } from "./client"
+import { TestConstants } from "./constants"
+import { BaseProcess } from "./process"
 
 export class Relayer extends BaseProcess {
   config: RelayerConfig
   rpcClient: RpcHttpClient
   axiosClient: AxiosInstance
 
-  constructor(config: RelayerConfig, timeout: number) {
+  constructor(config: RelayerConfig, timeout: number, clientIp: string) {
     super(timeout)
     this.config = config
     this.rpcClient = new RpcHttpClient(timeout)
     this.axiosClient = axios.create({
       baseURL: config.rpcRelayHttpUrl,
       timeout: timeout,
+      headers: {
+        [TestConstants.HeaderTrueClientIp]: clientIp
+      },
       validateStatus: function () {
         return true
       }

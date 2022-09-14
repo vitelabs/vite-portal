@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 )
 
@@ -89,7 +90,7 @@ func (a *OrchestratorApp) getClientIp(h http.Header) string {
 	clientIp := h.Get(a.config.HeaderTrueClientIp)
 	if clientIp == "" {
 		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
-		clientIp = h.Get("Origin")
+		clientIp = httputil.GetFallbackClientIp(h)
 	}
 	return clientIp
 }

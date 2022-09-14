@@ -1,8 +1,10 @@
 package httputil
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -14,6 +16,19 @@ const (
 	ContentTypeTextPlain = "text/plain; charset=UTF-8"
 	ContentTypeJson      = "application/json; charset=UTF-8"
 )
+
+func SetFallbackClientIp(h http.Header, value string) {
+	host, _, err := net.SplitHostPort(value)
+	if err != nil || host == "" {
+		logger.Logger().Error().Err(err).Msg(fmt.Sprintf("couldn't split host and port of '%s'", value))
+		return
+	}
+	h.Set(types.HeaderFallbackClientIp, host)
+}
+
+func GetFallbackClientIp(h http.Header) string {
+	return h.Get(types.HeaderFallbackClientIp)
+}
 
 func WriteResponse(w http.ResponseWriter, data, contentType string) {
 	WriteResponseWithCode(w, data, contentType, http.StatusOK)

@@ -3,6 +3,8 @@ package types
 import "time"
 
 const (
+	// The fallback IP address of the client (only used if configured TrueClientIp is not set)
+	HeaderFallbackClientIp = "VP-Fallback-Client-IP"
 	// The maximum size of the payload in bytes
 	MaxPayloadSize = 1024 * 128
 	// Time allowed to read the next pong message from the peer.

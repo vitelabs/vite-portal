@@ -9,6 +9,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
 )
 
 // Attach creates an RPC client attached to an in-process API handler.
@@ -103,6 +104,7 @@ func (a *OrchestratorApp) stopInProc() {
 }
 
 func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) error {
+	httputil.SetFallbackClientIp(r.Header, r.RemoteAddr)
 	// a blacklist seems to be required because closing a go-vite WebSocket connection causes an instant re-connect
 	clientIp := a.getClientIp(r.Header)
 	if _, found := a.context.ipBlacklist.Get(clientIp, a.config.MaxIpBlacklistDuration); !found {

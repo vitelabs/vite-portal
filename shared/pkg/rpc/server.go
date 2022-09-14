@@ -20,6 +20,7 @@ import (
 	"context"
 	"io"
 	"net"
+	"net/http"
 	"sync/atomic"
 
 	mapset "github.com/deckarep/golang-set"
@@ -197,7 +198,7 @@ type PeerInfo struct {
 		UserAgent string
 		Origin    string
 		Host      string
-		Auth      string
+		Header    http.Header
 	}
 }
 

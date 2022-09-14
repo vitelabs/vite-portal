@@ -45,7 +45,6 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 			UserAgent: peerInfo.HTTP.UserAgent,
 			Origin:    peerInfo.HTTP.Origin,
 			Host:      peerInfo.HTTP.Host,
-			Auth:      peerInfo.HTTP.Auth,
 		},
 	}
 	if err := s.store.Add(n); err != nil {

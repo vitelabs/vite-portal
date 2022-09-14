@@ -61,7 +61,6 @@ func (s *Service) insertRelayer(c *rpc.Client, peerInfo rpc.PeerInfo, r sharedty
 			UserAgent: peerInfo.HTTP.UserAgent,
 			Origin:    peerInfo.HTTP.Origin,
 			Host:      peerInfo.HTTP.Host,
-			Auth:      peerInfo.HTTP.Auth,
 		},
 	}
 	if err := s.store.Upsert(relayer); err != nil {

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"net/http"
 	"sync"
 	"time"
 
@@ -82,4 +83,13 @@ func (a *OrchestratorApp) Shutdown() {
 	defer a.startStopLock.Unlock()
 
 	a.stopRPC()
+}
+
+func (a *OrchestratorApp) getClientIp(h http.Header) string {
+	clientIp := h.Get(a.config.HeaderTrueClientIp)
+	if clientIp == "" {
+		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
+		clientIp = h.Get("Origin")
+	}
+	return clientIp
 }

@@ -38,6 +38,7 @@ func (c *TransientCache[T]) Get(key string, maxDuration int64) (item T, found bo
 	}
 	// check if expired
 	if time.Now().UnixMilli()-maxDuration > container.Timestamp {
+		c.Delete(key)
 		return *new(T), false
 	}
 	return container.Item, true

@@ -259,7 +259,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	connInfo.HTTP.Host = r.Host
 	connInfo.HTTP.Origin = r.Header.Get("Origin")
 	connInfo.HTTP.UserAgent = r.Header.Get("User-Agent")
-	connInfo.HTTP.Auth = r.Header.Get("Authorization")
+	connInfo.HTTP.Header = r.Header
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, peerInfoContextKey{}, connInfo)
 

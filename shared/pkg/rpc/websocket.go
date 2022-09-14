@@ -274,7 +274,7 @@ func newWebsocketCodec(conn *websocket.Conn, host string, req http.Header) Serve
 	wc.info.HTTP.Host = host
 	wc.info.HTTP.Origin = req.Get("Origin")
 	wc.info.HTTP.UserAgent = req.Get("User-Agent")
-	wc.info.HTTP.Auth = req.Get("Authorization")
+	wc.info.HTTP.Header = req
 	// Start pinger.
 	wc.wg.Add(1)
 	go wc.pingLoop()

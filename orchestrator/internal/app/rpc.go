@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
-	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
@@ -105,11 +104,7 @@ func (a *OrchestratorApp) stopInProc() {
 
 func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) error {
 	// a blacklist seems to be required because closing a go-vite WebSocket connection causes an instant re-connect
-	clientIp := r.Header.Get(a.config.HeaderTrueClientIp)
-	if clientIp == "" {
-		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
-		clientIp = r.RemoteAddr
-	}
+	clientIp := a.getClientIp(r.Header)
 	if _, found := a.context.ipBlacklist.Get(clientIp, a.config.MaxIpBlacklistDuration); !found {
 		return nil
 	}
@@ -132,7 +127,7 @@ func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (share
 	// By default it is assumed the connection has been initiated by a node
 	id, err := a.nodeService.HandleConnect(timeout, c, peerInfo)
 	if err != nil {
-		// TODO: add to temporary blacklist
+		a.addToIpBlacklist(peerInfo.HTTP.Header)
 		a.HandleOnConnectError(timeout, c.WriteConn, err)
 		return defaultConn, err
 	}
@@ -150,4 +145,13 @@ func (a *OrchestratorApp) HandleOnConnectError(timeout time.Duration, w rpc.JSON
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	w.WriteJSON(ctx, rpc.NewJSONRPCErrorMessage(err))
+}
+
+func (a *OrchestratorApp) addToIpBlacklist(h http.Header) {
+	clientIp := a.getClientIp(h)
+	item := types.IpBlacklistItem{
+		Key: clientIp,
+		Timestamp: time.Now().UnixMilli(),
+	}
+	a.context.ipBlacklist.Set(item.Key, item.Timestamp, item)
 }

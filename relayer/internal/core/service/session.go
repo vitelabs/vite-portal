@@ -28,14 +28,14 @@ func (s *Service) HandleSession(header coretypes.SessionHeader) (*coretypes.Sess
 	if s.haveNodesChanged(session) {
 		actualNodes := s.getActualNodes(session)
 		session.Nodes = actualNodes
-		s.cache.SetSession(session)
+		s.sessionCache.Set(session.Header.HashString(), session.Timestamp, session)
 	}
 
 	minNodeCount := s.config.ConsensusNodeCount
 	// make sure session has sufficient nodes
 	if nodeCount > minNodeCount && minNodeCount > len(session.Nodes) || len(session.Nodes) == 0 {
 		// delete current session and create new
-		s.cache.DeleteSession(header)
+		s.sessionCache.Delete(header.HashString())
 		session, err = s.getSession(header)
 		if err != nil {
 			return nil, err
@@ -53,7 +53,7 @@ func (s *Service) haveNodesChanged(session coretypes.Session) bool {
 
 func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session, roottypes.Error) {
 	// check cache
-	session, found := s.cache.GetSession(header, s.config.MaxSessionDuration)
+	session, found := s.sessionCache.Get(header.HashString(), s.config.MaxSessionDuration)
 	if !found {
 		// create new session
 		newSession, err := coretypes.NewSession(s.nodeService, header, s.config.SessionNodeCount)
@@ -61,7 +61,7 @@ func (s *Service) getSession(header coretypes.SessionHeader) (coretypes.Session,
 			return coretypes.Session{}, err
 		}
 		// add to cache
-		s.cache.SetSession(newSession)
+		s.sessionCache.Set(newSession.Header.HashString(), newSession.Timestamp, newSession)
 		session = newSession
 	}
 	return session, nil

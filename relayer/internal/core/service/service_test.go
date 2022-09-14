@@ -1,17 +1,18 @@
 package service
 
 import (
-	corestore "github.com/vitelabs/vite-portal/relayer/internal/core/store"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
 	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
 	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type testContext struct {
 	config      roottypes.Config
-	cache       *corestore.CacheStore
+	cache       *sharedtypes.TransientCache[coretypes.Session]
 	nodeStore   *nodestore.MemoryStore
 	nodeService *nodeservice.Service
 	service     *Service
@@ -23,7 +24,7 @@ func newDefaultTestContext() *testContext {
 }
 
 func newTestContext(config roottypes.Config) *testContext {
-	cache := corestore.NewCacheStore(config.MaxSessionCacheEntries)
+	cache := sharedtypes.NewTransientCache[coretypes.Session](config.MaxSessionCacheEntries)
 	store := nodestore.NewMemoryStore()
 	nodesvc := nodeservice.NewService(store)
 	svc := NewService(config, cache, nodesvc)

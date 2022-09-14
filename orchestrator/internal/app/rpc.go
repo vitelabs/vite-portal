@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
@@ -103,13 +104,19 @@ func (a *OrchestratorApp) stopInProc() {
 }
 
 func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) error {
-	// TODO: check temporary blacklist
-	if false {
-		msg := "too many requests"
-		http.Error(w, msg, http.StatusTooManyRequests)
-		return errors.New(msg)
+	// a blacklist seems to be required because closing a go-vite WebSocket connection causes an instant re-connect
+	clientIp := r.Header.Get(a.config.HeaderTrueClientIp)
+	if clientIp == "" {
+		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
+		clientIp = r.RemoteAddr
 	}
-	return nil
+	// TODO: check temporary blacklist
+	if clientIp == "" || true {
+		return nil
+	}
+	msg := "too many requests"
+	http.Error(w, msg, http.StatusTooManyRequests)
+	return errors.New(msg)
 }
 
 func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (sharedtypes.Connection, error) {

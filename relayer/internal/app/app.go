@@ -46,7 +46,7 @@ func NewRelayerApp(cfg types.Config) *RelayerApp {
 	}
 	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, defaultTimeout)
 	a.nodeService = nodeservice.NewService(c.nodeStore)
-	a.coreService = coreservice.NewService(cfg, &c.cacheStore, a.nodeService)
+	a.coreService = coreservice.NewService(cfg, c.sessionCacheStore, a.nodeService)
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)

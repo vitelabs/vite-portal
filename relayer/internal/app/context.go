@@ -1,20 +1,21 @@
 package app
 
 import (
-	corestore "github.com/vitelabs/vite-portal/relayer/internal/core/store"
+	coretypes "github.com/vitelabs/vite-portal/relayer/internal/core/types"
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
 	nodestore "github.com/vitelabs/vite-portal/relayer/internal/node/store"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type Context struct {
-	cacheStore corestore.CacheStore
+	sessionCacheStore *sharedtypes.TransientCache[coretypes.Session]
 	nodeStore nodeinterfaces.StoreI
 }
 
 func NewContext(config types.Config) *Context {
 	c := &Context{
-		cacheStore: *corestore.NewCacheStore(config.MaxSessionCacheEntries),
+		sessionCacheStore: sharedtypes.NewTransientCache[coretypes.Session](config.MaxSessionCacheEntries),
 		nodeStore: nodestore.NewMemoryStore(),
 	}
 	return c

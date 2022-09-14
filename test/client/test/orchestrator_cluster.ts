@@ -10,6 +10,8 @@ export function testOrchestratorCluster(common: TestCommon) {
     let cluster: NodeCluster
 
     before(async function () {
+      const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
+      expect(nodes.total).to.be.equal(0)
       cluster = new NodeCluster(20000)
       cluster.url = "http://127.0.0.1:48132"
       await cluster.start()

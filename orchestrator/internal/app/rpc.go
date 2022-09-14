@@ -110,8 +110,7 @@ func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) 
 		logger.Logger().Warn().Msg("client ip is empty (check configuration)")
 		clientIp = r.RemoteAddr
 	}
-	// TODO: check temporary blacklist
-	if clientIp == "" || true {
+	if _, found := a.context.ipBlacklist.Get(clientIp, a.config.MaxIpBlacklistDuration); !found {
 		return nil
 	}
 	msg := "too many requests"

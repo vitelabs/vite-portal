@@ -39,13 +39,9 @@ func (s *MemoryStore) Count() int {
 }
 
 func (s *MemoryStore) GetByIndex(index int) (r types.Relayer, found bool) {
-	// Assign default return values
-	r = *new(types.Relayer)
-	found = false
-
 	e := s.db.GetByIndex(index)
 	if e == nil {
-		return
+		return *new(types.Relayer), false
 	}
 
 	return e.(types.Relayer), true

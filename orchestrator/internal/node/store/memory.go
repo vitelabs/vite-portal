@@ -65,30 +65,22 @@ func (s *MemoryStore) GetChains() []string {
 }
 
 func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
-	// Assign default return values
-	n = *new(types.Node)
-	found = false
-
 	if chain == "" || id == "" || s.db[chain] == nil {
-		return
+		return *new(types.Node), false
 	}
 
 	node := s.db[chain].Get(id)
 	if node == nil {
-		return
+		return *new(types.Node), false
 	}
 
 	return node.(types.Node), true
 }
 
 func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
-	// Assign default return values
-	n = *new(types.Node)
-	found = false
-
 	node := s.db[chain].GetByIndex(index)
 	if node == nil {
-		return
+		return *new(types.Node), false
 	}
 
 	return node.(types.Node), true

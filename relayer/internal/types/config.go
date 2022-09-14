@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DefaultConfigVersion               = "v0.5"
+	DefaultConfigVersion               = "v0.1"
 	DefaultDebug                       = false
 	DefaultRpcPort                     = 56331
 	DefaultRpcAuthPort                 = 56332
@@ -20,8 +20,8 @@ const (
 	DefaultSortJsonResponse            = false
 	DefaultConsensusNodeCount          = 5
 	DefaultSessionNodeCount            = 24
-	DefaultMaxSessionCacheEntries      = 100
-	DefaultMaxSessionDuration          = 60000000
+	DefaultMaxSessionCacheEntries      = 10000
+	DefaultMaxSessionDuration          = 3600000
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
 	DefaultOrchestratorWsUrl           = ""
 	DefaultLoggingConsoleOutputEnabled = true

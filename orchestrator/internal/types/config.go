@@ -10,6 +10,8 @@ const (
 	DefaultRpcPort                     = 57331
 	DefaultRpcAuthPort                 = 57332
 	DefaultRpcTimeout                  = 5000
+	DefaultMaxIpBlacklistEntries       = 10000
+	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
 	DefaultHeaderTrueClientIp          = "True-Client-Ip"
 	DefaultLoggingConsoleOutputEnabled = true
@@ -39,6 +41,10 @@ type Config struct {
 	RpcAuthPort int32 `json:"rpcAuthPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
+	// The maximum ip entries in the blacklist
+	MaxIpBlacklistEntries int `json:"maxIpBlacklistEntries"`
+	// The maximum ip blacklist duration in milliseconds
+	MaxIpBlacklistDuration int64 `json:"maxIpBlacklistDuration"`
 	// The user agent used when sending RPC requests
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
@@ -51,14 +57,16 @@ type Config struct {
 
 func NewDefaultConfig() Config {
 	c := Config{
-		Version:            DefaultConfigVersion,
-		Debug:              DefaultDebug,
-		RpcPort:            DefaultRpcPort,
-		RpcAuthPort:        DefaultRpcAuthPort,
-		RpcTimeout:         DefaultRpcTimeout,
-		UserAgent:          DefaultUserAgent,
-		HeaderTrueClientIp: DefaultHeaderTrueClientIp,
-		SupportedChains:    DefaultSupportedChains,
+		Version:                DefaultConfigVersion,
+		Debug:                  DefaultDebug,
+		RpcPort:                DefaultRpcPort,
+		RpcAuthPort:            DefaultRpcAuthPort,
+		RpcTimeout:             DefaultRpcTimeout,
+		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
+		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
+		UserAgent:              DefaultUserAgent,
+		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		SupportedChains:        DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

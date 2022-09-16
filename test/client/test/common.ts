@@ -1,19 +1,18 @@
 import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
-import { TestContants } from "./constants"
 import { RpcHttpClient } from "../src/client"
+import { TestConstants } from "../src/constants"
 import { HttpMockCollector } from "../src/mock_collector"
 import { DefaultMockNode, MockNode, TimeoutMockNode } from "../src/mock_node"
 import { Orchestrator } from "../src/orchestrator"
 import { VitePortal } from "../src/portal"
 import { Relayer } from "../src/relayer"
-import { NodeEntity, RelayerConfig } from "../src/types"
+import { NodeEntity, OrchestratorConfig, RelayerConfig } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
 export class TestCommon {
   timeout: number
-  orchestratorUrl: string
-  orchestratorAuthUrl: string
+  orchestratorConfig: OrchestratorConfig
   relayerConfig: RelayerConfig
   providerUrl: string
   nodeHttpUrl: string
@@ -28,28 +27,32 @@ export class TestCommon {
 
   constructor() {
     this.timeout = 2100
-    this.orchestratorUrl = "http://127.0.0.1:57331"
-    this.orchestratorAuthUrl = "http://127.0.0.1:57332"
+    this.orchestratorConfig = {
+      rpcUrl: "http://127.0.0.1:57331",
+      rpcAuthUrl: "http://127.0.0.1:57332",
+      jwtSecret: TestConstants.DefaultJwtSecret
+    }
     this.relayerConfig = {
       rpcUrl: "http://127.0.0.1:56331",
       rpcAuthUrl: "http://127.0.0.1:56332",
       rpcRelayHttpUrl: "http://127.0.0.1:56333",
       rpcRelayWsUrl: "http://127.0.0.1:56334",
+      jwtSecret: TestConstants.DefaultJwtSecret
     }
     this.providerUrl = this.relayerConfig.rpcRelayHttpUrl + "/relay"
     this.nodeHttpUrl = config.networks.local.http
     this.httpMockCollector = new HttpMockCollector(23460)
-    this.defaultMockNode = new DefaultMockNode(TestContants.DefaultChain, 23470)
-    this.timeoutMockNode = new TimeoutMockNode(TestContants.DefaultChain, 23471)
+    this.defaultMockNode = new DefaultMockNode(TestConstants.DefaultChain, 23470)
+    this.timeoutMockNode = new TimeoutMockNode(TestConstants.DefaultChain, 23471)
   }
 
   startAsync = async () => {
     VitePortal.startCleanup()
-    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorUrl, this.orchestratorAuthUrl, this.timeout)
+    this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorConfig, this.timeout)
     this.relayer = await VitePortal.startRelayer(this.relayerConfig, this.timeout)
     this.provider = vite.newProvider(this.providerUrl)
     this.deployer = vite.newAccount(config.networks.local.mnemonic, 0, this.provider)
-    this.client = new RpcHttpClient(this.timeout)
+    this.client = new RpcHttpClient(this.timeout, "1.2.3.4")
     this.httpMockCollector.start()
     this.defaultMockNode.start()
     this.timeoutMockNode.start()

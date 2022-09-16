@@ -1,7 +1,7 @@
 import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
-import { TestContants } from "./constants"
+import { TestConstants } from "../src/constants"
 import { NodeEntity } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
@@ -80,7 +80,7 @@ export function testRelayerNodes(common: TestCommon) {
     const nodesAfter = await common.relayer.getNodes(chain)
     expect(nodesAfter.total).to.be.equal(nodes.length)
     expect(nodesAfter.entries.length).to.be.equal(nodes.length)
-    expect(nodesAfter.limit).to.be.equal(TestContants.DefaultPageLimit)
+    expect(nodesAfter.limit).to.be.equal(TestConstants.DefaultPageLimit)
     expect(nodesAfter.offset).to.be.equal(0)
 
     const page1 = await common.relayer.getNodes(chain, 0, 6)
@@ -93,7 +93,7 @@ export function testRelayerNodes(common: TestCommon) {
     const page2 = await common.relayer.getNodes(chain, page1.entries.length)
     expect(page2.total).to.be.equal(nodes.length)
     expect(page2.entries.length).to.be.equal(4)
-    expect(page2.limit).to.be.equal(TestContants.DefaultPageLimit)
+    expect(page2.limit).to.be.equal(TestConstants.DefaultPageLimit)
     expect(page2.offset).to.be.equal(page1.entries.length)
     expect(page2.entries[0].id).to.equal(nodes[6].id)
 

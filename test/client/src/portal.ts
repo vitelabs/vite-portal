@@ -3,7 +3,7 @@ import { BaseProcess } from "./process"
 import { TestConstants } from "./constants"
 import { Orchestrator } from "./orchestrator"
 import { Relayer } from "./relayer"
-import { RelayerConfig } from "./types"
+import { OrchestratorConfig, RelayerConfig } from "./types"
 
 export abstract class VitePortal {
   static handleShutdown(p: BaseProcess) {
@@ -27,15 +27,15 @@ export abstract class VitePortal {
     )
   }
 
-  public static async startOrchestrator(url: string, authUrl: string, timeout: number) {
-    const app = new Orchestrator(url, authUrl, timeout)
+  public static async startOrchestrator(config: OrchestratorConfig, timeout: number) {
+    const app = new Orchestrator(config, timeout, "1.1.1.1")
     this.handleShutdown(app)
     await app.start()
     return app
   }
 
   public static async startRelayer(config: RelayerConfig, timeout: number) {
-    const app = new Relayer(config, timeout, "1.1.1.1")
+    const app = new Relayer(config, timeout, "1.1.1.2")
     this.handleShutdown(app)
     await app.start()
     return app

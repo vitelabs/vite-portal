@@ -1,7 +1,7 @@
 import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
-import { TestContants } from "./constants"
+import { TestConstants } from "../src/constants"
 import { DefaultMockNode } from "../src/mock_node"
 import { NodeEntity, NodeResponse, RelayResult } from "../src/types"
 import { CommonUtil } from "../src/utils"
@@ -35,7 +35,7 @@ export function testRelayerRelay(common: TestCommon) {
       const result = await common.provider.request(method)
       expect(result).to.not.be.undefined
       // check if all mock nodes received a request
-      const timeout = TestContants.DefaultRpcNodeTimeout + 200
+      const timeout = TestConstants.DefaultRpcNodeTimeout + 200
       await CommonUtil.expectAsync(async () => common.defaultMockNode.requests.length == 1, timeout)
       await CommonUtil.expectAsync(async () => common.timeoutMockNode.requests.length == 1, timeout)
       const relayResults = common.httpMockCollector.results
@@ -43,8 +43,8 @@ export function testRelayerRelay(common: TestCommon) {
       const relayResult: RelayResult = relayResults[0]
       expect(relayResult.sessionKey).to.be.equal("cb8b30cecd1857c59530f8bda15fab91")
       expect(relayResult.relay.host).to.be.equal("127.0.0.1:56333")
-      expect(relayResult.relay.chain).to.be.equal(TestContants.DefaultChain)
-      expect(relayResult.relay.clientIp).to.be.equal(TestContants.DefaultIpAddress)
+      expect(relayResult.relay.chain).to.be.equal(TestConstants.DefaultChain)
+      expect(relayResult.relay.clientIp).to.be.equal(TestConstants.DefaultIpAddress)
       expect(relayResult.relay.payload.data).to.contain(method)
       expect(relayResult.relay.payload.method).to.be.equal("POST")
       expect(relayResult.relay.payload.path).to.be.equal("")
@@ -61,7 +61,7 @@ export function testRelayerRelay(common: TestCommon) {
       expect(response2.deadlineExceeded).to.be.true
       expect(response2.error).to.be.equal('Post "http://127.0.0.1:23471": context deadline exceeded')
       expect(response2.response).to.be.empty
-      expect(response2.responseTime).to.be.greaterThanOrEqual(TestContants.DefaultRpcNodeTimeout)
+      expect(response2.responseTime).to.be.greaterThanOrEqual(TestConstants.DefaultRpcNodeTimeout)
       const response3 = getByNodeId(nodes[2].id, relayResult)
       expect(response3.cancelled).to.be.false
       expect(response3.deadlineExceeded).to.be.false

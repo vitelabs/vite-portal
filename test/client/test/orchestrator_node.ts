@@ -1,8 +1,8 @@
 import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
-import { TestContants } from "./constants"
 import { RpcWsClient } from "../src/client"
+import { TestConstants } from "../src/constants"
 import { JsonRpcRequest, JsonRpcResponse } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
@@ -12,10 +12,10 @@ export function testOrchestratorNode(common: TestCommon) {
       // TODO: try starting a node with `npx vuilder node --config <config.json>`
       // Set "Single": false in the config otherwise net_nodeInfo returns mock data (invalid netId, node id, etc.)
       await CommonUtil.expectAsync(async () => {
-        const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
+        const nodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
         return nodes.total === 1
       }, common.timeout)
-      const nodes = await common.orchestrator.getNodes(TestContants.SupportedChains.ViteBuidl)
+      const nodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
       const node = nodes.entries[0]
       expect(node.id).to.not.be.empty
     })

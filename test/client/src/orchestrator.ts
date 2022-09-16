@@ -1,17 +1,19 @@
 import { BaseProcess } from "./process"
-import { AppInfo, GenericPage, RelayerEntity } from "../src/types"
+import { AppInfo, GenericPage, OrchestratorConfig, RelayerEntity } from "../src/types"
 import { RpcHttpClient } from "./client"
 
 export class Orchestrator extends BaseProcess {
   url: string
   authUrl: string
   rpcClient: RpcHttpClient
+  rpcAuthClient: RpcHttpClient
 
-  constructor(url: string, authUrl: string, timeout: number) {
+  constructor(config: OrchestratorConfig, timeout: number, clientIp: string) {
     super(timeout)
-    this.url = url
-    this.authUrl = authUrl
-    this.rpcClient = new RpcHttpClient(timeout)
+    this.url = config.rpcUrl
+    this.authUrl = config.rpcAuthUrl
+    this.rpcClient = new RpcHttpClient(timeout, clientIp)
+    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, undefined, config.jwtSecret)
   }
 
   name(): string {
@@ -43,7 +45,7 @@ export class Orchestrator extends BaseProcess {
   }
 
   getAppInfo = async (): Promise<AppInfo> => {
-    const response = await this.rpcClient.send(this.authUrl, "core_getAppInfo")
+    const response = await this.rpcAuthClient.send(this.authUrl, "core_getAppInfo")
     return response.data.result
   }
 
@@ -53,7 +55,7 @@ export class Orchestrator extends BaseProcess {
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
-    const response = await this.rpcClient.send(this.authUrl, "admin_getNodes", params)
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_getNodes", params)
     return response.data.result
   }
 
@@ -62,7 +64,7 @@ export class Orchestrator extends BaseProcess {
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
-    const response = await this.rpcClient.send(this.authUrl, "admin_getRelayers", params)
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_getRelayers", params)
     return response.data.result
   }
 }

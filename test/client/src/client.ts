@@ -1,15 +1,38 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios"
+import axios, { AxiosInstance, AxiosRequestHeaders, AxiosResponse } from "axios"
 import WebSocket from "ws"
 import { TestConstants } from "./constants"
 import { JsonRpcRequest } from "./types"
+import { CommonUtil, JwtUtil } from "./utils"
 
 export abstract class RpcClient {
   requestId: number
   timeout: number
+  clientIp?: string
+  subject?: string
+  jwtSecret?: string
 
-  constructor(timeout: number) {
+  constructor(timeout: number, clientIp?: string, subject?: string, jwtSecret?: string) {
     this.requestId = 0
     this.timeout = timeout
+    this.clientIp = clientIp
+    this.subject = subject
+    this.jwtSecret = jwtSecret
+  }
+
+  protected createHeaders = (): {
+    [x: string]: string;
+  } => {
+    const headers: {
+      [x: string]: string;
+    } = {}
+    if (!CommonUtil.isNullOrWhitespace(this.clientIp)) {
+      headers[TestConstants.DefaultHeaderTrueClientIp] = this.clientIp!
+    }
+    if (!CommonUtil.isNullOrWhitespace(this.jwtSecret)) {
+      const token = JwtUtil.CreateDefaultToken(this.jwtSecret!, this.subject)
+      headers[TestConstants.DefaultHeaderAuthorization] = "Bearer " + token
+    }
+    return headers
   }
 
   createJsonRpcRequest = (method: string, params?: any[], id?: number): JsonRpcRequest => {
@@ -29,8 +52,8 @@ export abstract class RpcClient {
 export class RpcHttpClient extends RpcClient {
   http: AxiosInstance
 
-  constructor(timeout: number) {
-    super(timeout)
+  constructor(timeout: number, clientIp?: string, subject?: string, jwtSecret?: string) {
+    super(timeout, clientIp, subject, jwtSecret)
     this.http = axios.create({
       timeout: timeout,
     })
@@ -38,9 +61,7 @@ export class RpcHttpClient extends RpcClient {
 
   send = async (url: string, method: string, params?: any[], id?: number): Promise<AxiosResponse<any, any>> => {
     const response = await this.http.post(url, this.createJsonRpcRequest(method, params, id), {
-      headers: {
-        [TestConstants.HeaderTrueClientIp]: "1.2.3.4"
-      }
+      headers: this.createHeaders()
     })
     return response
   }
@@ -49,14 +70,12 @@ export class RpcHttpClient extends RpcClient {
 export class RpcWsClient extends RpcClient {
   ws: WebSocket
 
-  constructor(timeout: number, url: string, clientIp: string) {
-    super(timeout)
+  constructor(timeout: number, url: string, clientIp?: string, subject?: string, jwtSecret?: string) {
+    super(timeout, clientIp, subject, jwtSecret)
     this.ws = new WebSocket(url, {
       handshakeTimeout: timeout,
       timeout: timeout,
-      headers: {
-        [TestConstants.HeaderTrueClientIp]: clientIp
-      }
+      headers: this.createHeaders()
     })
   }
 }

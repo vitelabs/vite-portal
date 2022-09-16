@@ -1,6 +1,7 @@
 import { it } from "mocha"
 import { expect } from "chai"
 import { TestCommon } from "./common"
+import { TestConstants } from "../src/constants"
 import { Relayer } from "../src/relayer"
 import { CommonUtil, FileUtil, getLocalFileUtil } from "../src/utils"
 import { RelayerConfig } from "../src/types"
@@ -44,8 +45,9 @@ export function testOrchestratorRelayer(common: TestCommon) {
           rpcAuthUrl: "http://127.0.0.1:56342",
           rpcRelayHttpUrl: "http://127.0.0.1:56343",
           rpcRelayWsUrl: "http://127.0.0.1:56344",
+          jwtSecret: TestConstants.DefaultJwtSecret
         }
-        relayer = new Relayer(config, common.timeout, "1.1.1.2")
+        relayer = new Relayer(config, common.timeout, "1.1.1.3")
         await relayer.start()
         const relayersAfter1 = await common.orchestrator.getRelayers()
         expect(relayersAfter1.total).to.be.equal(2)

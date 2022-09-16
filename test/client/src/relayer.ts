@@ -7,17 +7,19 @@ import { BaseProcess } from "./process"
 export class Relayer extends BaseProcess {
   config: RelayerConfig
   rpcClient: RpcHttpClient
+  rpcAuthClient: RpcHttpClient
   axiosClient: AxiosInstance
 
   constructor(config: RelayerConfig, timeout: number, clientIp: string) {
     super(timeout)
     this.config = config
-    this.rpcClient = new RpcHttpClient(timeout)
+    this.rpcClient = new RpcHttpClient(timeout, clientIp)
+    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, TestConstants.DefaultJwtRelayerSubject, config.jwtSecret)
     this.axiosClient = axios.create({
       baseURL: config.rpcRelayHttpUrl,
       timeout: timeout,
       headers: {
-        [TestConstants.HeaderTrueClientIp]: clientIp
+        [TestConstants.DefaultHeaderTrueClientIp]: clientIp
       },
       validateStatus: function () {
         return true
@@ -78,22 +80,22 @@ export class Relayer extends BaseProcess {
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_getNodes", params)
+    const response = await this.rpcAuthClient.send(this.config.rpcAuthUrl, "admin_getNodes", params)
     return response.data.result
   }
 
   getNode = async (id: string): Promise<JsonRpcResponse<NodeEntity>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_getNode", [id])
+    const response = await this.rpcAuthClient.send(this.config.rpcAuthUrl, "admin_getNode", [id])
     return response.data
   }
 
   putNode = async (node: NodeEntity): Promise<JsonRpcResponse<any>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_putNode", [node])
+    const response = await this.rpcAuthClient.send(this.config.rpcAuthUrl, "admin_putNode", [node])
     return response.data
   }
 
   deleteNode = async (id: string): Promise<JsonRpcResponse<any>> => {
-    const response = await this.rpcClient.send(this.config.rpcAuthUrl, "admin_deleteNode", [id])
+    const response = await this.rpcAuthClient.send(this.config.rpcAuthUrl, "admin_deleteNode", [id])
     return response.data
   }
 }

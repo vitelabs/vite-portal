@@ -15,13 +15,13 @@ func NewCryptoSeededSource() mathrand.Source {
 
 // RangeRandomInt returns a random range of numbers as a slice within a range
 func RangeRandomInt(min int, max int, n int) []int {
-	if max - min <= 0 || n == 0 {
+	if max-min <= 0 || n == 0 {
 		return make([]int, 0)
 	}
 	arr := make([]int, n)
 	random := mathrand.New(NewCryptoSeededSource())
 	for r := 0; r < n; r++ {
-			arr[r] = random.Intn(max - min) + min
+		arr[r] = random.Intn(max-min) + min
 	}
 	return arr
 }
@@ -47,7 +47,7 @@ func UniqueRandomInt(max int, n int) []int {
 		if _, ok := m[r]; ok {
 			continue
 		}
-		
+
 		// add the random number to the map
 		m[r] = true
 		// add the random number to the array

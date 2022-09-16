@@ -66,12 +66,17 @@ func (a *OrchestratorApp) startRPC() error {
 		return nil
 	}
 
+	var secret []byte
+	if a.config.JwtSecret != "" {
+		secret = []byte(a.config.JwtSecret)
+	}	
+
 	// Set up unauthenticated RPC.
 	if err := init(a.rpc, open, int(a.config.RpcPort), nil); err != nil {
 		return err
 	}
 	// Set up authenticated RPC.
-	if err := init(a.rpcAuth, all, int(a.config.RpcAuthPort), nil); err != nil {
+	if err := init(a.rpcAuth, all, int(a.config.RpcAuthPort), secret); err != nil {
 		return err
 	}
 

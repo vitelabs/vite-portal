@@ -5,6 +5,10 @@ import "time"
 const (
 	// The fallback IP address of the client (only used if configured TrueClientIp is not set)
 	HeaderFallbackClientIp = "VP-Fallback-Client-IP"
+	// The expiry timeout of JSON Web Tokens
+	JWTExpiryTimeout = 60 * time.Second
+	// The subject representing a relayer used in JSON Web Tokens
+	JWTRelayerSubject = "vite-portal-relayer"
 	// The maximum size of the payload in bytes
 	MaxPayloadSize = 1024 * 128
 	// Time allowed to read the next pong message from the peer.

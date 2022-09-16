@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
@@ -16,6 +17,7 @@ const (
 	DefaultRpcRelayWsPort              = 56334
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
+	DefaultJwtSecret                   = "secret1234"
 	DefaultUserAgent                   = ""
 	DefaultSortJsonResponse            = false
 	DefaultConsensusNodeCount          = 5
@@ -50,6 +52,8 @@ type Config struct {
 	RpcTimeout int64 `json:"rpcTimeout"`
 	// The time in milliseconds before a RPC request to a node times out
 	RpcNodeTimeout int64 `json:"rpcNodeTimeout"`
+	// The secret used for JSON Web Tokens
+	JwtSecret string `json:"jwtSecret"`
 	// The user agent used when sending RPC requests to nodes
 	UserAgent string `json:"userAgent"`
 	// Whether the JSON response from nodes should be sorted
@@ -84,6 +88,7 @@ func NewDefaultConfig() Config {
 		RpcRelayWsPort:         DefaultRpcRelayWsPort,
 		RpcTimeout:             DefaultRpcTimeout,
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
+		JwtSecret:              DefaultJwtSecret,
 		UserAgent:              DefaultUserAgent,
 		SortJsonResponse:       DefaultSortJsonResponse,
 		ConsensusNodeCount:     DefaultConsensusNodeCount,
@@ -126,6 +131,12 @@ func (c *Config) Validate() error {
 	prefix := "Config error: "
 	if c.SessionNodeCount <= 0 {
 		return errors.New(fmt.Sprintf("%s SessionNodeCount must be greater than 0", prefix))
+	}
+	if c.JwtSecret == "" {
+		return errors.New(fmt.Sprintf("%s JwtSecret must not be empty", prefix))
+	}
+	if c.JwtSecret == DefaultJwtSecret {
+		logger.Logger().Warn().Msg("consider changing the default JWT secret")
 	}
 	return nil
 }

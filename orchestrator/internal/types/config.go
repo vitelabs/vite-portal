@@ -1,6 +1,10 @@
 package types
 
 import (
+	"errors"
+	"fmt"
+
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
@@ -10,6 +14,7 @@ const (
 	DefaultRpcPort                     = 57331
 	DefaultRpcAuthPort                 = 57332
 	DefaultRpcTimeout                  = 5000
+	DefaultJwtSecret                   = "secret1234"
 	DefaultMaxIpBlacklistEntries       = 10000
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
@@ -41,6 +46,8 @@ type Config struct {
 	RpcAuthPort int32 `json:"rpcAuthPort"`
 	// The time in milliseconds before a RPC request times out
 	RpcTimeout int64 `json:"rpcTimeout"`
+	// The secret used for JSON Web Tokens
+	JwtSecret string `json:"jwtSecret"`
 	// The maximum ip entries in the blacklist
 	MaxIpBlacklistEntries int `json:"maxIpBlacklistEntries"`
 	// The maximum ip blacklist duration in milliseconds
@@ -62,6 +69,7 @@ func NewDefaultConfig() Config {
 		RpcPort:                DefaultRpcPort,
 		RpcAuthPort:            DefaultRpcAuthPort,
 		RpcTimeout:             DefaultRpcTimeout,
+		JwtSecret:              DefaultJwtSecret,
 		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
 		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
 		UserAgent:              DefaultUserAgent,
@@ -97,5 +105,12 @@ func (c *Config) GetLoggingConfig() sharedtypes.LoggingConfig {
 }
 
 func (c *Config) Validate() error {
+	prefix := "Config error: "
+	if c.JwtSecret == "" {
+		return errors.New(fmt.Sprintf("%s JwtSecret must not be empty", prefix))
+	}
+	if c.JwtSecret == DefaultJwtSecret {
+		logger.Logger().Warn().Msg("consider changing the default JWT secret")
+	}
 	return nil
 }

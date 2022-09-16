@@ -44,7 +44,7 @@ func NewRelayerApp(cfg types.Config) *RelayerApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
-	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, defaultTimeout)
+	a.orchestrator = orchestrator.NewOrchestrator(cfg.OrchestratorWsUrl, cfg.JwtSecret, defaultTimeout)
 	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.coreService = coreservice.NewService(cfg, c.sessionCacheStore, a.nodeService)
 

@@ -10,7 +10,7 @@ import (
 
 func TestConnect(t *testing.T) {
 	t.Skip()
-	c := NewClient("ws://localhost:57331/", time.Duration(types.DefaultRpcTimeout) * time.Millisecond)
+	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond)
 	err := c.Connect()
 	require.NoError(t, err)
 }

@@ -43,7 +43,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		context:       c,
 	}
 	a.nodeService = nodeservice.NewService(cfg, c.nodeStore)
-	a.relayerService = relayerservice.NewService(c.relayerStore)
+	a.relayerService = relayerservice.NewService(cfg, c.relayerStore)
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)

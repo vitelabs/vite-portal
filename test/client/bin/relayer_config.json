@@ -15,7 +15,7 @@
     "maxSessionDuration": 3600000,
     "headerTrueClientIp": "CF-Connecting-IP",
     "httpCollectorUrl": "http://127.0.0.1:23460",
-    "orchestratorWsUrl": "ws://127.0.0.1:57331",
+    "orchestratorWsUrl": "ws://127.0.0.1:57332",
     "hostToChainMap": {
         "http://127.0.0.1:23460": "mockchain"
     },

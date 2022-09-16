@@ -55,7 +55,7 @@ export class RpcWsClient extends RpcClient {
       handshakeTimeout: timeout,
       timeout: timeout,
       headers: {
-        "CF-Connecting-IP": clientIp
+        [TestConstants.HeaderTrueClientIp]: clientIp
       }
     })
   }

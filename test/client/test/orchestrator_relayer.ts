@@ -33,13 +33,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
     describe("testOrchestratorRelayer1.1", () => {
       let relayer: Relayer
 
-      after(async function () {
-        await relayer.stop()
-      })
-
-      it('test spawn/despawn relayer', async function () {
-        const relayersBefore = await common.orchestrator.getRelayers()
-        expect(relayersBefore.result.total).to.be.equal(1)
+      before(async function () {
         const config: RelayerConfig = {
           rpcUrl: "http://127.0.0.1:56341",
           rpcAuthUrl: "http://127.0.0.1:56342",
@@ -47,7 +41,16 @@ export function testOrchestratorRelayer(common: TestCommon) {
           rpcRelayWsUrl: "http://127.0.0.1:56344",
           jwtSecret: TestConstants.DefaultJwtSecret
         }
-        relayer = new Relayer(config, common.timeout, "1.1.1.3")
+        relayer = new Relayer(config, common.timeout, CommonUtil.uuid())
+      })
+
+      after(async function () {
+        await relayer.stop()
+      })
+
+      it('test spawn/despawn relayer', async function () {
+        const relayersBefore = await common.orchestrator.getRelayers()
+        expect(relayersBefore.result.total).to.be.equal(1)
         await relayer.start()
         const relayersAfter1 = await common.orchestrator.getRelayers()
         expect(relayersAfter1.result.total).to.be.equal(2)

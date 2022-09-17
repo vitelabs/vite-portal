@@ -16,14 +16,14 @@ export function testRelayerJwt(common: TestCommon) {
       rpcRelayHttpUrl: "",
       rpcRelayWsUrl: "",
       jwtSecret: TestConstants.DefaultJwtSecret
-    }, common.timeout, TestConstants.DefaultIpAddress)
+    }, common.timeout, CommonUtil.uuid())
     relayer2 = new Relayer({
       rpcUrl: "",
       rpcAuthUrl: "http://127.0.0.1:56332",
       rpcRelayHttpUrl: "",
       rpcRelayWsUrl: "",
       jwtSecret: "invalid_secret"
-    }, common.timeout, TestConstants.DefaultIpAddress)
+    }, common.timeout, CommonUtil.uuid())
   })
 
   it('test get nonexistent node', async function () {

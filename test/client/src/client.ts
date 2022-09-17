@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestHeaders, AxiosResponse } from "axios"
+import axios, { AxiosInstance, AxiosResponse } from "axios"
 import WebSocket from "ws"
 import { TestConstants } from "./constants"
-import { JsonRpcRequest } from "./types"
+import { JsonRpcRequest, JsonRpcResponse } from "./types"
 import { CommonUtil, JwtUtil } from "./utils"
 
 export abstract class RpcClient {
@@ -69,6 +69,7 @@ export class RpcHttpClient extends RpcClient {
 
 export class RpcWsClient extends RpcClient {
   ws: WebSocket
+  error?: WebSocket.ErrorEvent
 
   constructor(timeout: number, url: string, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
     super(timeout, clientIp, jwtSubject, jwtSecret)
@@ -77,5 +78,38 @@ export class RpcWsClient extends RpcClient {
       timeout: timeout,
       headers: this.createHeaders()
     })
+    this.ws.onerror = e => {
+      this.error = e
+    };
+  }
+}
+
+export class RpcWsClientWrapper {
+  client: RpcWsClient
+  connected = false
+  requests: JsonRpcRequest[] = []
+  errors: JsonRpcResponse<any>[] = []
+
+  constructor(client: RpcWsClient) {
+    this.client = client
+    client.ws.on('open', () => {
+      console.log('connected');
+      this.connected = true
+    });
+
+    client.ws.on('close', (code: number, reason: Buffer) => {
+      console.log(`disconnected: ${code} ${reason}`);
+      this.connected = false
+    });
+
+    client.ws.on('message', (data: Buffer) => {
+      const message = JSON.parse(data.toString())
+      console.log(message)
+      if (message.method) {
+        this.requests.push(message)
+      } else if (message.error) {
+        this.errors.push(message)
+      }
+    });
   }
 }

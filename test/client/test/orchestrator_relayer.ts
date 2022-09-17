@@ -45,8 +45,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
           rpcAuthUrl: "http://127.0.0.1:56342",
           rpcRelayHttpUrl: "http://127.0.0.1:56343",
           rpcRelayWsUrl: "http://127.0.0.1:56344",
-          jwtSecret: TestConstants.DefaultJwtSecret,
-          jwtSubject: TestConstants.DefaultJwtRelayerSubject
+          jwtSecret: TestConstants.DefaultJwtSecret
         }
         relayer = new Relayer(config, common.timeout, "1.1.1.3")
         await relayer.start()

@@ -37,8 +37,7 @@ export class TestCommon {
       rpcAuthUrl: "http://127.0.0.1:56332",
       rpcRelayHttpUrl: "http://127.0.0.1:56333",
       rpcRelayWsUrl: "http://127.0.0.1:56334",
-      jwtSecret: TestConstants.DefaultJwtSecret,
-      jwtSubject: TestConstants.DefaultJwtRelayerSubject
+      jwtSecret: TestConstants.DefaultJwtSecret
     }
     this.providerUrl = this.relayerConfig.rpcRelayHttpUrl + "/relay"
     this.nodeHttpUrl = config.networks.local.http

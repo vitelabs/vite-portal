@@ -14,7 +14,7 @@ export class Relayer extends BaseProcess {
     super(timeout)
     this.config = config
     this.rpcClient = new RpcHttpClient(timeout, clientIp)
-    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, TestConstants.DefaultJwtRelayerSubject, config.jwtSecret)
+    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, undefined, config.jwtSecret)
     this.axiosClient = axios.create({
       baseURL: config.rpcRelayHttpUrl,
       timeout: timeout,

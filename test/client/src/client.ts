@@ -8,14 +8,14 @@ export abstract class RpcClient {
   requestId: number
   timeout: number
   clientIp?: string
-  subject?: string
+  jwtSubject?: string
   jwtSecret?: string
 
-  constructor(timeout: number, clientIp?: string, subject?: string, jwtSecret?: string) {
+  constructor(timeout: number, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
     this.requestId = 0
     this.timeout = timeout
     this.clientIp = clientIp
-    this.subject = subject
+    this.jwtSubject = jwtSubject
     this.jwtSecret = jwtSecret
   }
 
@@ -29,7 +29,7 @@ export abstract class RpcClient {
       headers[TestConstants.DefaultHeaderTrueClientIp] = this.clientIp!
     }
     if (!CommonUtil.isNullOrWhitespace(this.jwtSecret)) {
-      const token = JwtUtil.CreateDefaultToken(this.jwtSecret!, this.subject)
+      const token = JwtUtil.CreateDefaultToken(this.jwtSecret!, this.jwtSubject)
       headers[TestConstants.DefaultHeaderAuthorization] = "Bearer " + token
     }
     return headers
@@ -52,8 +52,8 @@ export abstract class RpcClient {
 export class RpcHttpClient extends RpcClient {
   http: AxiosInstance
 
-  constructor(timeout: number, clientIp?: string, subject?: string, jwtSecret?: string) {
-    super(timeout, clientIp, subject, jwtSecret)
+  constructor(timeout: number, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
+    super(timeout, clientIp, jwtSubject, jwtSecret)
     this.http = axios.create({
       timeout: timeout,
     })
@@ -70,8 +70,8 @@ export class RpcHttpClient extends RpcClient {
 export class RpcWsClient extends RpcClient {
   ws: WebSocket
 
-  constructor(timeout: number, url: string, clientIp?: string, subject?: string, jwtSecret?: string) {
-    super(timeout, clientIp, subject, jwtSecret)
+  constructor(timeout: number, url: string, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
+    super(timeout, clientIp, jwtSubject, jwtSecret)
     this.ws = new WebSocket(url, {
       handshakeTimeout: timeout,
       timeout: timeout,

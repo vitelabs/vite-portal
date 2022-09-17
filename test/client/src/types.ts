@@ -68,7 +68,6 @@ export type RelayerConfig = {
   rpcRelayHttpUrl: string
   rpcRelayWsUrl: string
   jwtSecret: string
-  jwtSubject: string
 }
 
 export type OrchestratorConfig = {

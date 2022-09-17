@@ -15,16 +15,14 @@ export function testRelayerJwt(common: TestCommon) {
       rpcAuthUrl: "http://127.0.0.1:56331",
       rpcRelayHttpUrl: "",
       rpcRelayWsUrl: "",
-      jwtSecret: TestConstants.DefaultJwtSecret,
-      jwtSubject: ""
+      jwtSecret: TestConstants.DefaultJwtSecret
     }, common.timeout, TestConstants.DefaultIpAddress)
     relayer2 = new Relayer({
       rpcUrl: "",
       rpcAuthUrl: "http://127.0.0.1:56332",
       rpcRelayHttpUrl: "",
       rpcRelayWsUrl: "",
-      jwtSecret: "invalid_secret",
-      jwtSubject: ""
+      jwtSecret: "invalid_secret"
     }, common.timeout, TestConstants.DefaultIpAddress)
   })
 

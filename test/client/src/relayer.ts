@@ -74,14 +74,14 @@ export class Relayer extends BaseProcess {
     return response.data.result
   }
 
-  getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<NodeEntity>> => {
+  getNodes = async (chain: string, offset?: number, limit?: number): Promise<JsonRpcResponse<GenericPage<NodeEntity>>> => {
     const params = [
       chain,
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
     const response = await this.rpcAuthClient.send(this.config.rpcAuthUrl, "admin_getNodes", params)
-    return response.data.result
+    return response.data
   }
 
   getNode = async (id: string): Promise<JsonRpcResponse<NodeEntity>> => {

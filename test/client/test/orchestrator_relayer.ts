@@ -26,7 +26,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
       expect(relayer.httpInfo.version).to.be.empty
       expect(relayer.httpInfo.userAgent).to.be.equal("Go-http-client/1.1")
       expect(relayer.httpInfo.origin).to.be.empty
-      expect(relayer.httpInfo.host).to.be.equal("127.0.0.1:57331")
+      expect(relayer.httpInfo.host).to.be.equal("127.0.0.1:57332")
       expect(relayer.httpInfo.auth).to.be.undefined
     })
 
@@ -45,7 +45,8 @@ export function testOrchestratorRelayer(common: TestCommon) {
           rpcAuthUrl: "http://127.0.0.1:56342",
           rpcRelayHttpUrl: "http://127.0.0.1:56343",
           rpcRelayWsUrl: "http://127.0.0.1:56344",
-          jwtSecret: TestConstants.DefaultJwtSecret
+          jwtSecret: TestConstants.DefaultJwtSecret,
+          jwtSubject: TestConstants.DefaultJwtRelayerSubject
         }
         relayer = new Relayer(config, common.timeout, "1.1.1.3")
         await relayer.start()

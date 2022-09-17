@@ -6,8 +6,9 @@ import { testOrchestratorNode } from "./orchestrator_node"
 import { testOrchestratorRelayer } from "./orchestrator_relayer"
 import { testOrchestrator } from "./orchestrator"
 import { testRelayer } from "./relayer"
-import { testRelayerHeight } from "./relayer_height"
 import { testRelayerContract } from "./relayer_contract"
+import { testRelayerHeight } from "./relayer_height"
+import { testRelayerJwt } from "./relayer_jwt"
 import { testRelayerNodes } from "./relayer_node"
 import { testRelayerMockNodes } from "./relayer_mock_node"
 import { testRelayerRaw } from "./relayer_raw"
@@ -43,6 +44,7 @@ describe('run tests', () => {
   testOrchestratorRelayer(common)
   testOrchestrator(common)
   testRelayerHeight(common)
+  testRelayerJwt(common)
   testRelayerContract(common)
   testRelayerNodes(common)
   testRelayerMockNodes(common)

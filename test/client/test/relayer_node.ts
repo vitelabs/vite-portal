@@ -26,7 +26,7 @@ export function testRelayerNodes(common: TestCommon) {
   it('test insert and delete node', async function () {
     const chain = CommonUtil.uuid()
     const nodesBefore = await common.relayer.getNodes(chain)
-    expect(nodesBefore.total).to.be.equal(0)
+    expect(nodesBefore.result.total).to.be.equal(0)
 
     const node = common.createRandomNode(chain)
     const getNodeBefore = await common.relayer.getNode(node.id)
@@ -37,7 +37,7 @@ export function testRelayerNodes(common: TestCommon) {
     expect(putResponse.error).to.be.undefined
 
     const nodesAfter = await common.relayer.getNodes(chain)
-    expect(nodesAfter.total).to.be.equal(nodesBefore.total + 1)
+    expect(nodesAfter.result.total).to.be.equal(nodesBefore.result.total + 1)
 
     const getNodeAfter = await common.relayer.getNode(node.id)
     expect(getNodeAfter.error).to.be.undefined
@@ -51,7 +51,7 @@ export function testRelayerNodes(common: TestCommon) {
     expect(deleteResponse.error).to.be.undefined
 
     const nodesAfterDelete = await common.relayer.getNodes(chain)
-    expect(nodesAfterDelete.total).to.be.equal(nodesAfter.total - 1)
+    expect(nodesAfterDelete.result.total).to.be.equal(nodesAfter.result.total - 1)
 
     const getNodeAfterDelete = await common.relayer.getNode(node.id)
     expect(getNodeAfterDelete.error).to.not.be.undefined
@@ -67,7 +67,7 @@ export function testRelayerNodes(common: TestCommon) {
   it('test get paginated nodes', async function () {
     const chain = CommonUtil.uuid()
     const nodesBefore = await common.relayer.getNodes(chain)
-    expect(nodesBefore.total).to.be.equal(0)
+    expect(nodesBefore.result.total).to.be.equal(0)
 
     const nodes: NodeEntity[] = []
     for (let index = 0; index < 10; index++) {
@@ -78,24 +78,24 @@ export function testRelayerNodes(common: TestCommon) {
     }
 
     const nodesAfter = await common.relayer.getNodes(chain)
-    expect(nodesAfter.total).to.be.equal(nodes.length)
-    expect(nodesAfter.entries.length).to.be.equal(nodes.length)
-    expect(nodesAfter.limit).to.be.equal(TestConstants.DefaultPageLimit)
-    expect(nodesAfter.offset).to.be.equal(0)
+    expect(nodesAfter.result.total).to.be.equal(nodes.length)
+    expect(nodesAfter.result.entries.length).to.be.equal(nodes.length)
+    expect(nodesAfter.result.limit).to.be.equal(TestConstants.DefaultPageLimit)
+    expect(nodesAfter.result.offset).to.be.equal(0)
 
     const page1 = await common.relayer.getNodes(chain, 0, 6)
-    expect(page1.total).to.be.equal(nodes.length)
-    expect(page1.entries.length).to.be.equal(6)
-    expect(page1.limit).to.be.equal(6)
-    expect(page1.offset).to.be.equal(0)
-    expect(page1.entries[0].id).to.equal(nodes[0].id)
+    expect(page1.result.total).to.be.equal(nodes.length)
+    expect(page1.result.entries.length).to.be.equal(6)
+    expect(page1.result.limit).to.be.equal(6)
+    expect(page1.result.offset).to.be.equal(0)
+    expect(page1.result.entries[0].id).to.equal(nodes[0].id)
 
-    const page2 = await common.relayer.getNodes(chain, page1.entries.length)
-    expect(page2.total).to.be.equal(nodes.length)
-    expect(page2.entries.length).to.be.equal(4)
-    expect(page2.limit).to.be.equal(TestConstants.DefaultPageLimit)
-    expect(page2.offset).to.be.equal(page1.entries.length)
-    expect(page2.entries[0].id).to.equal(nodes[6].id)
+    const page2 = await common.relayer.getNodes(chain, page1.result.entries.length)
+    expect(page2.result.total).to.be.equal(nodes.length)
+    expect(page2.result.entries.length).to.be.equal(4)
+    expect(page2.result.limit).to.be.equal(TestConstants.DefaultPageLimit)
+    expect(page2.result.offset).to.be.equal(page1.result.entries.length)
+    expect(page2.result.entries[0].id).to.equal(nodes[6].id)
 
     for (const node of nodes) {
       const deleteResponse = await common.relayer.deleteNode(node.id)

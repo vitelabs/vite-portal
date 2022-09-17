@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -29,8 +30,9 @@ func (c *Client) Connect() error {
 		Proxy:            http.ProxyFromEnvironment,
 		HandshakeTimeout: c.timeout,
 	}
+	token := c.jwtHanler.IssueDefaultToken(sharedtypes.JWTRelayerSubject)
 	headers := make(http.Header, 1)
-	headers.Set("Authorization", c.jwtHanler.IssueDefaultToken(sharedtypes.JWTRelayerSubject))
+	headers.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	conn, _, err := dialer.Dial(c.url, headers)
 	if err != nil {
 		return err

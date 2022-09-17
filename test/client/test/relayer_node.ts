@@ -64,7 +64,7 @@ export function testRelayerNodes(common: TestCommon) {
     expect(response.result).to.be.null
   })
 
-  it('test get paginated nodes', async function () {
+  it('test get nodes', async function () {
     const chain = CommonUtil.uuid()
     const nodesBefore = await common.relayer.getNodes(chain)
     expect(nodesBefore.result.total).to.be.equal(0)

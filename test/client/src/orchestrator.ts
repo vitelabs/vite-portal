@@ -1,5 +1,5 @@
 import { BaseProcess } from "./process"
-import { AppInfo, GenericPage, OrchestratorConfig, RelayerEntity } from "../src/types"
+import { AppInfo, GenericPage, JsonRpcResponse, OrchestratorConfig, RelayerEntity } from "../src/types"
 import { RpcHttpClient } from "./client"
 
 export class Orchestrator extends BaseProcess {
@@ -49,22 +49,22 @@ export class Orchestrator extends BaseProcess {
     return response.data.result
   }
 
-  getNodes = async (chain: string, offset?: number, limit?: number): Promise<GenericPage<RelayerEntity>> => {
+  getNodes = async (chain: string, offset?: number, limit?: number): Promise<JsonRpcResponse<GenericPage<RelayerEntity>>> => {
     const params = [
       chain,
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
     const response = await this.rpcAuthClient.send(this.authUrl, "admin_getNodes", params)
-    return response.data.result
+    return response.data
   }
 
-  getRelayers = async (offset?: number, limit?: number): Promise<GenericPage<RelayerEntity>> => {
+  getRelayers = async (offset?: number, limit?: number): Promise<JsonRpcResponse<GenericPage<RelayerEntity>>> => {
     const params = [
       !!offset ? offset : 0,
       !!limit ? limit : 0
     ]
     const response = await this.rpcAuthClient.send(this.authUrl, "admin_getRelayers", params)
-    return response.data.result
+    return response.data
   }
 }

@@ -59,7 +59,7 @@ export function testRelayerJwt(common: TestCommon) {
     expect(result.response?.status).to.be.equal(403)
   })
 
-  it('test get paginated nodes', async function () {
+  it('test get nodes', async function () {
     const chain = CommonUtil.uuid()
     const response = await relayer1.getNodes(chain)
     expect(response.error).to.not.be.undefined

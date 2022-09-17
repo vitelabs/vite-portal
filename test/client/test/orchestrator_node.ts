@@ -13,10 +13,10 @@ export function testOrchestratorNode(common: TestCommon) {
       // Set "Single": false in the config otherwise net_nodeInfo returns mock data (invalid netId, node id, etc.)
       await CommonUtil.expectAsync(async () => {
         const nodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
-        return nodes.total === 1
+        return nodes.result.total === 1
       }, common.timeout)
       const nodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
-      const node = nodes.entries[0]
+      const node = nodes.result.entries[0]
       expect(node.id).to.not.be.empty
     })
 

@@ -16,8 +16,8 @@ export function testOrchestratorRelayer(common: TestCommon) {
   describe("testOrchestratorRelayer1", () => {
     it('test getPaginated relayers', async function () {
       const relayers = await common.orchestrator.getRelayers()
-      expect(relayers.total).to.be.equal(1)
-      const relayer = relayers.entries[0]
+      expect(relayers.result.total).to.be.equal(1)
+      const relayer = relayers.result.entries[0]
       const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
       expect(relayer.version).to.be.equal(expectedVersion.trim())
       expect(relayer.id).to.not.be.empty
@@ -39,7 +39,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
 
       it('test spawn/despawn relayer', async function () {
         const relayersBefore = await common.orchestrator.getRelayers()
-        expect(relayersBefore.total).to.be.equal(1)
+        expect(relayersBefore.result.total).to.be.equal(1)
         const config: RelayerConfig = {
           rpcUrl: "http://127.0.0.1:56341",
           rpcAuthUrl: "http://127.0.0.1:56342",
@@ -50,14 +50,14 @@ export function testOrchestratorRelayer(common: TestCommon) {
         relayer = new Relayer(config, common.timeout, "1.1.1.3")
         await relayer.start()
         const relayersAfter1 = await common.orchestrator.getRelayers()
-        expect(relayersAfter1.total).to.be.equal(2)
-        expect(relayersAfter1.entries[0].id).to.be.equal(relayersBefore.entries[0].id)
-        expect(relayersAfter1.entries[0].id).to.not.be.equal(relayersAfter1.entries[1].id)
+        expect(relayersAfter1.result.total).to.be.equal(2)
+        expect(relayersAfter1.result.entries[0].id).to.be.equal(relayersBefore.result.entries[0].id)
+        expect(relayersAfter1.result.entries[0].id).to.not.be.equal(relayersAfter1.result.entries[1].id)
         await relayer.stop()
         await CommonUtil.sleep(100)
         const relayersAfter2 = await common.orchestrator.getRelayers()
-        expect(relayersAfter2.total).to.be.equal(1)
-        expect(relayersAfter2.entries[0].id).to.be.equal(relayersBefore.entries[0].id)
+        expect(relayersAfter2.result.total).to.be.equal(1)
+        expect(relayersAfter2.result.entries[0].id).to.be.equal(relayersBefore.result.entries[0].id)
       })
     })
   })

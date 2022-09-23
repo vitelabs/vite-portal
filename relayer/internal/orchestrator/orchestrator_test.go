@@ -51,3 +51,17 @@ func TestInitInvalidUrl(t *testing.T) {
 	o := NewOrchestrator(idutil.NewGuid(), "http://localhost:1234", types.DefaultJwtSecret, timeout)
 	require.NotNil(t, o)
 }
+
+func TestStop(t *testing.T) {
+	r := wstest.NewTestWsRpc(timeout)
+	r.Start()
+	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout)
+	require.NotNil(t, o)
+	require.Equal(t, ws.Unknown, o.GetStatus())
+	o.Start(rpc.NewServer())
+	require.Equal(t, ws.Connected, o.GetStatus())
+	require.True(t, ws.CanConnect(r.Url, timeout))
+	o.Stop()
+	require.True(t, ws.CanConnect(r.Url, timeout))
+	require.Equal(t, ws.Disconnected, o.GetStatus())
+}

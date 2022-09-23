@@ -12,6 +12,7 @@ import (
 
 type Orchestrator struct {
 	relayerId string
+	stopped   bool
 	status    ws.ConnectionStatus
 	client    *client.Client
 }
@@ -26,6 +27,7 @@ func NewOrchestrator(relayerId, url, jwtSecret string, timeout time.Duration) *O
 	}
 	return &Orchestrator{
 		relayerId: relayerId,
+		stopped:   false,
 		status:    ws.Unknown,
 		client:    client.NewClient(url, jwtSecret, timeout),
 	}
@@ -36,17 +38,8 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 }
 
 func (o *Orchestrator) Start(s *rpc.Server) {
-	// TODO: start/stop properly
-	o.setStatus(ws.Connecting)
-	err := o.client.Connect(o.relayerId)
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
-		// TODO: use exponential backoff strategy
-		time.Sleep(1 * time.Second)
-		// o.init()
-		return
-	}
-	o.setStatus(ws.Connected)
+	o.stopped = false
+	o.connect(s)
 
 	codec := rpc.NewFuncCodec(o.client.Conn, o.client.Conn.WriteJSON, o.client.Conn.ReadJSON)
 	go s.ServeCodec(codec, 0, nil, nil)
@@ -54,7 +47,36 @@ func (o *Orchestrator) Start(s *rpc.Server) {
 	go func() {
 		<-codec.Closed()
 		o.setStatus(ws.Disconnected)
+		if !o.stopped {
+			time.Sleep(10 * time.Second)
+			o.Start(s)
+		}
 	}()
+}
+
+func (o *Orchestrator) Stop() {
+	if !o.stopped {
+		o.stopped = true
+		conn := o.client.Conn
+		if conn != nil {
+			conn.Close()
+		}
+	}
+}
+
+func (o *Orchestrator) connect(s *rpc.Server) {
+	if o.stopped {
+		return
+	}
+	o.setStatus(ws.Connecting)
+	err := o.client.Connect(o.relayerId)
+	if err != nil {
+		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
+		time.Sleep(10 * time.Second)
+		o.connect(s)
+		return
+	}
+	o.setStatus(ws.Connected)
 }
 
 func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {

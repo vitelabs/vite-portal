@@ -6,13 +6,18 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo rpc.PeerInfo) (id string, err error) {
+func (s *Service) IsRelayerConnection(claims jwt.RegisteredClaims) bool {
+	return claims.Issuer == sharedtypes.JWTRelayerIssuer
+}
+
+func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo rpc.PeerInfo, claims jwt.RegisteredClaims) (id string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	var resp sharedtypes.RpcAppInfoResponse
@@ -21,7 +26,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		return "", err
 	}
 	logger.Logger().Debug().Str("resp", fmt.Sprintf("%#v", resp)).Msg("handle connect response")
-	if err := s.validateRelayerResponse(resp); err != nil {
+	if err := s.validateRelayerResponse(resp, claims); err != nil {
 		logger.Logger().Warn().Err(err).Msg("invalid relayer response")
 		return "", err
 	}
@@ -38,9 +43,8 @@ func (s *Service) HandleDisconnect(id string) {
 	s.store.Remove(id)
 }
 
-func (s *Service) validateRelayerResponse(r sharedtypes.RpcAppInfoResponse) error {
-	// TODO: verify if relayer id matches with JWT subject
-	if r.Id == "" {
+func (s *Service) validateRelayerResponse(r sharedtypes.RpcAppInfoResponse, claims jwt.RegisteredClaims) error {
+	if r.Id == "" || r.Id != claims.Subject {
 		return errors.New("invalid relayer id")
 	}
 	if r.Name != "vite-portal-relayer" {

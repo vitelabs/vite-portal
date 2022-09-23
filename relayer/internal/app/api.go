@@ -79,12 +79,10 @@ func (a *adminAPI) GetNode(id string) (nodetypes.Node, error) {
 
 // PutNode enables the orchestrator to add or update a node
 func (a *adminAPI) PutNode(node nodetypes.Node) error {
-	// TODO: auth
 	return a.app.nodeService.PutNode(node)
 }
 
 // DeleteNode enables the orchestrator to delete a node
 func (a *adminAPI) DeleteNode(id string) error {
-	// TODO: auth
 	return a.app.nodeService.DeleteNode(id)
 }

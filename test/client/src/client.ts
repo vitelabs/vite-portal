@@ -1,22 +1,20 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios"
 import WebSocket from "ws"
 import { TestConstants } from "./constants"
-import { JsonRpcRequest, JsonRpcResponse } from "./types"
+import { JsonRpcRequest, JsonRpcResponse, Jwt } from "./types"
 import { CommonUtil, JwtUtil } from "./utils"
 
 export abstract class RpcClient {
   requestId: number
   timeout: number
   clientIp?: string
-  jwtSubject?: string
-  jwtSecret?: string
+  jwt?: Jwt
 
-  constructor(timeout: number, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
+  constructor(timeout: number, clientIp?: string, jwt?: Jwt) {
     this.requestId = 0
     this.timeout = timeout
     this.clientIp = clientIp
-    this.jwtSubject = jwtSubject
-    this.jwtSecret = jwtSecret
+    this.jwt = jwt
   }
 
   protected createHeaders = (): {
@@ -28,8 +26,8 @@ export abstract class RpcClient {
     if (!CommonUtil.isNullOrWhitespace(this.clientIp)) {
       headers[TestConstants.DefaultHeaderTrueClientIp] = this.clientIp!
     }
-    if (!CommonUtil.isNullOrWhitespace(this.jwtSecret)) {
-      const token = JwtUtil.CreateDefaultToken(this.jwtSecret!, this.jwtSubject)
+    if (this.jwt) {
+      const token = JwtUtil.CreateDefaultToken(this.jwt)
       headers[TestConstants.DefaultHeaderAuthorization] = "Bearer " + token
     }
     return headers
@@ -52,8 +50,8 @@ export abstract class RpcClient {
 export class RpcHttpClient extends RpcClient {
   http: AxiosInstance
 
-  constructor(timeout: number, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
-    super(timeout, clientIp, jwtSubject, jwtSecret)
+  constructor(timeout: number, clientIp?: string, jwt?: Jwt) {
+    super(timeout, clientIp, jwt)
     this.http = axios.create({
       timeout: timeout,
     })
@@ -71,8 +69,8 @@ export class RpcWsClient extends RpcClient {
   ws: WebSocket
   error?: WebSocket.ErrorEvent
 
-  constructor(timeout: number, url: string, clientIp?: string, jwtSubject?: string, jwtSecret?: string) {
-    super(timeout, clientIp, jwtSubject, jwtSecret)
+  constructor(timeout: number, url: string, clientIp?: string, jwt?: Jwt) {
+    super(timeout, clientIp, jwt)
     this.ws = new WebSocket(url, {
       handshakeTimeout: timeout,
       timeout: timeout,

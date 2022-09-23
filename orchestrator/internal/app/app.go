@@ -7,6 +7,7 @@ import (
 	nodeservice "github.com/vitelabs/vite-portal/orchestrator/internal/node/service"
 	relayerservice "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/service"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/crypto"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
@@ -30,6 +31,7 @@ type OrchestratorApp struct {
 	rpcAuth        *rpc.HTTPServer
 	inprocHandler  *rpc.Server // In-process RPC request handler to process the API requests
 	context        *Context
+	jwtHandler     *crypto.JWTHandler
 	nodeService    *nodeservice.Service
 	relayerService *relayerservice.Service
 }
@@ -42,6 +44,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
+	a.jwtHandler = crypto.NewDefaultJWTHandler([]byte(cfg.JwtSecret))
 	a.nodeService = nodeservice.NewService(cfg, c.nodeStore)
 	a.relayerService = relayerservice.NewService(cfg, c.relayerStore)
 

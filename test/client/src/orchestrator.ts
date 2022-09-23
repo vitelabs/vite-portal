@@ -1,5 +1,5 @@
 import { BaseProcess } from "./process"
-import { AppInfo, GenericPage, JsonRpcResponse, OrchestratorConfig, RelayerEntity } from "../src/types"
+import { AppInfo, GenericPage, JsonRpcResponse, Jwt, OrchestratorConfig, RelayerEntity } from "../src/types"
 import { RpcHttpClient } from "./client"
 
 export class Orchestrator extends BaseProcess {
@@ -13,7 +13,10 @@ export class Orchestrator extends BaseProcess {
     this.url = config.rpcUrl
     this.authUrl = config.rpcAuthUrl
     this.rpcClient = new RpcHttpClient(timeout, clientIp)
-    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, undefined, config.jwtSecret)
+    const jwt: Jwt = {
+      secret: config.jwtSecret
+    }
+    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, jwt)
   }
 
   name(): string {

@@ -1,8 +1,9 @@
 import { sign, Secret } from "jsonwebtoken"
 import { CommonUtil } from "./common.util"
+import { Jwt } from "../types";
 
 export abstract class JwtUtil {
-  public static CreateDefaultToken(jwtSecret: string, subject?: string): string {
+  public static CreateDefaultToken(jwt: Jwt): string {
     const now = Math.floor(Date.now() / 1000)
     const payload: {
       [x: string]: any;
@@ -10,9 +11,12 @@ export abstract class JwtUtil {
       "iat": now,
       "exp": now + 10
     }
-    if (!CommonUtil.isNullOrWhitespace(subject)) {
-      payload["sub"] = subject!
+    if (!CommonUtil.isNullOrWhitespace(jwt.subject)) {
+      payload["sub"] = jwt.subject!
     }
-    return sign(payload, jwtSecret, { algorithm: "HS256" })
+    if (!CommonUtil.isNullOrWhitespace(jwt.issuer)) {
+      payload["iss"] = jwt.issuer!
+    }
+    return sign(payload, jwt.secret, { algorithm: "HS256" })
   }
 }

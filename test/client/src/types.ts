@@ -95,3 +95,9 @@ export type Payload = {
   path: string
   headers: any
 }
+
+export type Jwt = {
+  secret: string
+  subject?: string
+  issuer?: string
+}

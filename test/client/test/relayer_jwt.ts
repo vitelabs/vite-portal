@@ -26,7 +26,7 @@ export function testRelayerJwt(common: TestCommon) {
     }, common.timeout, CommonUtil.uuid())
   })
 
-  it('test get nonexistent node', async function () {
+  it('test get nonexistent node unauthorized', async function () {
     const response = await relayer1.getNode(CommonUtil.uuid())
     expect(response.result).to.be.undefined
     expect(response.error).to.not.be.undefined
@@ -37,7 +37,7 @@ export function testRelayerJwt(common: TestCommon) {
     expect(result.response?.status).to.be.equal(403)
   })
 
-  it('test insert node', async function () {
+  it('test insert node unauthorized', async function () {
     const chain = CommonUtil.uuid()
     const node = common.createRandomNode(chain)
     const response = await relayer1.putNode(node)
@@ -49,7 +49,7 @@ export function testRelayerJwt(common: TestCommon) {
     expect(result.response?.status).to.be.equal(403)
   })
 
-  it('test delete nonexistent node', async function () {
+  it('test delete nonexistent node unauthorized', async function () {
     const response = await relayer1.deleteNode(CommonUtil.uuid())
     expect(response.error).to.not.be.undefined
     expect(response.error?.code).to.be.equal(-32601)
@@ -59,7 +59,7 @@ export function testRelayerJwt(common: TestCommon) {
     expect(result.response?.status).to.be.equal(403)
   })
 
-  it('test get nodes', async function () {
+  it('test get nodes unauthorized', async function () {
     const chain = CommonUtil.uuid()
     const response = await relayer1.getNodes(chain)
     expect(response.error).to.not.be.undefined

@@ -4,7 +4,7 @@ export abstract class TestConstants {
   static DefaultBinPath = path.join(path.dirname(__dirname), "bin")
   static DefaultChain = "chain1"
   static DefaultJwtSecret = "secret1234"
-  static DefaultJwtRelayerSubject = "vite-portal-relayer"
+  static DefaultJwtRelayerIssuer = "vite-portal-relayer"
   static DefaultHeaderAuthorization = "Authorization"
   static DefaultHeaderTrueClientIp = "CF-Connecting-IP"
   static DefaultIpAddress = "0.0.0.0"

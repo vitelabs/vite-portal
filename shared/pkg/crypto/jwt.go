@@ -31,7 +31,7 @@ func NewJWTHandler(secret []byte, expiryTimeout time.Duration) *JWTHandler {
 
 func (h *JWTHandler) Extract(header http.Header) (string, error) {
 	var strToken string
-	if auth := header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
+	if auth := header.Get(types.HTTPHeaderAuthorization); strings.HasPrefix(auth, "Bearer ") {
 		strToken = strings.TrimPrefix(auth, "Bearer ")
 	}
 	if len(strToken) == 0 {
@@ -67,10 +67,24 @@ func (h *JWTHandler) Validate(token string) (jwt.RegisteredClaims, error) {
 	return claims, nil
 }
 
-func (h *JWTHandler) IssueDefaultToken(subject string) string {
+func (h *JWTHandler) GetClaims(header http.Header) (jwt.RegisteredClaims, error) {
+	var claims jwt.RegisteredClaims
+	token, err := h.Extract(header)
+	if err != nil {
+		return claims, err
+	}
+	claims, err = h.Validate(token)
+	if err != nil {
+		return claims, err
+	}
+	return claims, nil
+}
+
+func (h *JWTHandler) IssueDefaultToken(subject, issuer string) string {
 	method := jwt.SigningMethodHS256
 	claims := claims{
 		"sub": subject,
+		"iss": issuer,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Unix() + 10,
 	}

@@ -142,8 +142,6 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 
 ## Create or update a node <a name="put_node"></a>
 
-TODO: add authorization to restrict access to orchestrator
-
 ### Request
 
     curl -i -X POST http://localhost:56332/ \
@@ -211,8 +209,6 @@ TODO: add authorization to restrict access to orchestrator
     }
 
 ## Delete a node <a name="delete_node"></a>
-
-TODO: add authorization to restrict access to orchestrator
 
 ### Request
 

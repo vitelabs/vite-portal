@@ -4,6 +4,7 @@ import { TestCommon } from "./common"
 import { RpcWsClient, RpcWsClientWrapper } from "../src/client"
 import { TestConstants } from "../src/constants"
 import { Orchestrator } from "../src/orchestrator"
+import { Jwt } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
 export function testOrchestratorJwt(common: TestCommon) {
@@ -46,14 +47,22 @@ export function testOrchestratorJwt(common: TestCommon) {
     })
 
     var runs1 = [
-      { id: '1', options: { jwtSubject: undefined, jwtSecret: undefined } },
-      { id: '2', options: { jwtSubject: undefined, jwtSecret: "invalid_secret" } },
+      { id: '1', options: { jwtSubject: undefined, jwtIssuer: undefined, jwtSecret: undefined } },
+      { id: '2', options: { jwtSubject: undefined, jwtIssuer: undefined, jwtSecret: "invalid_secret" } },
     ]
 
     runs1.forEach(function (run) {
       it('test connect/disconnect error ' + run.id, async function () {
         const url = "ws://127.0.0.1:57332"
-        const client = new RpcWsClient(common.timeout, url, CommonUtil.uuid(), run.options.jwtSubject, run.options.jwtSecret)
+        let jwt: Jwt | undefined = undefined
+        if (!CommonUtil.isNullOrWhitespace(run.options.jwtSecret)) {
+          jwt = {
+            secret: run.options.jwtSecret!,
+            subject: run.options.jwtSubject,
+            issuer: run.options.jwtIssuer
+          }
+        }
+        const client = new RpcWsClient(common.timeout, url, CommonUtil.uuid(), jwt)
         expect(client.error).to.be.undefined
         await CommonUtil.sleep(10)
         expect(client.error).to.not.be.undefined
@@ -66,16 +75,18 @@ export function testOrchestratorJwt(common: TestCommon) {
         id: '1', options: {
           expected1: "net_nodeInfo",
           expected2: "failed to call \'net_nodeInfo\'",
+          jwtSecret: TestConstants.DefaultJwtSecret,
           jwtSubject: undefined,
-          jwtSecret: TestConstants.DefaultJwtSecret
+          jwtIssuer: undefined,
         }
       },
       {
         id: '2', options: {
           expected1: "core_getAppInfo",
           expected2: "context deadline exceeded",
-          jwtSubject: TestConstants.DefaultJwtRelayerSubject,
-          jwtSecret: TestConstants.DefaultJwtSecret
+          jwtSecret: TestConstants.DefaultJwtSecret,
+          jwtSubject: undefined,
+          jwtIssuer: TestConstants.DefaultJwtRelayerIssuer,
         }
       },
     ]
@@ -83,7 +94,12 @@ export function testOrchestratorJwt(common: TestCommon) {
     runs2.forEach(function (run) {
       it('test connect/disconnect success ' + run.id, async function () {
         const url = "ws://127.0.0.1:57332"
-        const client = new RpcWsClient(common.timeout, url, CommonUtil.uuid(), run.options.jwtSubject, run.options.jwtSecret)
+        const jwt: Jwt = {
+          secret: run.options.jwtSecret,
+          subject: run.options.jwtSubject,
+          issuer: run.options.jwtIssuer
+        }
+        const client = new RpcWsClient(common.timeout, url, CommonUtil.uuid(), jwt)
         const wrapper = new RpcWsClientWrapper(client)
 
         await CommonUtil.expectAsync(async () => wrapper.connected === true, common.timeout)

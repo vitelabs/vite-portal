@@ -32,11 +32,11 @@ func SetFallbackClientIp(h http.Header, value string) {
 		logger.Logger().Error().Err(err).Msg(fmt.Sprintf("couldn't split host and port of '%s'", value))
 		return
 	}
-	h.Set(types.HeaderFallbackClientIp, host)
+	h.Set(types.HTTPHeaderFallbackClientIp, host)
 }
 
 func GetFallbackClientIp(h http.Header) string {
-	return h.Get(types.HeaderFallbackClientIp)
+	return h.Get(types.HTTPHeaderFallbackClientIp)
 }
 
 func WriteResponse(w http.ResponseWriter, data, contentType string) {

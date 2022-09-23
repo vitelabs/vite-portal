@@ -123,8 +123,9 @@ func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) 
 func (a *OrchestratorApp) OnConnect(c *rpc.Client, peerInfo rpc.PeerInfo) (sharedtypes.Connection, error) {
 	defaultConn := sharedtypes.Connection{}
 	timeout := time.Duration(a.config.RpcTimeout) * time.Millisecond
-	if a.relayerService.IsRelayerConnection(peerInfo) {
-		id, err := a.relayerService.HandleConnect(timeout, c, peerInfo)
+	claims, _ := a.jwtHandler.GetClaims(peerInfo.HTTP.Header)
+	if a.relayerService.IsRelayerConnection(claims) {
+		id, err := a.relayerService.HandleConnect(timeout, c, peerInfo, claims)
 		if err != nil {
 			a.HandleOnConnectError(timeout, c.WriteConn, err)
 			return defaultConn, err

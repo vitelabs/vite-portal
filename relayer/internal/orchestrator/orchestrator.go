@@ -11,11 +11,12 @@ import (
 )
 
 type Orchestrator struct {
-	status        ws.ConnectionStatus
-	client        *client.Client
+	relayerId string
+	status    ws.ConnectionStatus
+	client    *client.Client
 }
 
-func NewOrchestrator(url, jwtSecret string, timeout time.Duration) *Orchestrator {
+func NewOrchestrator(relayerId, url, jwtSecret string, timeout time.Duration) *Orchestrator {
 	u, e := urlutil.Parse(url)
 	if e != nil {
 		logger.Logger().Error().Err(e).Msg("orchestrator URL parse failed")
@@ -24,8 +25,9 @@ func NewOrchestrator(url, jwtSecret string, timeout time.Duration) *Orchestrator
 		logger.Logger().Error().Msg("orchestrator URL does not match WebSocket protocol")
 	}
 	return &Orchestrator{
-		status:        ws.Unknown,
-		client:        client.NewClient(url, jwtSecret, timeout),
+		relayerId: relayerId,
+		status:    ws.Unknown,
+		client:    client.NewClient(url, jwtSecret, timeout),
 	}
 }
 
@@ -36,7 +38,7 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 func (o *Orchestrator) Start(s *rpc.Server) {
 	// TODO: start/stop properly
 	o.setStatus(ws.Connecting)
-	err := o.client.Connect()
+	err := o.client.Connect(o.relayerId)
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
 		// TODO: use exponential backoff strategy

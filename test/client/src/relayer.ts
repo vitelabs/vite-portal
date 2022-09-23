@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios"
-import { NodeEntity, GenericPage, RelayerConfig, AppInfo, JsonRpcResponse } from "./types"
+import { NodeEntity, GenericPage, RelayerConfig, AppInfo, JsonRpcResponse, Jwt } from "./types"
 import { RpcHttpClient } from "./client"
 import { TestConstants } from "./constants"
 import { BaseProcess } from "./process"
@@ -14,7 +14,10 @@ export class Relayer extends BaseProcess {
     super(timeout)
     this.config = config
     this.rpcClient = new RpcHttpClient(timeout, clientIp)
-    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, undefined, config.jwtSecret)
+    const jwt: Jwt = {
+      secret: config.jwtSecret
+    }
+    this.rpcAuthClient = new RpcHttpClient(timeout, clientIp, jwt)
     this.axiosClient = axios.create({
       baseURL: config.rpcRelayHttpUrl,
       timeout: timeout,

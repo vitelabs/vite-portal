@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 	wstest "github.com/vitelabs/vite-portal/shared/pkg/ws/test"
 )
@@ -16,7 +17,7 @@ var timeout = 1000 * time.Millisecond
 func TestInit(t *testing.T) {
 	r := wstest.NewTestWsRpc(timeout)
 	r.Start()
-	o := NewOrchestrator(r.Url, types.DefaultJwtSecret, timeout)
+	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
 	o.Start(rpc.NewServer())
@@ -32,7 +33,7 @@ func TestMockInit(t *testing.T) {
 	mock := ws.NewMockWsRpc(0)
 	require.NotNil(t, mock)
 	go mock.Serve(timeout)
-	o := NewOrchestrator(mock.Url, types.DefaultJwtSecret, timeout)
+	o := NewOrchestrator(idutil.NewGuid(), mock.Url, types.DefaultJwtSecret, timeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
 	o.Start(rpc.NewServer())
@@ -47,6 +48,6 @@ func TestMockInit(t *testing.T) {
 
 func TestInitInvalidUrl(t *testing.T) {
 	t.Parallel()
-	o := NewOrchestrator("http://localhost:1234", types.DefaultJwtSecret, timeout)
+	o := NewOrchestrator(idutil.NewGuid(), "http://localhost:1234", types.DefaultJwtSecret, timeout)
 	require.NotNil(t, o)
 }

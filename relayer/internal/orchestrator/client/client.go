@@ -25,14 +25,14 @@ func NewClient(url, jwtSecret string, timeout time.Duration) *Client {
 	}
 }
 
-func (c *Client) Connect() error {
+func (c *Client) Connect(jwtSubject string) error {
 	dialer := websocket.Dialer{
 		Proxy:            http.ProxyFromEnvironment,
 		HandshakeTimeout: c.timeout,
 	}
-	token := c.jwtHanler.IssueDefaultToken(sharedtypes.JWTRelayerSubject)
+	token := c.jwtHanler.IssueDefaultToken(jwtSubject, sharedtypes.JWTRelayerIssuer)
 	headers := make(http.Header, 1)
-	headers.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	headers.Set(sharedtypes.HTTPHeaderAuthorization, fmt.Sprintf("Bearer %s", token))
 	conn, _, err := dialer.Dial(c.url, headers)
 	if err != nil {
 		return err

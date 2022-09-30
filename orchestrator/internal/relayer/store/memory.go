@@ -5,10 +5,11 @@ import (
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/relayer/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/collections"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 )
 
 type MemoryStore struct {
-	db    collections.NameObjectCollectionI
+	db   collections.NameObjectCollectionI[types.Relayer]
 	lock sync.RWMutex
 }
 
@@ -27,7 +28,7 @@ func (s *MemoryStore) Clear() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.db = collections.NewNameObjectCollection()
+	s.db = collections.NewNameObjectCollection[types.Relayer]()
 }
 
 func (s *MemoryStore) Close() {
@@ -40,20 +41,20 @@ func (s *MemoryStore) Count() int {
 
 func (s *MemoryStore) GetByIndex(index int) (r types.Relayer, found bool) {
 	e := s.db.GetByIndex(index)
-	if e == nil {
+	if commonutil.IsEmpty(e) {
 		return *new(types.Relayer), false
 	}
 
-	return e.(types.Relayer), true
+	return e, true
 }
 
 func (s *MemoryStore) GetById(id string) (r types.Relayer, found bool) {
 	e := s.db.Get(id)
-	if e == nil {
+	if commonutil.IsEmpty(e) {
 		return
 	}
 
-	return e.(types.Relayer), true
+	return e, true
 }
 
 func (s *MemoryStore) Upsert(r types.Relayer) error {

@@ -3,40 +3,41 @@ package collections
 import (
 	"sync"
 
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 )
 
-type NameObjectCollectionI interface {
-	Add(name string, obj any)
-	Set(name string, obj any)
+type NameObjectCollectionI[T any] interface {
+	Add(name string, obj T)
+	Set(name string, obj T)
 	Remove(name string)
 	RemoveAt(i int)
-	Get(name string) any
-	GetByIndex(i int) any
+	Get(name string) T
+	GetByIndex(i int) T
 	GetNameByIndex(i int) string
+	GetEnumerator() EnumeratorI[T]
 	Count() int
 }
 
 // Implementation based on:
 // https://github.com/microsoft/referencesource/blob/master/System/compmod/system/collections/specialized/nameobjectcollectionbase.cs
-type NameObjectCollection struct {
-	NameObjectCollectionI
-	entriesMap   map[string]*nameObjectEntry
-	entriesSlice []*nameObjectEntry
+type NameObjectCollection[T any] struct {
+	entriesMap   map[string]*nameObjectEntry[T]
+	entriesSlice []*nameObjectEntry[T]
 	lock         sync.RWMutex
 }
 
 // NewNameObjectCollection creates a new collection
-func NewNameObjectCollection() *NameObjectCollection {
-	return &NameObjectCollection{
-		entriesMap:   map[string]*nameObjectEntry{},
-		entriesSlice: []*nameObjectEntry{},
+func NewNameObjectCollection[T any]() *NameObjectCollection[T] {
+	return &NameObjectCollection[T]{
+		entriesMap:   map[string]*nameObjectEntry[T]{},
+		entriesSlice: []*nameObjectEntry[T]{},
 		lock:         sync.RWMutex{},
 	}
 }
 
 // Add adds an entry with the specified name and object.
-func (c *NameObjectCollection) Add(name string, obj any) {
+func (c *NameObjectCollection[T]) Add(name string, obj T) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -44,7 +45,7 @@ func (c *NameObjectCollection) Add(name string, obj any) {
 }
 
 // AddMany adds many entries to the collection.
-func (c *NameObjectCollection) AddMany(entries map[string]any) {
+func (c *NameObjectCollection[T]) AddMany(entries map[string]T) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -54,7 +55,7 @@ func (c *NameObjectCollection) AddMany(entries map[string]any) {
 }
 
 // Set sets the object of the entry with the specified name, if found; otherwise, adds an entry with the specified name and object.
-func (c *NameObjectCollection) Set(name string, obj any) {
+func (c *NameObjectCollection[T]) Set(name string, obj T) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -68,7 +69,7 @@ func (c *NameObjectCollection) Set(name string, obj any) {
 }
 
 // Remove removes the entries with the specified name.
-func (c *NameObjectCollection) Remove(name string) {
+func (c *NameObjectCollection[T]) Remove(name string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -93,7 +94,7 @@ func (c *NameObjectCollection) Remove(name string) {
 }
 
 // RemoveAt removes the entry at the specified index.
-func (c *NameObjectCollection) RemoveAt(i int) {
+func (c *NameObjectCollection[T]) RemoveAt(i int) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -108,34 +109,41 @@ func (c *NameObjectCollection) RemoveAt(i int) {
 }
 
 // Get gets the object of the entry with the specified name.
-func (c *NameObjectCollection) Get(name string) any {
+func (c *NameObjectCollection[T]) Get(name string) T {
 	entry := c.findEntry(name)
 	if entry == nil {
-		return nil
+		return *new(T)
 	}
 	return entry.obj
 }
 
 // GetByIndex gets the object of the entry with the specified index.
-func (c *NameObjectCollection) GetByIndex(i int) any {
+func (c *NameObjectCollection[T]) GetByIndex(i int) T {
 	return c.Get(c.GetNameByIndex(i))
 }
 
 // GetNameByIndex gets the name of the entry at the specified index.
-func (c *NameObjectCollection) GetNameByIndex(i int) string {
+func (c *NameObjectCollection[T]) GetNameByIndex(i int) string {
 	if i >= len(c.entriesSlice) || i < 0 {
 		return ""
 	}
 	return c.entriesSlice[i].name
 }
 
+// GetEnumerator gets an enumerator that can iterate through the collection.
+func (c *NameObjectCollection[T]) GetEnumerator() EnumeratorI[T] {
+	tmp := make([]*nameObjectEntry[T], len(c.entriesSlice))
+	copy(tmp, c.entriesSlice)
+	return NewNameObjectKeysEnumerator(tmp)
+}
+
 // Count gets the number of entries in this collection.
-func (c *NameObjectCollection) Count() int {
+func (c *NameObjectCollection[T]) Count() int {
 	return len(c.entriesSlice)
 }
 
-func (c *NameObjectCollection) add(name string, obj any) {
-	if name == "" || obj == nil {
+func (c *NameObjectCollection[T]) add(name string, obj T) {
+	if name == "" || commonutil.IsEmpty(obj) {
 		return
 	}
 
@@ -148,18 +156,50 @@ func (c *NameObjectCollection) add(name string, obj any) {
 	c.entriesSlice = append(c.entriesSlice, entry)
 }
 
-func (c *NameObjectCollection) findEntry(name string) *nameObjectEntry {
+func (c *NameObjectCollection[T]) findEntry(name string) *nameObjectEntry[T] {
 	return c.entriesMap[name]
 }
 
-type nameObjectEntry struct {
+type nameObjectEntry[T any] struct {
 	name string
-	obj  any
+	obj  T
 }
 
-func newNameObjectEntry(name string, obj any) *nameObjectEntry {
-	return &nameObjectEntry{
+func newNameObjectEntry[T any](name string, obj T) *nameObjectEntry[T] {
+	return &nameObjectEntry[T]{
 		name: name,
 		obj:  obj,
 	}
+}
+
+type nameObjectKeysEnumerator[T any] struct {
+	pos     int
+	entries []*nameObjectEntry[T]
+}
+
+func NewNameObjectKeysEnumerator[T any](entries []*nameObjectEntry[T]) *nameObjectKeysEnumerator[T] {
+	return &nameObjectKeysEnumerator[T]{
+		pos:     -1,
+		entries: entries,
+	}
+}
+
+func (e *nameObjectKeysEnumerator[T]) MoveNext() bool {
+	if e.pos < len(e.entries)-1 {
+		e.pos++
+		return true
+	}
+	e.pos = len(e.entries)
+	return false
+}
+
+func (e *nameObjectKeysEnumerator[T]) Current() (found bool, curr T) {
+	if e.pos < 0 || e.pos >= len(e.entries) {
+		return false, *new(T)
+	}
+	return true, e.entries[e.pos].obj
+}
+
+func (e *nameObjectKeysEnumerator[T]) Reset() {
+	e.pos = -1
 }

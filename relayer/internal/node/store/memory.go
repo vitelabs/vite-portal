@@ -7,11 +7,12 @@ import (
 
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/collections"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 )
 
 type MemoryStore struct {
 	idMap map[string]string
-	db    map[string]collections.NameObjectCollectionI
+	db    map[string]collections.NameObjectCollectionI[types.Node]
 	lock  sync.RWMutex
 }
 
@@ -31,7 +32,7 @@ func (s *MemoryStore) Clear() {
 	defer s.lock.Unlock()
 
 	s.idMap = map[string]string{}
-	s.db = map[string]collections.NameObjectCollectionI{}
+	s.db = map[string]collections.NameObjectCollectionI[types.Node]{}
 }
 
 func (s *MemoryStore) Close() {
@@ -66,20 +67,20 @@ func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
 	}
 
 	node := s.db[chain].Get(id)
-	if node == nil {
+	if commonutil.IsEmpty(node) {
 		return *new(types.Node), false
 	}
 
-	return node.(types.Node), true
+	return node, true
 }
 
 func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
 	node := s.db[chain].GetByIndex(index)
-	if node == nil {
+	if commonutil.IsEmpty(node) {
 		return *new(types.Node), false
 	}
 
-	return node.(types.Node), true
+	return node, true
 }
 
 func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
@@ -128,9 +129,9 @@ func (s *MemoryStore) Remove(chain string, id string) error {
 	return nil
 }
 
-func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectionI) {
+func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectionI[types.Node]) {
 	if s.db[chain] == nil {
-		s.db[chain] = collections.NewNameObjectCollection()
+		s.db[chain] = collections.NewNameObjectCollection[types.Node]()
 	}
 
 	return s.db[chain]

@@ -84,7 +84,7 @@ Example response:
 Create Bearer token with `relayer/internal/orchestrator/client/client_test.go`:
 
 ```
-websocat ws://localhost:57332/ -E -H='Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjQ2NDEyNjksImlhdCI6MTY2NDYxMjQ2OSwiaXNzIjoidml0ZS1wb3J0YWwtcmVsYXllciIsInN1YiI6InRlc3QxMjM0In0.LOgQdnZbI2bU5ky5KwLXeCSVpuAjkZah5pM0WtvlvfE'
+websocat ws://localhost:57332/ -E -H='Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjQ2MTQ2MzksImlzcyI6InZpdGUtcG9ydGFsLXJlbGF5ZXIiLCJzdWIiOiJ0ZXN0MTIzNCJ9.e3dbqQ9RG656Pk4UaKL1IgIVi9IFqk05u_9orBvx1AA'
 ```
 
 Example response:

@@ -19,7 +19,7 @@ func TestConnect(t *testing.T) {
 
 func TestCreateToken(t *testing.T) {
 	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond)
-	token := c.CreateToken("test1234", 28800) // expires in 8 hours
+	token := c.CreateToken("test1234", 0) // never expires
 	fmt.Println(token)
 	require.NotEmpty(t, token)
 }

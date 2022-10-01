@@ -72,14 +72,32 @@ sudo chmod a+x /usr/local/bin/websocat
 Now `websocat` will be available for all users as a system-wide command:
 
 ```
-websocat ws://localhost:57332/ -E
+websocat ws://localhost:57331/ -E
 ```
 
+Example response:
+
 ```
-{"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": "v0.1", "name": "hello"}}
-{"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": "v0.1", "name": "vite-portal-relayer"}}
+{"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": 0, "netId": 1}}
+```
+
+Create Bearer token with `relayer/internal/orchestrator/client/client_test.go`:
+
+```
+websocat ws://localhost:57332/ -E -H='Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjQ2NDEyNjksImlhdCI6MTY2NDYxMjQ2OSwiaXNzIjoidml0ZS1wb3J0YWwtcmVsYXllciIsInN1YiI6InRlc3QxMjM0In0.LOgQdnZbI2bU5ky5KwLXeCSVpuAjkZah5pM0WtvlvfE'
+```
+
+Example response:
+
+```
+{"jsonrpc": "2.0", "id": 1, "result": {"id": "test1234", "name": "vite-portal-relayer"}}
+```
+
+Example requests:
+
+```
 {"jsonrpc": "2.0", "id": 2, "method": "core_getAppInfo", "params": []}
-{"jsonrpc": "2.0", "id": 2, "method": "admin_getRelayers", "params": []}
+{"jsonrpc": "2.0", "id": 2, "method": "admin_getRelayers", "params": [0, 0]}
 ```
 
 # API

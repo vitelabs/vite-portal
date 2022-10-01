@@ -1,25 +1,23 @@
 package app
 
 import (
-	nodeinterfaces "github.com/vitelabs/vite-portal/orchestrator/internal/node/interfaces"
 	nodestore "github.com/vitelabs/vite-portal/orchestrator/internal/node/store"
-	relayerinterfaces "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/interfaces"
 	relayerstore "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/store"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type Context struct {
-	nodeStore    nodeinterfaces.StoreI
-	relayerStore relayerinterfaces.StoreI
-	ipBlacklist *sharedtypes.TransientCache[types.IpBlacklistItem]
+	nodeStore    *nodestore.MemoryStore
+	relayerStore *relayerstore.MemoryStore
+	ipBlacklist  *sharedtypes.TransientCache[types.IpBlacklistItem]
 }
 
 func NewContext(config types.Config) *Context {
 	c := &Context{
 		nodeStore:    nodestore.NewMemoryStore(),
 		relayerStore: relayerstore.NewMemoryStore(),
-		ipBlacklist: sharedtypes.NewTransientCache[types.IpBlacklistItem](config.MaxIpBlacklistEntries),
+		ipBlacklist:  sharedtypes.NewTransientCache[types.IpBlacklistItem](config.MaxIpBlacklistEntries),
 	}
 	return c
 }

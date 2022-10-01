@@ -11,17 +11,17 @@ import (
 )
 
 type Client struct {
-	url       string
-	timeout   time.Duration
-	jwtHanler crypto.JWTHandler
-	Conn      *websocket.Conn
+	url        string
+	timeout    time.Duration
+	jwtHandler crypto.JWTHandler
+	Conn       *websocket.Conn
 }
 
 func NewClient(url, jwtSecret string, timeout time.Duration) *Client {
 	return &Client{
-		url:       url,
-		timeout:   timeout,
-		jwtHanler: *crypto.NewDefaultJWTHandler([]byte(jwtSecret)),
+		url:        url,
+		timeout:    timeout,
+		jwtHandler: *crypto.NewDefaultJWTHandler([]byte(jwtSecret)),
 	}
 }
 
@@ -30,7 +30,7 @@ func (c *Client) Connect(jwtSubject string) error {
 		Proxy:            http.ProxyFromEnvironment,
 		HandshakeTimeout: c.timeout,
 	}
-	token := c.jwtHanler.IssueDefaultToken(jwtSubject, sharedtypes.JWTRelayerIssuer)
+	token := c.CreateToken(jwtSubject, 10) // expires in 10 seconds
 	headers := make(http.Header, 1)
 	headers.Set(sharedtypes.HTTPHeaderAuthorization, fmt.Sprintf("Bearer %s", token))
 	conn, _, err := dialer.Dial(c.url, headers)
@@ -39,4 +39,8 @@ func (c *Client) Connect(jwtSubject string) error {
 	}
 	c.Conn = conn
 	return nil
+}
+
+func (c *Client) CreateToken(jwtSubject string, exp int64) string {
+	return c.jwtHandler.IssueDefaultToken(jwtSubject, sharedtypes.JWTRelayerIssuer, exp)
 }

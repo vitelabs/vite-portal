@@ -80,13 +80,13 @@ func (h *JWTHandler) GetClaims(header http.Header) (jwt.RegisteredClaims, error)
 	return claims, nil
 }
 
-func (h *JWTHandler) IssueDefaultToken(subject, issuer string) string {
+func (h *JWTHandler) IssueDefaultToken(subject, issuer string, exp int64) string {
 	method := jwt.SigningMethodHS256
 	claims := claims{
 		"sub": subject,
 		"iss": issuer,
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Unix() + 10,
+		"exp": time.Now().Unix() + exp,
 	}
 	secret, _ := h.keyFunc(nil)
 	ss, err := jwt.NewWithClaims(method, claims).SignedString(secret)

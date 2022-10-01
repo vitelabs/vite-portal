@@ -91,6 +91,10 @@ func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
 	return s.Get(s.idMap[id], id)
 }
 
+func (s *MemoryStore) GetEnumerator(chain string) collections.EnumeratorI[types.Node] {
+	return s.db[chain].GetEnumerator()
+}
+
 func (s *MemoryStore) Add(n types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()

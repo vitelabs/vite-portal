@@ -16,3 +16,12 @@ type LoggingConfig struct {
 	// MaxAge the max age in days to keep a logfile
 	MaxAge int `json:"maxAge"`
 }
+
+type ChainConfig struct {
+	// Id is the identifier of the chain
+	Id string `json:"id"`
+	// Name is the name of the chain
+	Name string `json:"name"`
+	// OfficialNodeUrl is the HTTP URL of the official node
+	OfficialNodeUrl string `json:"officialNodeUrl"`
+}

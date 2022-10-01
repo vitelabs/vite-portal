@@ -1,11 +1,8 @@
 package types
 
 import (
-	"errors"
-	"fmt"
-
-	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
 const (
@@ -14,8 +11,6 @@ const (
 	DefaultRpcPort                     = 57331
 	DefaultRpcAuthPort                 = 57332
 	DefaultRpcTimeout                  = 5000
-	DefaultJwtSecret                   = "secret1234"
-	DefaultJwtExpiryTimeout            = 0
 	DefaultMaxIpBlacklistEntries       = 10000
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
@@ -27,13 +22,6 @@ const (
 	DefaultLoggingMaxSize              = 100
 	DefaultLoggingMaxBackups           = 10
 	DefaultLoggingMaxAge               = 28
-)
-
-var (
-	DefaultSupportedChains = []string{
-		sharedtypes.Chains.ViteMain.Name,
-		sharedtypes.Chains.ViteBuidl.Name,
-	}
 )
 
 type Config struct {
@@ -59,8 +47,9 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
-	// A list of supported chain names
-	SupportedChains []string `json:"supportedChains"`
+	// A list of supported chains
+	SupportedChains []sharedtypes.ChainConfig `json:"supportedChains"`
+	supportedChains *sharedtypes.Chains
 	// Logging related configurtion
 	Logging sharedtypes.LoggingConfig `json:"logging"`
 }
@@ -72,13 +61,13 @@ func NewDefaultConfig() Config {
 		RpcPort:                DefaultRpcPort,
 		RpcAuthPort:            DefaultRpcAuthPort,
 		RpcTimeout:             DefaultRpcTimeout,
-		JwtSecret:              DefaultJwtSecret,
-		JwtExpiryTimeout:       DefaultJwtExpiryTimeout,
+		JwtSecret:              sharedtypes.DefaultJwtSecret,
+		JwtExpiryTimeout:       sharedtypes.DefaultJwtExpiryTimeout,
 		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
 		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
 		UserAgent:              DefaultUserAgent,
 		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
-		SupportedChains:        DefaultSupportedChains,
+		SupportedChains:        sharedtypes.DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,
@@ -108,16 +97,15 @@ func (c *Config) GetLoggingConfig() sharedtypes.LoggingConfig {
 	return c.Logging
 }
 
+func (c *Config) GetChains() *sharedtypes.Chains {
+	return c.supportedChains
+}
+
 func (c *Config) Validate() error {
-	prefix := "Config error: "
-	if c.JwtSecret == "" {
-		return errors.New(fmt.Sprintf("%s JwtSecret must not be empty", prefix))
+	c.supportedChains = sharedtypes.NewChains(c.SupportedChains)
+	err := configutil.ValidateChains(c.supportedChains)
+	if err != nil {
+		return err
 	}
-	if c.JwtSecret == DefaultJwtSecret {
-		logger.Logger().Warn().Msg("consider changing the default JWT secret")
-	}
-	if c.JwtExpiryTimeout == DefaultJwtExpiryTimeout {
-		logger.Logger().Warn().Msg("consider changing the default JWT expiry timeout")
-	}
-	return nil
+	return configutil.ValidateJwt(c.JwtSecret, c.JwtExpiryTimeout)
 }

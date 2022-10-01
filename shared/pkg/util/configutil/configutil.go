@@ -11,6 +11,7 @@ import (
 
 	"github.com/vitelabs/vite-portal/shared/pkg/interfaces"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
@@ -90,4 +91,34 @@ func WriteConfigFile(p string, c any) {
 	if err != nil {
 		logger.Logger().Fatal().Err(err).Msg("cannot write default config to json file")
 	}
+}
+
+func ValidateChains(c *types.Chains) error {
+	prefix := "Config error: "
+	defaultChain := types.DefaultSupportedChains[0]
+	if 0 >= c.Count() {
+		return errors.New(fmt.Sprintf("%s supported chains cannot be empty", prefix))
+	}
+	chain, found := c.GetByName(defaultChain.Name)
+	if !found {
+		return errors.New(fmt.Sprintf("%s default chain not found", prefix))
+	}
+	if chain.OfficialNodeUrl == defaultChain.OfficialNodeUrl {
+		logger.Logger().Warn().Msg("consider changing the default official node URL of the supported chains")
+	}
+	return nil
+}
+
+func ValidateJwt(secret string, expiryTimeout int64) error {
+	prefix := "Config error: "
+	if secret == "" {
+		return errors.New(fmt.Sprintf("%s JwtSecret must not be empty", prefix))
+	}
+	if secret == types.DefaultJwtSecret {
+		logger.Logger().Warn().Msg("consider changing the default JWT secret")
+	}
+	if expiryTimeout == types.DefaultJwtExpiryTimeout {
+		logger.Logger().Warn().Msg("consider changing the default JWT expiry timeout")
+	}
+	return nil
 }

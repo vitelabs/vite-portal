@@ -6,10 +6,6 @@
     "rpcTimeout": 2000,
     "userAgent": "",
     "headerTrueClientIp": "CF-Connecting-IP",
-    "supportedChains": [
-        "vite_main",
-        "vite_buidl"
-    ],
     "logging": {
         "consoleOutputEnabled": true,
         "fileOutputEnabled": true,

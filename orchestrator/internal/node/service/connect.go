@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
@@ -11,7 +12,6 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/httputil"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/sliceutil"
 )
 
 func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo rpc.PeerInfo) (id string, err error) {
@@ -22,8 +22,8 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		return s.returnConnectError("failed to call 'net_nodeInfo'", err)
 	}
 	logger.Logger().Debug().Str("nodeInfo", fmt.Sprintf("%#v", nodeInfo)).Msg("handle connect response")
-	chain := sharedtypes.Chains.GetById(nodeInfo.NetID)
-	if chain.Id == sharedtypes.Chains.Unknown.Id || !sliceutil.Contains(s.config.SupportedChains, chain.Name) {
+	chain, found := s.config.GetChains().GetById(strconv.Itoa(nodeInfo.NetID))
+	if !found {
 		return s.returnConnectError(fmt.Sprintf("chain id '%d' is not supported", nodeInfo.NetID), nil)
 	}
 	var processInfo sharedtypes.RpcViteProcessInfoResponse

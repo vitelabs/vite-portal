@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/configutil"
 )
 
 const (
@@ -136,14 +136,5 @@ func (c *Config) Validate() error {
 	if c.SessionNodeCount <= 0 {
 		return errors.New(fmt.Sprintf("%s SessionNodeCount must be greater than 0", prefix))
 	}
-	if c.JwtSecret == "" {
-		return errors.New(fmt.Sprintf("%s JwtSecret must not be empty", prefix))
-	}
-	if c.JwtSecret == DefaultJwtSecret {
-		logger.Logger().Warn().Msg("consider changing the default JWT secret")
-	}
-	if c.JwtExpiryTimeout == DefaultJwtExpiryTimeout {
-		logger.Logger().Warn().Msg("consider changing the default JWT expiry timeout")
-	}
-	return nil
+	return configutil	.ValidateJwt(c.JwtSecret, c.JwtExpiryTimeout)
 }

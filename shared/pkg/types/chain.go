@@ -1,41 +1,47 @@
 package types
 
-var Chains = newChainRegistry()
+import (
+	"github.com/vitelabs/vite-portal/shared/pkg/collections"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
+)
 
-type Chain struct {
-	Id   int
-	Name string
-}
-
-func newChainRegistry() *chainRegistry {
-	unknown := Chain{Id: 0, Name: "Unknown"}
-	viteMain := Chain{Id: 1, Name: "vite_main"}
-	viteBuidl := Chain{Id: 9, Name: "vite_buidl"}
-
-	return &chainRegistry{
-		Unknown:   unknown,
-		ViteMain:  viteMain,
-		ViteBuidl: viteBuidl,
-		types:     []Chain{unknown, viteMain, viteBuidl},
+var (
+	DefaultSupportedChains = []ChainConfig{
+		{Id: "1", Name: "vite_main", OfficialNodeUrl: "http://127.0.0.1:23456/"},
+		{Id: "9", Name: "vite_buidl", OfficialNodeUrl: "http://127.0.0.1:23456/"},
 	}
+)
+
+type Chains struct {
+	idToNameMap map[string]string
+	db          collections.NameObjectCollectionI[ChainConfig]
 }
 
-type chainRegistry struct {
-	Unknown   Chain
-	ViteMain  Chain
-	ViteBuidl Chain
-	types     []Chain
-}
-
-func (r *chainRegistry) List() []Chain {
-	return r.types
-}
-
-func (r *chainRegistry) GetById(id int) Chain {
-	for _, v := range r.List() {
-		if v.Id == id {
-			return v
-		}
+func NewChains(cfg []ChainConfig) *Chains {
+	c := &Chains{
+		idToNameMap: map[string]string{},
+		db:          collections.NewNameObjectCollection[ChainConfig](),
 	}
-	return r.Unknown
+	for _, v := range cfg {
+		c.idToNameMap[v.Id] = v.Name
+		c.db.Add(v.Name, v)
+	}
+	return c
+}
+
+func (c *Chains) GetById(id string) (chain ChainConfig, found bool) {
+	return c.GetByName(c.idToNameMap[id])
+}
+
+func (c *Chains) GetByName(name string) (chain ChainConfig, found bool) {
+	existing := c.db.Get(name)
+	if commonutil.IsEmpty(existing) {
+		return *new(ChainConfig), false
+	}
+
+	return existing, true
+}
+
+func (c *Chains) Count() int {
+	return len(c.idToNameMap)
 }

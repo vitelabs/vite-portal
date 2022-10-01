@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
@@ -11,7 +10,7 @@ import (
 )
 
 func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
-	logger.Logger().Debug().Str("chain", chain).Str("supportedChains", strings.Join(s.config.SupportedChains[:], ",")).Msg("get nodes")
+	logger.Logger().Debug().Str("chain", chain).Msg("get nodes")
 	total := s.store.Count(chain)
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset

@@ -16,10 +16,6 @@ type JWTHandler struct {
 	keyFunc       func(token *jwt.Token) (interface{}, error)
 }
 
-func NewDefaultJWTHandler(secret []byte) *JWTHandler {
-	return NewJWTHandler(secret, types.JWTExpiryTimeout)
-}
-
 func NewJWTHandler(secret []byte, expiryTimeout time.Duration) *JWTHandler {
 	return &JWTHandler{
 		expiryTimeout: expiryTimeout,
@@ -58,9 +54,9 @@ func (h *JWTHandler) Validate(token string) (jwt.RegisteredClaims, error) {
 		return claims, errors.New("token is expired")
 	case claims.IssuedAt == nil:
 		return claims, errors.New("missing issued-at")
-	case time.Since(claims.IssuedAt.Time) > h.expiryTimeout:
+	case h.expiryTimeout > 0 && time.Since(claims.IssuedAt.Time) > h.expiryTimeout:
 		return claims, errors.New("stale token")
-	case time.Until(claims.IssuedAt.Time) > h.expiryTimeout:
+	case h.expiryTimeout > 0 && time.Until(claims.IssuedAt.Time) > h.expiryTimeout:
 		return claims, errors.New("future token")
 	}
 

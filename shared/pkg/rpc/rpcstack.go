@@ -41,14 +41,16 @@ type HTTPConfig struct {
 	Vhosts             []string
 	Prefix             string // path prefix on which to mount http handler
 	JwtSecret          []byte // optional JWT secret
+	JwtExpiryTimeout   time.Duration
 }
 
 // WSConfig is the JSON-RPC/Websocket configuration
 type WSConfig struct {
-	Origins   []string
-	Modules   []string
-	Prefix    string // path prefix on which to mount ws handler
-	JwtSecret []byte // optional JWT secret
+	Origins          []string
+	Modules          []string
+	Prefix           string // path prefix on which to mount ws handler
+	JwtSecret        []byte // optional JWT secret
+	JwtExpiryTimeout time.Duration
 }
 
 type rpcHandler struct {
@@ -180,7 +182,7 @@ func (h *HTTPServer) Start() error {
 	for _, path := range paths {
 		name := h.handlerNames[path]
 		if !logged[name] {
-			log.Info().Str("url", "http://"+listener.Addr().String()+path).Msg(name+" enabled")
+			log.Info().Str("url", "http://"+listener.Addr().String()+path).Msg(name + " enabled")
 			logged[name] = true
 		}
 	}
@@ -298,7 +300,7 @@ func (h *HTTPServer) EnableRPC(apis []API, config HTTPConfig) error {
 	}
 	h.httpConfig = config
 	h.httpHandler.Store(&rpcHandler{
-		Handler: NewHTTPHandlerStack(srv, config.CorsAllowedOrigins, config.Vhosts, config.JwtSecret),
+		Handler: NewHTTPHandlerStack(srv, config.CorsAllowedOrigins, config.Vhosts, config.JwtSecret, config.JwtExpiryTimeout),
 		server:  srv,
 	})
 	return nil
@@ -329,7 +331,7 @@ func (h *HTTPServer) EnableWS(apis []API, config WSConfig, beforeConnect BeforeC
 	}
 	h.wsConfig = config
 	h.wsHandler.Store(&rpcHandler{
-		Handler: NewWSHandlerStack(srv.WebsocketHandler(config.Origins, beforeConnect, onConnect, onDisconnect), config.JwtSecret),
+		Handler: NewWSHandlerStack(srv.WebsocketHandler(config.Origins, beforeConnect, onConnect, onDisconnect), config.JwtSecret, config.JwtExpiryTimeout),
 		server:  srv,
 	})
 	return nil
@@ -374,20 +376,20 @@ func isWebsocket(r *http.Request) bool {
 }
 
 // NewHTTPHandlerStack returns wrapped http-related handlers
-func NewHTTPHandlerStack(srv http.Handler, cors []string, vhosts []string, jwtSecret []byte) http.Handler {
+func NewHTTPHandlerStack(srv http.Handler, cors []string, vhosts []string, jwtSecret []byte, expiryTimeout time.Duration) http.Handler {
 	// Wrap the CORS-handler within a host-handler
 	handler := newCorsHandler(srv, cors)
 	handler = newVHostHandler(vhosts, handler)
 	if len(jwtSecret) != 0 {
-		handler = newJWTHandler(jwtSecret, handler)
+		handler = newJWTHandler(jwtSecret, handler, expiryTimeout)
 	}
 	return newGzipHandler(handler)
 }
 
 // NewWSHandlerStack returns a wrapped ws-related handler.
-func NewWSHandlerStack(srv http.Handler, jwtSecret []byte) http.Handler {
+func NewWSHandlerStack(srv http.Handler, jwtSecret []byte, expiryTimeout time.Duration) http.Handler {
 	if len(jwtSecret) != 0 {
-		return newJWTHandler(jwtSecret, srv)
+		return newJWTHandler(jwtSecret, srv, expiryTimeout)
 	}
 	return srv
 }
@@ -539,22 +541,22 @@ func checkModuleAvailability(modules []string, apis []API) (bad, available []str
 func CheckTimeouts(timeouts *HTTPTimeouts) {
 	if timeouts.ReadTimeout < time.Second {
 		logger.Logger().Warn().Dur("provided", timeouts.ReadTimeout).Dur("updated", DefaultHTTPTimeouts.ReadTimeout).
-		Msg("Sanitizing invalid HTTP read timeout")
+			Msg("Sanitizing invalid HTTP read timeout")
 		timeouts.ReadTimeout = DefaultHTTPTimeouts.ReadTimeout
 	}
 	if timeouts.ReadHeaderTimeout < time.Second {
 		logger.Logger().Warn().Dur("provided", timeouts.ReadHeaderTimeout).Dur("updated", DefaultHTTPTimeouts.ReadHeaderTimeout).
-		Msg("Sanitizing invalid HTTP read header timeout")
+			Msg("Sanitizing invalid HTTP read header timeout")
 		timeouts.ReadHeaderTimeout = DefaultHTTPTimeouts.ReadHeaderTimeout
 	}
 	if timeouts.WriteTimeout < time.Second {
 		logger.Logger().Warn().Dur("provided", timeouts.WriteTimeout).Dur("updated", DefaultHTTPTimeouts.WriteTimeout).
-		Msg("Sanitizing invalid HTTP write timeout")
+			Msg("Sanitizing invalid HTTP write timeout")
 		timeouts.WriteTimeout = DefaultHTTPTimeouts.WriteTimeout
 	}
 	if timeouts.IdleTimeout < time.Second {
 		logger.Logger().Warn().Dur("provided", timeouts.IdleTimeout).Dur("updated", DefaultHTTPTimeouts.IdleTimeout).
-		Msg("Sanitizing invalid HTTP idle timeout")
+			Msg("Sanitizing invalid HTTP idle timeout")
 		timeouts.IdleTimeout = DefaultHTTPTimeouts.IdleTimeout
 	}
 }

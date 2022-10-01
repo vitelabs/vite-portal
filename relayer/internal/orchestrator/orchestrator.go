@@ -17,7 +17,7 @@ type Orchestrator struct {
 	client    *client.Client
 }
 
-func NewOrchestrator(relayerId, url, jwtSecret string, timeout time.Duration) *Orchestrator {
+func NewOrchestrator(relayerId, url, jwtSecret string, timeout, jwtExpiryTimeout time.Duration) *Orchestrator {
 	u, e := urlutil.Parse(url)
 	if e != nil {
 		logger.Logger().Error().Err(e).Msg("orchestrator URL parse failed")
@@ -29,7 +29,7 @@ func NewOrchestrator(relayerId, url, jwtSecret string, timeout time.Duration) *O
 		relayerId: relayerId,
 		stopped:   false,
 		status:    ws.Unknown,
-		client:    client.NewClient(url, jwtSecret, timeout),
+		client:    client.NewClient(url, jwtSecret, timeout, jwtExpiryTimeout),
 	}
 }
 

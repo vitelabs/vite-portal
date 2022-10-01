@@ -17,11 +17,11 @@ type Client struct {
 	Conn       *websocket.Conn
 }
 
-func NewClient(url, jwtSecret string, timeout time.Duration) *Client {
+func NewClient(url, jwtSecret string, timeout, jwtExpiryTimeout time.Duration) *Client {
 	return &Client{
 		url:        url,
 		timeout:    timeout,
-		jwtHandler: *crypto.NewDefaultJWTHandler([]byte(jwtSecret)),
+		jwtHandler: *crypto.NewJWTHandler([]byte(jwtSecret), jwtExpiryTimeout),
 	}
 }
 

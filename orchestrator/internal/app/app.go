@@ -44,7 +44,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
-	a.jwtHandler = crypto.NewDefaultJWTHandler([]byte(cfg.JwtSecret))
+	a.jwtHandler = crypto.NewJWTHandler([]byte(cfg.JwtSecret), time.Duration(cfg.JwtExpiryTimeout) * time.Millisecond)
 	a.nodeService = nodeservice.NewService(cfg, c.nodeStore)
 	a.relayerService = relayerservice.NewService(cfg, c.relayerStore)
 

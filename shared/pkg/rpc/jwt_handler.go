@@ -18,6 +18,7 @@ package rpc
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/vitelabs/vite-portal/shared/pkg/crypto"
 )
@@ -28,9 +29,9 @@ type jwtHandler struct {
 }
 
 // newJWTHandler creates a http.Handler with jwt authentication support.
-func newJWTHandler(secret []byte, next http.Handler) http.Handler {
+func newJWTHandler(secret []byte, next http.Handler, expiryTimeout time.Duration) http.Handler {
 	return &jwtHandler{
-		inner: crypto.NewDefaultJWTHandler(secret),
+		inner: crypto.NewJWTHandler(secret, expiryTimeout),
 		next:  next,
 	}
 }

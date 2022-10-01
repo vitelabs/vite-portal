@@ -18,6 +18,7 @@ const (
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
 	DefaultJwtSecret                   = "secret1234"
+	DefaultJwtExpiryTimeout            = 0
 	DefaultUserAgent                   = ""
 	DefaultSortJsonResponse            = false
 	DefaultConsensusNodeCount          = 5
@@ -54,6 +55,8 @@ type Config struct {
 	RpcNodeTimeout int64 `json:"rpcNodeTimeout"`
 	// The secret used for JSON Web Tokens
 	JwtSecret string `json:"jwtSecret"`
+	// The expiry timeout in milliseconds of JSON Web Tokens
+	JwtExpiryTimeout int64 `json:"jwtExpiryTimeout"`
 	// The user agent used when sending RPC requests to nodes
 	UserAgent string `json:"userAgent"`
 	// Whether the JSON response from nodes should be sorted
@@ -89,6 +92,7 @@ func NewDefaultConfig() Config {
 		RpcTimeout:             DefaultRpcTimeout,
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
 		JwtSecret:              DefaultJwtSecret,
+		JwtExpiryTimeout:       DefaultJwtExpiryTimeout,
 		UserAgent:              DefaultUserAgent,
 		SortJsonResponse:       DefaultSortJsonResponse,
 		ConsensusNodeCount:     DefaultConsensusNodeCount,
@@ -137,6 +141,9 @@ func (c *Config) Validate() error {
 	}
 	if c.JwtSecret == DefaultJwtSecret {
 		logger.Logger().Warn().Msg("consider changing the default JWT secret")
+	}
+	if c.JwtExpiryTimeout == DefaultJwtExpiryTimeout {
+		logger.Logger().Warn().Msg("consider changing the default JWT expiry timeout")
 	}
 	return nil
 }

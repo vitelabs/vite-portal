@@ -12,13 +12,13 @@ import (
 
 func TestConnect(t *testing.T) {
 	t.Skip()
-	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond)
+	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond, 0)
 	err := c.Connect(idutil.NewGuid())
 	require.NoError(t, err)
 }
 
 func TestCreateToken(t *testing.T) {
-	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond)
+	c := NewClient("ws://localhost:57331/", types.DefaultJwtSecret, time.Duration(types.DefaultRpcTimeout) * time.Millisecond, 0)
 	token := c.CreateToken("test1234", 0) // never expires
 	fmt.Println(token)
 	require.NotEmpty(t, token)

@@ -37,6 +37,7 @@ type RelayerApp struct {
 
 func NewRelayerApp(cfg types.Config) *RelayerApp {
 	defaultTimeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
+	jwtExpiryTimeout := time.Duration(cfg.JwtExpiryTimeout) * time.Millisecond
 	c := NewContext(cfg)
 	a := &RelayerApp{
 		id:            idutil.NewGuid(),
@@ -44,7 +45,7 @@ func NewRelayerApp(cfg types.Config) *RelayerApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
-	a.orchestrator = orchestrator.NewOrchestrator(a.id, cfg.OrchestratorWsUrl, cfg.JwtSecret, defaultTimeout)
+	a.orchestrator = orchestrator.NewOrchestrator(a.id, cfg.OrchestratorWsUrl, cfg.JwtSecret, defaultTimeout, jwtExpiryTimeout)
 	a.nodeService = nodeservice.NewService(c.nodeStore)
 	a.coreService = coreservice.NewService(cfg, c.sessionCacheStore, a.nodeService)
 

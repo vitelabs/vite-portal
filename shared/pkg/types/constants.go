@@ -7,8 +7,6 @@ const (
 	HTTPHeaderFallbackClientIp = "VP-Fallback-Client-IP"
 	// Can be used to provide credentials that authenticate a user agent with a server, allowing access to a protected resource.
 	HTTPHeaderAuthorization = "Authorization"
-	// The expiry timeout of JSON Web Tokens
-	JWTExpiryTimeout = 60 * time.Second
 	// The issuer representing a relayer used in JSON Web Tokens
 	JWTRelayerIssuer = "vite-portal-relayer"
 	// The maximum size of the payload in bytes

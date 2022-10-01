@@ -15,6 +15,7 @@ const (
 	DefaultRpcAuthPort                 = 57332
 	DefaultRpcTimeout                  = 5000
 	DefaultJwtSecret                   = "secret1234"
+	DefaultJwtExpiryTimeout            = 0
 	DefaultMaxIpBlacklistEntries       = 10000
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
@@ -48,6 +49,8 @@ type Config struct {
 	RpcTimeout int64 `json:"rpcTimeout"`
 	// The secret used for JSON Web Tokens
 	JwtSecret string `json:"jwtSecret"`
+	// The expiry timeout in milliseconds of JSON Web Tokens
+	JwtExpiryTimeout int64 `json:"jwtExpiryTimeout"`
 	// The maximum ip entries in the blacklist
 	MaxIpBlacklistEntries int `json:"maxIpBlacklistEntries"`
 	// The maximum ip blacklist duration in milliseconds
@@ -70,6 +73,7 @@ func NewDefaultConfig() Config {
 		RpcAuthPort:            DefaultRpcAuthPort,
 		RpcTimeout:             DefaultRpcTimeout,
 		JwtSecret:              DefaultJwtSecret,
+		JwtExpiryTimeout:       DefaultJwtExpiryTimeout,
 		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
 		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
 		UserAgent:              DefaultUserAgent,
@@ -111,6 +115,9 @@ func (c *Config) Validate() error {
 	}
 	if c.JwtSecret == DefaultJwtSecret {
 		logger.Logger().Warn().Msg("consider changing the default JWT secret")
+	}
+	if c.JwtExpiryTimeout == DefaultJwtExpiryTimeout {
+		logger.Logger().Warn().Msg("consider changing the default JWT expiry timeout")
 	}
 	return nil
 }

@@ -85,6 +85,27 @@ func TestGetByIndex(t *testing.T) {
 	assert.Equal(t, entry2.id, actualEntry.id)
 }
 
+func TestGetEntries(t *testing.T) {
+	t.Parallel()
+	c := NewNameObjectCollection[testEntry]()
+	entry1 := testEntry{id: "1", val: "test1"}
+	c.Add(entry1.id, entry1)
+	entry2 := testEntry{id: "2", val: "test2"}
+	c.Add(entry2.id, entry2)
+	entries := c.GetEntries()
+	assert.Equal(t, entry1.val, entries[0].val)
+	entry1.val = "test1.1"
+	assert.NotEqual(t, entry1.val, entries[0].val)
+	c.Set(entry1.id, entry1)
+	assert.NotEqual(t, entry1.val, entries[0].val)
+	entry1_1 := c.GetByIndex(0)
+	entry1_1.val = "test1.2"
+	assert.NotEqual(t, entry1_1.val, entries[0].val)
+	c.RemoveAt(1)
+	assert.Equal(t, 2, len(entries))
+	assert.Equal(t, 1, c.Count())
+}
+
 func TestRemove(t *testing.T) {
 	t.Parallel()
 	c := NewNameObjectCollection[testEntry]()

@@ -15,6 +15,7 @@ type NameObjectCollectionI[T any] interface {
 	Get(name string) T
 	GetByIndex(i int) T
 	GetNameByIndex(i int) string
+	GetEntries() []T
 	GetEnumerator() EnumeratorI[T]
 	Count() int
 }
@@ -128,6 +129,19 @@ func (c *NameObjectCollection[T]) GetNameByIndex(i int) string {
 		return ""
 	}
 	return c.entriesSlice[i].name
+}
+
+// GetEntries gets all entries of the collection.
+func (c *NameObjectCollection[T]) GetEntries() []T {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	entries := make([]T, len(c.entriesSlice))
+	for i, v := range c.entriesSlice {
+		entries[i] = v.obj
+	}
+
+	return entries
 }
 
 // GetEnumerator gets an enumerator that can iterate through the collection.

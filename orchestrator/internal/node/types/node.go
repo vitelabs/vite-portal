@@ -4,23 +4,23 @@ import (
 	"errors"
 	"fmt"
 
+	sharedinterfaces "github.com/vitelabs/vite-portal/shared/pkg/interfaces"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
-	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type Node struct {
-	Id            string               `json:"id"`
-	Name          string               `json:"name"`
-	Chain         string               `json:"chain"`
-	Version       string               `json:"version"`
-	Commit        string               `json:"commit"`
-	RewardAddress string               `json:"rewardAddress"`
-	Transport     string               `json:"transport"`
-	RemoteAddress string               `json:"remoteAddress"`
-	ClientIp      string               `json:"clientIp"`
-	HTTPInfo      sharedtypes.HTTPInfo `json:"httpInfo"`
-	RpcClient     *rpc.Client          `json:"-"`
+	Id            string                      `json:"id"`
+	Name          string                      `json:"name"`
+	Chain         string                      `json:"chain"`
+	Version       string                      `json:"version"`
+	Commit        string                      `json:"commit"`
+	RewardAddress string                      `json:"rewardAddress"`
+	Transport     string                      `json:"transport"`
+	RemoteAddress string                      `json:"remoteAddress"`
+	ClientIp      string                      `json:"clientIp"`
+	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo"`
+	RpcClient     sharedinterfaces.RpcClientI `json:"-"`
 }
 
 func (n *Node) IsValid() bool {

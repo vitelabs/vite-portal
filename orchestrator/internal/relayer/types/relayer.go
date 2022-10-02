@@ -4,18 +4,18 @@ import (
 	"errors"
 	"fmt"
 
+	sharedinterfaces "github.com/vitelabs/vite-portal/shared/pkg/interfaces"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
-	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 type Relayer struct {
-	Id            string               `json:"id"`
-	Version       string               `json:"version"`
-	Transport     string               `json:"transport"`
-	RemoteAddress string               `json:"remoteAddress"`
-	RpcClient     *rpc.Client          `json:"-"`
-	HTTPInfo      sharedtypes.HTTPInfo `json:"httpInfo"`
+	Id            string                      `json:"id"`
+	Version       string                      `json:"version"`
+	Transport     string                      `json:"transport"`
+	RemoteAddress string                      `json:"remoteAddress"`
+	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo"`
+	RpcClient     sharedinterfaces.RpcClientI `json:"-"`
 }
 
 func (r *Relayer) IsValid() bool {

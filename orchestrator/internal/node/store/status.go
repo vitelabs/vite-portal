@@ -7,7 +7,7 @@ import (
 )
 
 type StatusStore struct {
-	requestedSets map[string]*mapset.Set[string]
+	processedSets map[string]*mapset.Set[string]
 	lock        sync.RWMutex
 }
 
@@ -23,17 +23,17 @@ func (s *StatusStore) Clear() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.requestedSets = map[string]*mapset.Set[string]{}
+	s.processedSets = map[string]*mapset.Set[string]{}
 }
 
-func (s *StatusStore) GetRequestedSet(chain string) *mapset.Set[string] {
+func (s *StatusStore) GetProcessedSet(chain string) *mapset.Set[string] {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	if existing := s.requestedSets[chain]; existing == nil {
+	if existing := s.processedSets[chain]; existing == nil {
 		set := mapset.NewSet[string]()
-		s.requestedSets[chain] = &set
+		s.processedSets[chain] = &set
 	}
 
-	return s.requestedSets[chain]
+	return s.processedSets[chain]
 }

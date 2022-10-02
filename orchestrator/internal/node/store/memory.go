@@ -79,6 +79,10 @@ func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
 }
 
 func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
+	if chain == "" || s.db[chain] == nil {
+		return *new(types.Node), false
+	}
+
 	node := s.db[chain].GetByIndex(index)
 	if commonutil.IsEmpty(node) {
 		return *new(types.Node), false
@@ -92,6 +96,10 @@ func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
 }
 
 func (s *MemoryStore) GetEnumerator(chain string) collections.EnumeratorI[types.Node] {
+	if chain == "" || s.db[chain] == nil {
+		return collections.NewNameObjectCollection[types.Node]().GetEnumerator()
+	}
+
 	return s.db[chain].GetEnumerator()
 }
 

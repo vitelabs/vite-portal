@@ -11,6 +11,6 @@ func NewNode(chain string) nodetypes.Node {
 		Id: idutil.NewGuid(),
 		Chain: chain,
 		ClientIp: idutil.NewGuid(),
-		RpcClient: &rpc.Client{},
+		RpcClient: &rpc.ClientMock{},
 	}
 }

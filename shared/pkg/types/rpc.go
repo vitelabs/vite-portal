@@ -31,3 +31,21 @@ type RpcViteProcessInfoResponse struct {
 	RewardAddress string `json:"rewardAddress"`
 	Pid           int    `json:"pid"`
 }
+
+type RpcViteRuntimeInfoResponse struct {
+	ReqId              string                        `json:"reqId,omitempty"`
+	PeersNum           int                           `json:"peersNum"`
+	SnapshotPendingNum int                           `json:"snapshotPendingNum"`
+	AccountPendingNum  string                        `json:"accountPendingNum"`
+	LatestSnapshot     RpcViteLatestSnapshotResponse `json:"latestSnapshot"`
+	UpdateTime         int                           `json:"updateTime"`
+	DelayTime          []int                         `json:"delayTime"`
+	Producer           string                        `json:"producer,omitempty"`
+	SignData           string                        `json:"signData"`
+}
+
+type RpcViteLatestSnapshotResponse struct {
+	Hash   string `json:"Hash"`
+	Height int    `json:"Height"`
+	Time   int    `json:"Time"`
+}

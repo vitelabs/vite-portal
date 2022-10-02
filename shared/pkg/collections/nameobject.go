@@ -193,11 +193,11 @@ func (e *nameObjectKeysEnumerator[T]) MoveNext() bool {
 	return false
 }
 
-func (e *nameObjectKeysEnumerator[T]) Current() (found bool, curr T) {
+func (e *nameObjectKeysEnumerator[T]) Current() (curr T, found bool) {
 	if e.pos < 0 || e.pos >= len(e.entries) {
-		return false, *new(T)
+		return *new(T), false
 	}
-	return true, e.entries[e.pos].obj
+	return e.entries[e.pos].obj, true
 }
 
 func (e *nameObjectKeysEnumerator[T]) Reset() {

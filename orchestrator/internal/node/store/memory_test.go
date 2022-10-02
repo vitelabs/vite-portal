@@ -46,6 +46,13 @@ func TestGet(t *testing.T) {
 
 	assert.Equal(t, node.Id, n.Id)
 	assert.Equal(t, node.Chain, n.Chain)
+	assert.Equal(t, node.Commit, n.Commit)
+
+	n.Commit = "1234"
+	n1, found := s.Get(node.Chain, node.Id)
+	assert.Equal(t, n.Id, n1.Id)
+	assert.Equal(t, n.Chain, n1.Chain)
+	assert.NotEqual(t, n.Commit, n1.Commit)
 }
 
 func TestGetById(t *testing.T) {

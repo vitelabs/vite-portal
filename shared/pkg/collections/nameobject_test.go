@@ -174,19 +174,19 @@ func TestEnumerator(t *testing.T) {
 	c.Remove(entry1.id)
 	assert.Equal(t, 1, c.Count())
 
-	found, current := e.Current()
+	current, found := e.Current()
 	assert.False(t, found)
 	assert.Empty(t, current)
 
 	hasNext := e.MoveNext()
 	assert.True(t, hasNext)
-	found, current = e.Current()
+	current, found  = e.Current()
 	assert.True(t, found)
 	assert.Equal(t, entry1, current)
 
 	hasNext = e.MoveNext()
 	assert.True(t, hasNext)
-	found, current = e.Current()
+	current, found  = e.Current()
 	assert.True(t, found)
 	assert.Equal(t, entry2, current)
 
@@ -202,7 +202,7 @@ func TestEnumerator(t *testing.T) {
 	e.Reset()
 	hasNext = e.MoveNext()
 	assert.True(t, hasNext)
-	found, current = e.Current()
+	current, found  = e.Current()
 	assert.True(t, found)
 	assert.Equal(t, entry1, current)
 }

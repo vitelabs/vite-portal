@@ -47,12 +47,18 @@ func TestGet(t *testing.T) {
 	assert.Equal(t, node.Id, n.Id)
 	assert.Equal(t, node.Chain, n.Chain)
 	assert.Equal(t, node.Commit, n.Commit)
+	assert.Equal(t, node.RpcClient.GetID(), n.RpcClient.GetID())
+	assert.Equal(t, uint32(0), node.RpcClient.GetID())
 
 	n.Commit = "1234"
+	n.RpcClient.Notify(nil, "")
+	
 	n1, found := s.Get(node.Chain, node.Id)
 	assert.Equal(t, n.Id, n1.Id)
 	assert.Equal(t, n.Chain, n1.Chain)
 	assert.NotEqual(t, n.Commit, n1.Commit)
+	assert.Equal(t, node.RpcClient.GetID(), n.RpcClient.GetID())
+	assert.Equal(t, uint32(1), node.RpcClient.GetID())
 }
 
 func TestGetById(t *testing.T) {

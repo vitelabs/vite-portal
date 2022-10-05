@@ -45,3 +45,11 @@ func (c *Chains) GetByName(name string) (chain ChainConfig, found bool) {
 func (c *Chains) Count() int {
 	return len(c.idToNameMap)
 }
+
+func (c *Chains) GetEnumerator() collections.EnumeratorI[ChainConfig] {
+	return c.db.GetEnumerator()
+}
+
+func (c *Chains) GetAll() []ChainConfig {
+	return c.db.GetEntries()
+}

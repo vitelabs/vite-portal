@@ -6,6 +6,7 @@ import (
 	"time"
 
 	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
@@ -15,9 +16,9 @@ func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
 	if chain == "" || limit <= 0 {
 		return
 	}
-	e := s.store.GetEnumerator(chain)
+	e := s.context.GetNodeStore().GetEnumerator(chain)
 	batch := make([]nodetypes.Node, 0, batchSize)
-	processed := *s.status.GetProcessedSet(chain)
+	processed := *s.context.GetStatusStore(chain).ProcessedSet
 	count := 0
 	for e.MoveNext() {
 		n, found := e.Current()
@@ -58,6 +59,13 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 		go func(n nodetypes.Node) {
 			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 			defer cancel()
+			logger.Logger().Info().
+				Str("id", n.Id).
+				Str("name", n.Name).
+				Str("ip", n.ClientIp).
+				Str("chain", n.Chain).
+				Str("rewardAddress", n.RewardAddress).
+				Msg("calling 'dashboard_runtimeInfo'")
 			var runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse
 			if err := n.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1"); err != nil {
 				// not successful
@@ -68,7 +76,7 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 			wg.Done()
 		}(v)
 	}
-	
+
 	wg.Wait()
 }
 

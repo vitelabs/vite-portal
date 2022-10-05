@@ -30,14 +30,14 @@ type OrchestratorApp struct {
 	rpc            *rpc.HTTPServer
 	rpcAuth        *rpc.HTTPServer
 	inprocHandler  *rpc.Server // In-process RPC request handler to process the API requests
-	context        *Context
+	context        *types.Context
 	jwtHandler     *crypto.JWTHandler
 	nodeService    *nodeservice.Service
 	relayerService *relayerservice.Service
 }
 
 func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
-	c := NewContext(cfg)
+	c := types.NewContext(cfg)
 	a := &OrchestratorApp{
 		id:            idutil.NewGuid(),
 		config:        cfg,
@@ -45,8 +45,8 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		context:       c,
 	}
 	a.jwtHandler = crypto.NewJWTHandler([]byte(cfg.JwtSecret), time.Duration(cfg.JwtExpiryTimeout) * time.Millisecond)
-	a.nodeService = nodeservice.NewService(cfg, c.nodeStore)
-	a.relayerService = relayerservice.NewService(cfg, c.relayerStore)
+	a.nodeService = nodeservice.NewService(cfg, c)
+	a.relayerService = relayerservice.NewService(cfg, c.GetRelayerStore())
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)

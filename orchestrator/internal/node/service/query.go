@@ -11,7 +11,7 @@ import (
 
 func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
 	logger.Logger().Debug().Str("chain", chain).Msg("get nodes")
-	total := s.store.Count(chain)
+	total := s.context.GetNodeStore().Count(chain)
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset
 	result.Limit = limit
@@ -23,7 +23,7 @@ func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[typ
 	count := mathutil.Min(result.Offset+result.Limit, total)
 	current := 0
 	for i := result.Offset; i < count; i++ {
-		item, found := s.store.GetByIndex(chain, i)
+		item, found := s.context.GetNodeStore().GetByIndex(chain, i)
 		if !found {
 			return *generics.NewGenericPage[types.Node](), errors.New("inconsistent state")
 		}

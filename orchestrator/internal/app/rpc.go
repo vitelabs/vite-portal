@@ -112,7 +112,7 @@ func (a *OrchestratorApp) BeforeConnect(w http.ResponseWriter, r *http.Request) 
 	httputil.SetFallbackClientIp(r.Header, r.RemoteAddr)
 	// a blacklist seems to be required because closing a go-vite WebSocket connection causes an instant re-connect
 	clientIp := httputil.GetClientIp(r.Header, a.config.HeaderTrueClientIp)
-	if _, found := a.context.ipBlacklist.Get(clientIp, a.config.MaxIpBlacklistDuration); !found {
+	if _, found := a.context.GetIpBlacklist().Get(clientIp, a.config.MaxIpBlacklistDuration); !found {
 		return nil
 	}
 	msg := "too many requests"
@@ -161,5 +161,5 @@ func (a *OrchestratorApp) addToIpBlacklist(h http.Header) {
 		Key: clientIp,
 		Timestamp: time.Now().UnixMilli(),
 	}
-	a.context.ipBlacklist.Set(item.Key, item.Timestamp, item)
+	a.context.GetIpBlacklist().Set(item.Key, item.Timestamp, item)
 }

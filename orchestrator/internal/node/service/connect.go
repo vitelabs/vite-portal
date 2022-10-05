@@ -50,7 +50,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 			Host:      peerInfo.HTTP.Host,
 		},
 	}
-	if err := s.store.Add(n); err != nil {
+	if err := s.context.GetNodeStore().Add(n); err != nil {
 		msg := "failed to add node"
 		logger.Logger().Error().Err(err).Msg(msg)
 		return s.returnConnectError(msg, err)

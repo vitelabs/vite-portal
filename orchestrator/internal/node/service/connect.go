@@ -50,9 +50,13 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 			Host:      peerInfo.HTTP.Host,
 		},
 	}
-	if err := s.context.GetNodeStore().Add(n); err != nil {
-		msg := "failed to add node"
-		logger.Logger().Error().Err(err).Msg(msg)
+	msg := "failed to add node"
+	store := s.context.GetNodeStore(chain.Name)
+	if store == nil {
+		err := errors.New(fmt.Sprintf("node store not found for chain '%s'", chain.Name))
+		return s.returnConnectError(msg, err)
+	}
+	if err := store.Add(n); err != nil {
 		return s.returnConnectError(msg, err)
 	}
 	return n.Id, nil

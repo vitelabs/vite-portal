@@ -2,7 +2,6 @@ package store
 
 import (
 	"errors"
-	"sort"
 	"sync"
 
 	mapset "github.com/deckarep/golang-set/v2"
@@ -12,8 +11,7 @@ import (
 )
 
 type MemoryStore struct {
-	idMap     map[string]string
-	db        map[string]collections.NameObjectCollectionI[types.Node]
+	db        collections.NameObjectCollectionI[types.Node]
 	addresses mapset.Set[string]
 	lock      sync.RWMutex
 }
@@ -34,8 +32,7 @@ func (s *MemoryStore) Clear() {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.idMap = map[string]string{}
-	s.db = map[string]collections.NameObjectCollectionI[types.Node]{}
+	s.db = collections.NewNameObjectCollection[types.Node]()
 	s.addresses.Clear()
 }
 
@@ -43,64 +40,30 @@ func (s *MemoryStore) Close() {
 
 }
 
-func (s *MemoryStore) Count(chain string) int {
-	if s.db[chain] == nil {
-		return 0
-	}
-
-	return s.db[chain].Count()
-}
-
-func (s *MemoryStore) GetChains() []string {
-	chains := make([]string, len(s.db))
-
-	i := 0
-	for k := range s.db {
-		chains[i] = k
-		i++
-	}
-
-	sort.Strings(chains)
-
-	return chains
-}
-
-func (s *MemoryStore) Get(chain string, id string) (n types.Node, found bool) {
-	if chain == "" || id == "" || s.db[chain] == nil {
-		return *new(types.Node), false
-	}
-
-	node := s.db[chain].Get(id)
-	if commonutil.IsEmpty(node) {
-		return *new(types.Node), false
-	}
-
-	return node, true
-}
-
-func (s *MemoryStore) GetByIndex(chain string, index int) (n types.Node, found bool) {
-	if chain == "" || s.db[chain] == nil {
-		return *new(types.Node), false
-	}
-
-	node := s.db[chain].GetByIndex(index)
-	if commonutil.IsEmpty(node) {
-		return *new(types.Node), false
-	}
-
-	return node, true
+func (s *MemoryStore) Count() int {
+	return s.db.Count()
 }
 
 func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
-	return s.Get(s.idMap[id], id)
-}
-
-func (s *MemoryStore) GetEnumerator(chain string) collections.EnumeratorI[types.Node] {
-	if chain == "" || s.db[chain] == nil {
-		return collections.NewNameObjectCollection[types.Node]().GetEnumerator()
+	node := s.db.Get(id)
+	if commonutil.IsEmpty(node) {
+		return *new(types.Node), false
 	}
 
-	return s.db[chain].GetEnumerator()
+	return node, true
+}
+
+func (s *MemoryStore) GetByIndex(index int) (n types.Node, found bool) {
+	node := s.db.GetByIndex(index)
+	if commonutil.IsEmpty(node) {
+		return *new(types.Node), false
+	}
+
+	return node, true
+}
+
+func (s *MemoryStore) GetEnumerator() collections.EnumeratorI[types.Node] {
+	return s.db.GetEnumerator()
 }
 
 func (s *MemoryStore) Add(n types.Node) error {
@@ -112,8 +75,6 @@ func (s *MemoryStore) Add(n types.Node) error {
 		return err
 	}
 
-	c := s.initChain(n.Chain)
-
 	if _, found := s.GetById(n.Id); found {
 		return errors.New("a node with the same id already exists")
 	}
@@ -123,41 +84,23 @@ func (s *MemoryStore) Add(n types.Node) error {
 		return errors.New("a node with the same ip address already exists")
 	}
 
-	c.Add(n.Id, n)
-	s.idMap[n.Id] = n.Chain
+	s.db.Add(n.Id, n)
 	s.addresses.Add(addr)
 
 	return nil
 }
 
-func (s *MemoryStore) Remove(chain string, id string) error {
+func (s *MemoryStore) Remove(id string) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-
-	if chain == "" || id == "" || s.db[chain] == nil {
-		return nil
-	}
 
 	existing, found := s.GetById(id)
 	if !found {
 		return nil
 	}
 
-	s.db[chain].Remove(id)
-	delete(s.idMap, id)
+	s.db.Remove(id)
 	s.addresses.Remove(existing.ClientIp)
 
-	if s.Count(chain) == 0 {
-		delete(s.db, chain)
-	}
-
 	return nil
-}
-
-func (s *MemoryStore) initChain(chain string) (c collections.NameObjectCollectionI[types.Node]) {
-	if s.db[chain] == nil {
-		s.db[chain] = collections.NewNameObjectCollection[types.Node]()
-	}
-
-	return s.db[chain]
 }

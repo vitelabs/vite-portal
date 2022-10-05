@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -16,7 +17,12 @@ func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
 	if chain == "" || limit <= 0 {
 		return
 	}
-	e := s.context.GetNodeStore().GetEnumerator(chain)
+	store := s.context.GetNodeStore(chain)
+	if store == nil {
+		logger.Logger().Error().Msg(fmt.Sprintf("node store not found for chain '%s'", chain))
+		return
+	}
+	e := store.GetEnumerator()
 	batch := make([]nodetypes.Node, 0, batchSize)
 	processed := *s.context.GetStatusStore(chain).ProcessedSet
 	count := 0

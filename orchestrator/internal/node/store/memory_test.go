@@ -9,38 +9,17 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/util/testutil"
 )
 
-func TestGetChains(t *testing.T) {
-	t.Parallel()
-	node := testutil.NewNode("chain1")
-	s := NewMemoryStore()
-
-	c := s.GetChains()
-	assert.Empty(t, c)
-	assert.Equal(t, 0, len(c))
-	require.NoError(t, s.Add(node))
-
-	c = s.GetChains()
-	assert.Equal(t, 1, len(c))
-	node.Chain = "chain2"
-	err := s.Add(node)
-	require.Error(t, err)
-	assert.Equal(t, "a node with the same id already exists", err.Error())
-
-	c = s.GetChains()
-	assert.Equal(t, 2, len(c))
-}
-
 func TestGet(t *testing.T) {
 	t.Parallel()
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
-	n, found := s.Get(node.Chain, node.Id)
+	n, found := s.GetById(node.Id)
 	assert.Empty(t, n)
 	assert.False(t, found)
 	require.NoError(t, s.Add(node))
 
-	n, found = s.Get(node.Chain, node.Id)
+	n, found = s.GetById(node.Id)
 	assert.NotEmpty(t, n)
 	assert.True(t, found)
 
@@ -53,7 +32,7 @@ func TestGet(t *testing.T) {
 	n.Commit = "1234"
 	n.RpcClient.Notify(nil, "")
 	
-	n1, found := s.Get(node.Chain, node.Id)
+	n1, found := s.GetById(node.Id)
 	assert.Equal(t, n.Id, n1.Id)
 	assert.Equal(t, n.Chain, n1.Chain)
 	assert.NotEqual(t, n.Commit, n1.Commit)
@@ -81,22 +60,18 @@ func TestCount(t *testing.T) {
 	node := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
-	assert.Equal(t, 0, s.Count(""))
-	assert.Equal(t, 0, s.Count(node.Chain))
+	assert.Equal(t, 0, s.Count())
 
 	require.Error(t, s.Add(*new(types.Node)))
-	assert.Equal(t, 0, s.Count(""))
-	assert.Equal(t, 0, s.Count(node.Chain))
+	assert.Equal(t, 0, s.Count())
 
 	require.NoError(t, s.Add(node))
-	assert.Equal(t, 0, s.Count(""))
-	assert.Equal(t, 1, s.Count(node.Chain))
+	assert.Equal(t, 1, s.Count())
 
 	err := s.Add(node)
 	require.Error(t, err)
 	assert.Equal(t, "a node with the same id already exists", err.Error())
-	assert.Equal(t, 0, s.Count(""))
-	assert.Equal(t, 1, s.Count(node.Chain))
+	assert.Equal(t, 1, s.Count())
 }
 
 func TestUpsertInvalid(t *testing.T) {
@@ -140,24 +115,19 @@ func TestRemove(t *testing.T) {
 	node1 := testutil.NewNode("chain1")
 	s := NewMemoryStore()
 
-	assert.Equal(t, 0, s.Count(node1.Chain))
-	assert.Equal(t, 0, len(s.GetChains()))
+	assert.Equal(t, 0, s.Count())
 	require.NoError(t, s.Add(node1))
-	assert.Equal(t, 1, s.Count(node1.Chain))
-	assert.Equal(t, 1, len(s.GetChains()))
+	assert.Equal(t, 1, s.Count())
 
 	node2 := testutil.NewNode("chain1")
 
 	require.NoError(t, s.Add(node2))
-	assert.Equal(t, 2, s.Count(node2.Chain))
-	assert.Equal(t, 1, len(s.GetChains()))
+	assert.Equal(t, 2, s.Count())
 
-	s.Remove(node1.Chain, node1.Id)
-	assert.Equal(t, 1, s.Count(node1.Chain))
-	assert.Equal(t, 1, len(s.GetChains()))
-	s.Remove(node2.Chain, node2.Id)
-	assert.Equal(t, 0, s.Count(node2.Chain))
-	assert.Equal(t, 0, len(s.GetChains()))
+	s.Remove(node1.Id)
+	assert.Equal(t, 1, s.Count())
+	s.Remove(node2.Id)
+	assert.Equal(t, 0, s.Count())
 }
 
 func TestClear(t *testing.T) {
@@ -166,18 +136,18 @@ func TestClear(t *testing.T) {
 	s := NewMemoryStore()
 
 	s.Clear()
-	assert.Equal(t, 0, s.Count(node.Chain))
+	assert.Equal(t, 0, s.Count())
 
 	require.NoError(t, s.Add(node))
-	assert.Equal(t, 1, s.Count(node.Chain))
+	assert.Equal(t, 1, s.Count())
 
 	node.Id = "2"
 
 	err := s.Add(node)
 	require.Error(t, err)
 	assert.Equal(t, "a node with the same ip address already exists", err.Error())
-	assert.Equal(t, 1, s.Count(node.Chain))
+	assert.Equal(t, 1, s.Count())
 
 	s.Clear()
-	assert.Equal(t, 0, s.Count(node.Chain))
+	assert.Equal(t, 0, s.Count())
 }

@@ -17,13 +17,14 @@ func newTestService(t *testing.T, nodeCount int) (*Service, []nodetypes.Node, sh
 	svc := NewService(cfg, c)
 	chain, found := cfg.GetChains().GetById("1")
 	require.True(t, found)
+	store := c.GetNodeStore(chain.Name)
 	nodes := make([]nodetypes.Node, 0, nodeCount)
 	for i := 0; i < nodeCount; i++ {
 		node := testutil.NewNode(chain.Name)
 		nodes = append(nodes, node)
-		c.GetNodeStore().Add(node)
+		store.Add(node)
 	}
 	require.Equal(t, nodeCount, len(nodes))
-	require.Equal(t, nodeCount, svc.context.GetNodeStore().Count(chain.Name))
+	require.Equal(t, nodeCount, store.Count())
 	return svc, nodes, chain
 }

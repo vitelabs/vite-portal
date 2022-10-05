@@ -7,7 +7,7 @@ import (
 )
 
 type Context struct {
-	nodeStore    *nodestore.MemoryStore
+	nodeStores   map[string]*nodestore.MemoryStore
 	relayerStore *relayerstore.MemoryStore
 	statusStores map[string]*nodestore.StatusStore
 	ipBlacklist  *sharedtypes.TransientCache[IpBlacklistItem]
@@ -15,19 +15,20 @@ type Context struct {
 
 func NewContext(config Config) *Context {
 	c := &Context{
-		nodeStore:    nodestore.NewMemoryStore(),
+		nodeStores:   map[string]*nodestore.MemoryStore{},
 		relayerStore: relayerstore.NewMemoryStore(),
 		statusStores: map[string]*nodestore.StatusStore{},
 		ipBlacklist:  sharedtypes.NewTransientCache[IpBlacklistItem](config.MaxIpBlacklistEntries),
 	}
 	for _, v := range config.GetChains().GetAll() {
+		c.nodeStores[v.Name] = nodestore.NewMemoryStore()
 		c.statusStores[v.Name] = nodestore.NewStatusStore()
 	}
 	return c
 }
 
-func (c *Context) GetNodeStore() *nodestore.MemoryStore {
-	return c.nodeStore
+func (c *Context) GetNodeStore(chain string) *nodestore.MemoryStore {
+	return c.nodeStores[chain]
 }
 
 func (c *Context) GetRelayerStore() *relayerstore.MemoryStore {

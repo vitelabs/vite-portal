@@ -7,3 +7,7 @@ type RpcClientI interface {
 	CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error
 	Notify(ctx context.Context, method string, args ...interface{}) error 
 }
+
+type RpcResponseI interface {
+	GetError() error
+}

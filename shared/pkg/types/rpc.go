@@ -1,5 +1,31 @@
 package types
 
+import (
+	"errors"
+	"fmt"
+)
+
+type RpcRequest struct {
+	Id      int    `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Params  []any  `json:"params"`
+}
+
+type RpcResponse[T any] struct {
+	Id      int       `json:"id"`
+	Jsonrpc string    `json:"jsonrpc"`
+	Result  T         `json:"result"`
+	Error   *RpcError `json:"error,omitempty"`
+}
+
+func (t *RpcResponse[T]) GetError() error {
+	if t.Error != nil {
+		return errors.New(fmt.Sprintf("error code: %d, message: %s", t.Error.Code, t.Error.Message))
+	}
+	return nil
+}
+
 type RpcError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -48,4 +74,9 @@ type RpcViteLatestSnapshotResponse struct {
 	Hash   string `json:"Hash"`
 	Height int    `json:"Height"`
 	Time   int    `json:"Time"`
+}
+
+type RpcViteLatestAccountBlockResponse struct {
+	BlockType int    `json:"blockType"`
+	Height    string `json:"height"`
 }

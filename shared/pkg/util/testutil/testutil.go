@@ -12,6 +12,10 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
+const (
+	DefaultViteMainNodeUrl = "https://node.vite.net/gvite"
+)
+
 func BuildFullPath(elem ...string) string {
 	_, filename, _, _ := runtime.Caller(0)
 	rootName := "vite-portal"

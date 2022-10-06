@@ -90,3 +90,18 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 func (s *Service) SendStatus(chain string) {
 	// round := time.Now().UnixMilli() / 1000 / 60
 }
+
+func (s *Service) GetChainHeight(chain string) int64 {
+	store := s.context.GetStatusStore(chain)
+	if store.GlobalHeight.Height != 0 && store.GlobalHeight.LastUpdate != 0 {
+		if time.Now().UnixMilli() - store.GlobalHeight.LastUpdate < 10 {
+			return store.GlobalHeight.Height
+		}
+	}
+	h, err := s.GetViteClient(chain).GetSnapshotChainHeight()
+	if err != nil {
+		return 0
+	}
+	store.GlobalHeight.Update(h)
+	return h
+}

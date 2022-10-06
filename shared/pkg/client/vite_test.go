@@ -2,17 +2,22 @@ package client
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"testing"
+	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/testutil"
 )
 
-var defaultUrl = "https://node.vite.net/gvite"
+var defaultUrl = testutil.DefaultViteMainNodeUrl
 
 func TestSendError(t *testing.T) {
+	t.Parallel()
 	c := NewViteClient(defaultUrl)
 	require.Equal(t, defaultUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
@@ -29,6 +34,7 @@ func TestSendError(t *testing.T) {
 }
 
 func TestGetSnapshotChainHeight(t *testing.T) {
+	t.Parallel()
 	c := NewViteClient(defaultUrl)
 	require.Equal(t, defaultUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
@@ -43,6 +49,7 @@ func TestGetSnapshotChainHeight(t *testing.T) {
 }
 
 func TestGetLatestAccountBlock(t *testing.T) {
+	t.Parallel()
 	c := NewViteClient(defaultUrl)
 
 	r, err := c.GetLatestAccountBlock("vite_0000000000000000000000000000000000000006e82b8ba657")
@@ -54,4 +61,28 @@ func TestGetLatestAccountBlock(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 4, r.BlockType)
 	require.Greater(t, height, int64(0))
+}
+
+func TestRetry(t *testing.T) {
+	t.Parallel()
+	start := time.Now()
+	url := "http://localhost:1234"
+	c := NewViteClient(url)
+	retryCount := 0
+	c.client.RequestLogHook = func(logger retryablehttp.Logger, request *http.Request, count int) {
+		retryCount++
+	}
+	require.Equal(t, url, c.url)
+	require.Equal(t, uint64(0), c.requestId)
+	require.Equal(t, 0, retryCount)
+
+	response := types.RpcResponse[any]{}
+	err := c.Send("test1234", nil, &response)
+	require.Error(t, err)
+	logger.Logger().Info().Msg(fmt.Sprintf("%#v", err))
+
+	elapsed := time.Since(start)
+	require.Equal(t, 4, retryCount)
+	require.GreaterOrEqual(t, elapsed, 3 * time.Second)
+	require.LessOrEqual(t, elapsed, 4 * time.Second)
 }

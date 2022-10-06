@@ -25,8 +25,8 @@ func NewViteClient(url string) *ViteClient {
 		requestId: 0,
 		client:    retryablehttp.NewClient(),
 	}
-	c.client.RetryWaitMin = 200 * time.Millisecond
-	c.client.RetryWaitMax = 1 * time.Second
+	c.client.RetryWaitMin = 500 * time.Millisecond
+	c.client.RetryWaitMax = 3 * time.Second
 	c.client.RetryMax = 3
 	return c
 }

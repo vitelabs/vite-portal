@@ -12,7 +12,7 @@ import (
 func TestGetGlobalHeight(t *testing.T) {
 	t.Parallel()
 	start := time.Now().UnixMilli()
-	client := client.NewViteClient(testutil.DefaultViteMainNodeUrl)
+	client := client.NewViteClient(testutil.DefaultViteMainNodeUrl, time.Duration(0) * time.Millisecond)
 	store := NewStatusStore(client)
 	require.Equal(t, int64(0), store.globalHeight)
 	require.Equal(t, int64(0), store.lastUpdate)

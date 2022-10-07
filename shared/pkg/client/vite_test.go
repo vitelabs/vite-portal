@@ -15,10 +15,11 @@ import (
 )
 
 var defaultUrl = testutil.DefaultViteMainNodeUrl
+var defaultTimeout = time.Duration(1000) * time.Millisecond
 
 func TestSendError(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl)
+	c := NewViteClient(defaultUrl, defaultTimeout)
 	require.Equal(t, defaultUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
 
@@ -35,22 +36,36 @@ func TestSendError(t *testing.T) {
 
 func TestGetSnapshotChainHeight(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl)
+	c := NewViteClient(defaultUrl, defaultTimeout)
 	require.Equal(t, defaultUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
 
-	r, err := c.GetSnapshotChainHeight()
+	h, err := c.GetSnapshotChainHeight()
 	require.NoError(t, err)
-	require.NotNil(t, r)
-	logger.Logger().Info().Msg(fmt.Sprintf("GetSnapshotChainHeight: %d", r))
+	logger.Logger().Info().Msg(fmt.Sprintf("GetSnapshotChainHeight: %d", h))
 
 	require.Equal(t, uint64(1), c.requestId)
-	require.Greater(t, r, int64(0))
+	require.Greater(t, h, int64(0))
+}
+
+func TestGetSnapshotChainHeight_Timeout(t *testing.T) {
+	t.Parallel()
+	c := NewViteClient(defaultUrl, time.Duration(1) * time.Millisecond)
+	require.Equal(t, defaultUrl, c.url)
+	require.Equal(t, uint64(0), c.requestId)
+
+	h, err := c.GetSnapshotChainHeight()
+	require.Error(t, err)
+	require.Equal(t, fmt.Sprintf("POST %s giving up after 1 attempt(s): context deadline exceeded", c.url), err.Error())
+	logger.Logger().Info().Msg(fmt.Sprintf("GetSnapshotChainHeight: %d", h))
+
+	require.Equal(t, uint64(1), c.requestId)
+	require.Equal(t, int64(0), h)
 }
 
 func TestGetLatestAccountBlock(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl)
+	c := NewViteClient(defaultUrl, defaultTimeout)
 
 	r, err := c.GetLatestAccountBlock("vite_0000000000000000000000000000000000000006e82b8ba657")
 	require.NoError(t, err)
@@ -67,7 +82,7 @@ func TestRetry(t *testing.T) {
 	t.Parallel()
 	start := time.Now()
 	url := "http://localhost:1234"
-	c := NewViteClient(url)
+	c := NewViteClient(url, 0)
 	retryCount := 0
 	c.client.RequestLogHook = func(logger retryablehttp.Logger, request *http.Request, count int) {
 		retryCount++

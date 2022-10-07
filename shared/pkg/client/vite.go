@@ -1,7 +1,9 @@
 package client
 
 import (
+	"context"
 	"io/ioutil"
+	"net/http"
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -15,13 +17,15 @@ import (
 
 type ViteClient struct {
 	url       string
+	timeout   time.Duration
 	requestId uint64
 	client    *retryablehttp.Client
 }
 
-func NewViteClient(url string) *ViteClient {
+func NewViteClient(url string, timeout time.Duration) *ViteClient {
 	c := &ViteClient{
 		url:       url,
+		timeout:   timeout,
 		requestId: 0,
 		client:    retryablehttp.NewClient(),
 	}
@@ -41,13 +45,27 @@ func (c *ViteClient) createRequest(method string, params []interface{}) *types.R
 	}
 }
 
+func (c *ViteClient) post(url, bodyType string, body interface{}) (*http.Response, error) {
+	if c.timeout.Milliseconds() <= 0 {
+		return c.client.Post(url, bodyType, body)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	req, err := retryablehttp.NewRequestWithContext(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", bodyType)
+	return c.client.Do(req)
+}
+
 func (c *ViteClient) Send(method string, params []interface{}, v interfaces.RpcResponseI) error {
 	request := c.createRequest(method, params)
 	requestBody, err := jsonutil.ToByte(request)
 	if err != nil {
 		return err
 	}
-	r, err := c.client.Post(c.url, httputil.ContentTypeJson, requestBody)
+	r, err := c.post(c.url, httputil.ContentTypeJson, requestBody)
 	if err != nil {
 		return err
 	}

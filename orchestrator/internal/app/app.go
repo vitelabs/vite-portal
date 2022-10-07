@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-co-op/gocron"
 	nodeservice "github.com/vitelabs/vite-portal/orchestrator/internal/node/service"
 	relayerservice "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/service"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
@@ -34,6 +35,7 @@ type OrchestratorApp struct {
 	jwtHandler     *crypto.JWTHandler
 	nodeService    *nodeservice.Service
 	relayerService *relayerservice.Service
+	scheduler      *gocron.Scheduler
 }
 
 func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
@@ -44,9 +46,11 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		inprocHandler: rpc.NewServer(),
 		context:       c,
 	}
-	a.jwtHandler = crypto.NewJWTHandler([]byte(cfg.JwtSecret), time.Duration(cfg.JwtExpiryTimeout) * time.Millisecond)
+	a.jwtHandler = crypto.NewJWTHandler([]byte(cfg.JwtSecret), time.Duration(cfg.JwtExpiryTimeout)*time.Millisecond)
 	a.nodeService = nodeservice.NewService(cfg, c)
 	a.relayerService = relayerservice.NewService(cfg, c.GetRelayerStore())
+	a.scheduler = gocron.NewScheduler(time.UTC)
+	a.InitScheduler()
 
 	// Register built-in APIs.
 	a.rpcAPIs = append(a.rpcAPIs, a.apis()...)
@@ -71,6 +75,8 @@ func (a *OrchestratorApp) Start() error {
 	a.startStopLock.Lock()
 	defer a.startStopLock.Unlock()
 
+	a.scheduler.StartAsync()
+
 	// start RPC endpoints
 	err := a.startRPC()
 	if err != nil {
@@ -84,5 +90,6 @@ func (a *OrchestratorApp) Shutdown() {
 	a.startStopLock.Lock()
 	defer a.startStopLock.Unlock()
 
+	a.scheduler.Stop()
 	a.stopRPC()
 }

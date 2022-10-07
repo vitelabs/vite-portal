@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"testing"
@@ -7,25 +7,26 @@ import (
 	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/util/testutil"
-	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-func newTestService(t *testing.T, nodeCount int) (*Service, []nodetypes.Node, sharedtypes.ChainConfig) {
+func newTestHandler(t *testing.T, nodeCount int) (*Handler, []nodetypes.Node) {
 	cfg := types.NewDefaultConfig()
 	require.NoError(t, cfg.Validate())
 	c := types.NewContext(cfg)
-	svc := NewService(cfg, c)
 	chain, found := cfg.GetChains().GetById("1")
 	require.True(t, found)
-	store, err := c.GetNodeStore(chain.Name)
+	nodeStore, err := c.GetNodeStore(chain.Name)
 	require.NoError(t, err)
+	statusStore, err := c.GetStatusStore(chain.Name)
+	require.NoError(t, err)
+	handler := NewHandler(cfg, nodeStore, statusStore)
 	nodes := make([]nodetypes.Node, 0, nodeCount)
 	for i := 0; i < nodeCount; i++ {
 		node := testutil.NewNode(chain.Name)
 		nodes = append(nodes, node)
-		store.Add(node)
+		nodeStore.Add(node)
 	}
 	require.Equal(t, nodeCount, len(nodes))
-	require.Equal(t, nodeCount, store.Count())
-	return svc, nodes, chain
+	require.Equal(t, nodeCount, nodeStore.Count())
+	return handler, nodes
 }

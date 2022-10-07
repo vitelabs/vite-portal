@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"context"
@@ -12,23 +12,13 @@ import (
 
 // UpdateStatus tries to update the local status of a subset of all nodes specified by the limit parameter.
 // Once all nodes have been updated, it starts from the beginning.
-func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
-	if chain == "" || limit <= 0 {
+func (h *Handler) UpdateStatus(limit, batchSize int) {
+	if limit <= 0 || batchSize <= 0 {
 		return
 	}
-	nodeStore, err := s.context.GetNodeStore(chain)
-	if err != nil {
-		logger.Logger().Error().Msg(err.Error())
-		return
-	}
-	statusStore, err := s.context.GetStatusStore(chain)
-	if err != nil {
-		logger.Logger().Error().Msg(err.Error())
-		return
-	}
-	e := nodeStore.GetEnumerator()
+	e := h.nodeStore.GetEnumerator()
 	batch := make([]nodetypes.Node, 0, batchSize)
-	processed := *statusStore.ProcessedSet
+	processed := *h.statusStore.ProcessedSet
 	count := 0
 	for e.MoveNext() {
 		n, found := e.Current()
@@ -41,7 +31,7 @@ func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
 		processed.Add(n.Id)
 		batch = append(batch, n)
 		if len(batch) >= batchSize {
-			s.updateStatus(batch)
+			h.updateStatus(batch)
 			batch = batch[:0]
 		}
 		count++
@@ -50,18 +40,18 @@ func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
 		}
 	}
 	if len(batch) > 0 {
-		s.updateStatus(batch)
+		h.updateStatus(batch)
 	}
 	if count == 0 {
 		processed.Clear()
 	}
 }
 
-func (s *Service) updateStatus(batch []nodetypes.Node) {
+func (h *Handler) updateStatus(batch []nodetypes.Node) {
 	var wg = sync.WaitGroup{}
 	maxGoroutines := len(batch) // could be smaller than batch size if needed
 	guard := make(chan struct{}, maxGoroutines)
-	timeout := time.Duration(s.config.RpcTimeout) * time.Millisecond
+	timeout := time.Duration(h.config.RpcTimeout) * time.Millisecond
 
 	for _, v := range batch {
 		guard <- struct{}{}
@@ -81,7 +71,7 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 				// not successful
 				return
 			}
-			s.updateNodeStatus(n, runtimeInfo)
+			h.updateNodeStatus(n, runtimeInfo)
 			<-guard
 			wg.Done()
 		}(v)
@@ -90,19 +80,12 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 	wg.Wait()
 }
 
-func (s *Service) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
+func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
+
 }
 
-func (s *Service) UpdateOnlineStatus(chain string) {
-	if chain == "" {
-		return
-	}
-	store, err := s.context.GetNodeStore(chain)
-	if err != nil {
-		logger.Logger().Error().Msg(err.Error())
-		return
-	}
-	e := store.GetEnumerator()
+func (h *Handler) UpdateOnlineStatus() {
+	e := h.nodeStore.GetEnumerator()
 	count := 0
 	for e.MoveNext() {
 		count++
@@ -110,6 +93,6 @@ func (s *Service) UpdateOnlineStatus(chain string) {
 }
 
 // SendStatus sends the local status information about every node to Apache Kafka
-func (s *Service) SendStatus(chain string) {
+func (h *Handler) SendStatus() {
 	// round := time.Now().UnixMilli() / 1000 / 60
 }

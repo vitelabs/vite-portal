@@ -39,7 +39,12 @@ func (a *OrchestratorApp) HandleNodeStatusUpdate() {
 		if n < 50 {
 			n = 50
 		}
-		a.nodeService.UpdateStatus(c.Name, n, 20)
+		handler, err := a.nodeService.GetHandler(c.Name)
+		if err != nil {
+			logger.Logger().Error().Msg(err.Error())
+			continue
+		}
+		handler.UpdateStatus(n, 20)
 		elapsed := time.Since(start)
 		logger.Logger().Info().
 			Str("chain", c.Name).
@@ -52,6 +57,11 @@ func (a *OrchestratorApp) HandleNodeStatusUpdate() {
 
 func (a *OrchestratorApp) HandleNodeOnlineStatusUpdate() {
 	for _, c := range a.config.SupportedChains {
-		a.nodeService.UpdateOnlineStatus(c.Name)
+		handler, err := a.nodeService.GetHandler(c.Name)
+		if err != nil {
+			logger.Logger().Error().Msg(err.Error())
+			continue
+		}
+		handler.UpdateOnlineStatus()
 	}
 }

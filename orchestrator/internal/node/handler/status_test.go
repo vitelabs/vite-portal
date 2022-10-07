@@ -2,6 +2,7 @@ package handler
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
@@ -76,4 +77,29 @@ func TestGetRuntimeInfo(t *testing.T) {
 	require.NotNil(t, r)
 	require.NotEmpty(t, r)
 	require.NotEmpty(t, r.LatestSnapshot)
+}
+
+func TestUpdateGlobalHeight(t *testing.T) {
+	t.Parallel()
+	start := time.Now().UnixMilli()
+	h, _ := newTestHandler(t, 0)
+	require.Equal(t, int64(0), h.statusStore.GetGlobalHeight())
+	require.Equal(t, int64(0), h.statusStore.GetLastUpdate())
+
+	height := h.updateGlobalHeight()
+	lastHeight := h.statusStore.GetGlobalHeight()
+	lastUpdate := h.statusStore.GetLastUpdate()
+	require.Greater(t, height, int64(0))
+	require.Equal(t, height, lastHeight)
+	require.GreaterOrEqual(t, lastUpdate, start)
+
+	time.Sleep(time.Millisecond * 5)
+	height = h.updateGlobalHeight()
+	require.Equal(t, lastHeight, h.statusStore.GetGlobalHeight())
+	require.Equal(t, lastUpdate, h.statusStore.GetLastUpdate())
+
+	time.Sleep(time.Second * 2)
+	height = h.updateGlobalHeight()
+	require.Greater(t, h.statusStore.GetGlobalHeight(), lastHeight)
+	require.Greater(t, h.statusStore.GetLastUpdate(), lastUpdate)
 }

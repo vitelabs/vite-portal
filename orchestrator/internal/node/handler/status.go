@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"sync"
+	"time"
 
 	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -54,18 +55,17 @@ func (h *Handler) updateStatus(batch []nodetypes.Node) {
 		guard <- struct{}{}
 		wg.Add(1)
 		go func(n nodetypes.Node) {
-			logger.Logger().Info().
-				Str("id", n.Id).
-				Str("name", n.Name).
-				Str("ip", n.ClientIp).
-				Str("chain", n.Chain).
-				Str("rewardAddress", n.RewardAddress).
-				Msg("calling 'dashboard_runtimeInfo'")
+			start := time.Now()
+			logEvent := logger.Logger().Info().Str("id", n.Id).Str("name", n.Name).Str("ip", n.ClientIp).Str("chain", n.Chain)
 			runtimeInfo, err := h.getRuntimeInfo(n)
 			if err != nil {
+				elapsed := time.Since(start)
+				logEvent.Err(err).Int64("elapsed", elapsed.Milliseconds()).Msg("update status failed")
 				return
 			}
 			h.updateNodeStatus(n, runtimeInfo)
+			elapsed := time.Since(start)
+			logEvent.Str("height", "0").Int64("elapsed", elapsed.Milliseconds()).Msg("status updated")
 			<-guard
 			wg.Done()
 		}(v)
@@ -78,12 +78,31 @@ func (h *Handler) getRuntimeInfo(node nodetypes.Node) (sharedtypes.RpcViteRuntim
 	ctx, cancel := context.WithTimeout(context.Background(), h.timeout)
 	defer cancel()
 	var runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse
-	err := node.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1");
+	err := node.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1")
 	return runtimeInfo, err
 }
 
 func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
-	
+	// oldHeight := h.statusStore.GetGlobalHeight()
+}
+
+func (h *Handler) updateGlobalHeight() int64 {
+	h.heightLock.Lock()
+	defer h.heightLock.Unlock()
+
+	current := h.statusStore.GetGlobalHeight()
+	lastUpdate := h.statusStore.GetLastUpdate()
+	if current != 0 && lastUpdate != 0 {
+		if time.Now().UnixMilli()-lastUpdate < 500 {
+			return current
+		}
+	}
+	height, err := h.client.GetSnapshotChainHeight()
+	if err != nil {
+		return 0
+	}
+	h.statusStore.SetGlobalHeight(current, height)
+	return h.statusStore.GetGlobalHeight()
 }
 
 func (h *Handler) UpdateOnlineStatus() {

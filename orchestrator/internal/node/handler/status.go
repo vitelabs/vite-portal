@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"sync"
-	"time"
 
 	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -51,14 +50,10 @@ func (h *Handler) updateStatus(batch []nodetypes.Node) {
 	var wg = sync.WaitGroup{}
 	maxGoroutines := len(batch) // could be smaller than batch size if needed
 	guard := make(chan struct{}, maxGoroutines)
-	timeout := time.Duration(h.config.RpcTimeout) * time.Millisecond
-
 	for _, v := range batch {
 		guard <- struct{}{}
 		wg.Add(1)
 		go func(n nodetypes.Node) {
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
-			defer cancel()
 			logger.Logger().Info().
 				Str("id", n.Id).
 				Str("name", n.Name).
@@ -66,9 +61,8 @@ func (h *Handler) updateStatus(batch []nodetypes.Node) {
 				Str("chain", n.Chain).
 				Str("rewardAddress", n.RewardAddress).
 				Msg("calling 'dashboard_runtimeInfo'")
-			var runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse
-			if err := n.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1"); err != nil {
-				// not successful
+			runtimeInfo, err := h.getRuntimeInfo(n)
+			if err != nil {
 				return
 			}
 			h.updateNodeStatus(n, runtimeInfo)
@@ -80,8 +74,16 @@ func (h *Handler) updateStatus(batch []nodetypes.Node) {
 	wg.Wait()
 }
 
-func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
+func (h *Handler) getRuntimeInfo(node nodetypes.Node) (sharedtypes.RpcViteRuntimeInfoResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), h.timeout)
+	defer cancel()
+	var runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse
+	err := node.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1");
+	return runtimeInfo, err
+}
 
+func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
+	
 }
 
 func (h *Handler) UpdateOnlineStatus() {

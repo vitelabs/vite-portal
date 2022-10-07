@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	DefaultViteMainNodeUrl = "https://node.vite.net/gvite"
+	DefaultViteMainNodeUrl  = "https://node.vite.net/gvite"
+	DefaultViteBuidlNodeUrl = "https://buidl.vite.net/gvite"
 )
 
 func BuildFullPath(elem ...string) string {
@@ -23,7 +24,7 @@ func BuildFullPath(elem ...string) string {
 	if index == -1 {
 		logger.Logger().Fatal().Msg(fmt.Sprintf("Root '%s' not found in %s", rootName, filename))
 	}
-	root := filename[0:index+len(rootName)]
+	root := filename[0 : index+len(rootName)]
 	p := path.Join(root, path.Join(elem...))
 	logger.Logger().Info().Msg(fmt.Sprintf("root: %s, path: %s", root, p))
 	_, err := os.Stat(p)

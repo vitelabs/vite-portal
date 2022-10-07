@@ -7,9 +7,21 @@ import (
 )
 
 func (a *OrchestratorApp) InitScheduler() {
-	a.scheduler.Every(1).Minute().Do(func() {
+	job1, err := a.scheduler.Every(1).Minute().Do(func() {
 		a.HandleNodeStatusUpdate()
 	})
+	if err != nil {
+		panic(err)
+	}
+	job1.SingletonMode()
+
+	job2, err := a.scheduler.Every(5).Seconds().Do(func() {
+		a.HandleNodeOnlineStatusUpdate()
+	})
+	if err != nil {
+		panic(err)
+	}
+	job2.SingletonMode()
 }
 
 // HandleNodeStatusUpdate tries to update the local status of 1/10 of the nodes every minute.
@@ -18,7 +30,11 @@ func (a *OrchestratorApp) InitScheduler() {
 func (a *OrchestratorApp) HandleNodeStatusUpdate() {
 	for _, c := range a.config.SupportedChains {
 		start := time.Now()
-		store := a.context.GetNodeStore(c.Name)
+		store, err := a.context.GetNodeStore(c.Name)
+		if err != nil {
+			logger.Logger().Error().Msg(err.Error())
+			continue
+		}
 		n := store.Count() / 10
 		if n < 50 {
 			n = 50
@@ -31,5 +47,11 @@ func (a *OrchestratorApp) HandleNodeStatusUpdate() {
 			Int("count", store.Count()).
 			Int64("elapsed", elapsed.Milliseconds()).
 			Msg("node status updated")
+	}
+}
+
+func (a *OrchestratorApp) HandleNodeOnlineStatusUpdate() {
+	for _, c := range a.config.SupportedChains {
+		a.nodeService.UpdateOnlineStatus(c.Name)
 	}
 }

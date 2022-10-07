@@ -45,3 +45,17 @@ func (s *StatusStore) GetGlobalHeight() int64 {
 	s.lastUpdate = time.Now().UnixMilli()
 	return h
 }
+
+func (s *StatusStore) SetGlobalHeight(oldValue int64, newValue int64) bool {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if s.globalHeight != oldValue {
+		return false
+	}
+
+	s.globalHeight = newValue
+	s.lastUpdate = time.Now().UnixMilli()
+	
+	return true
+}

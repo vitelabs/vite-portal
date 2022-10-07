@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
@@ -12,9 +11,9 @@ import (
 
 func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
 	logger.Logger().Debug().Str("chain", chain).Msg("get nodes")
-	store := s.context.GetNodeStore(chain)
-	if store == nil {
-		return *generics.NewGenericPage[types.Node](), errors.New(fmt.Sprintf("node store not found for chain '%s'", chain))
+	store, err := s.context.GetNodeStore(chain)
+	if err != nil {
+		return *generics.NewGenericPage[types.Node](), err
 	}
 	total := store.Count()
 	result := *generics.NewGenericPage[types.Node]()

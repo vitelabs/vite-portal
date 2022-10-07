@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	nodestore "github.com/vitelabs/vite-portal/orchestrator/internal/node/store"
@@ -40,16 +42,24 @@ func NewContext(config Config) *Context {
 	return c
 }
 
-func (c *Context) GetNodeStore(chain string) *nodestore.MemoryStore {
-	return c.nodeStores[chain]
+func (c *Context) GetNodeStore(chain string) (*nodestore.MemoryStore, error) {
+	s := c.nodeStores[chain]
+	if s == nil {
+		return nil, errors.New(fmt.Sprintf("node store not found for chain '%s'", chain))
+	}
+	return s, nil
 }
 
 func (c *Context) GetRelayerStore() *relayerstore.MemoryStore {
 	return c.relayerStore
 }
 
-func (c *Context) GetStatusStore(chain string) *nodestore.StatusStore {
-	return c.statusStores[chain]
+func (c *Context) GetStatusStore(chain string) (*nodestore.StatusStore, error) {
+	s := c.statusStores[chain]
+	if s == nil {
+		return nil, errors.New(fmt.Sprintf("status store not found for chain '%s'", chain))
+	}
+	return s, nil
 }
 
 func (c *Context) GetIpBlacklist() *sharedtypes.TransientCache[IpBlacklistItem] {

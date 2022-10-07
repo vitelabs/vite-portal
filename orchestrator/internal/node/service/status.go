@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -17,14 +16,19 @@ func (s *Service) UpdateStatus(chain string, limit, batchSize int) {
 	if chain == "" || limit <= 0 {
 		return
 	}
-	store := s.context.GetNodeStore(chain)
-	if store == nil {
-		logger.Logger().Error().Msg(fmt.Sprintf("node store not found for chain '%s'", chain))
+	nodeStore, err := s.context.GetNodeStore(chain)
+	if err != nil {
+		logger.Logger().Error().Msg(err.Error())
 		return
 	}
-	e := store.GetEnumerator()
+	statusStore, err := s.context.GetStatusStore(chain)
+	if err != nil {
+		logger.Logger().Error().Msg(err.Error())
+		return
+	}
+	e := nodeStore.GetEnumerator()
 	batch := make([]nodetypes.Node, 0, batchSize)
-	processed := *s.context.GetStatusStore(chain).ProcessedSet
+	processed := *statusStore.ProcessedSet
 	count := 0
 	for e.MoveNext() {
 		n, found := e.Current()
@@ -75,15 +79,34 @@ func (s *Service) updateStatus(batch []nodetypes.Node) {
 			var runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse
 			if err := n.RpcClient.CallContext(ctx, &runtimeInfo, "dashboard_runtimeInfo", "param1"); err != nil {
 				// not successful
-			} else {
-				// successful
+				return
 			}
+			s.updateNodeStatus(n, runtimeInfo)
 			<-guard
 			wg.Done()
 		}(v)
 	}
 
 	wg.Wait()
+}
+
+func (s *Service) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
+}
+
+func (s *Service) UpdateOnlineStatus(chain string) {
+	if chain == "" {
+		return
+	}
+	store, err := s.context.GetNodeStore(chain)
+	if err != nil {
+		logger.Logger().Error().Msg(err.Error())
+		return
+	}
+	e := store.GetEnumerator()
+	count := 0
+	for e.MoveNext() {
+		count++
+	}
 }
 
 // SendStatus sends the local status information about every node to Apache Kafka

@@ -51,9 +51,8 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		},
 	}
 	msg := "failed to add node"
-	store := s.context.GetNodeStore(chain.Name)
-	if store == nil {
-		err := errors.New(fmt.Sprintf("node store not found for chain '%s'", chain.Name))
+	store, err := s.context.GetNodeStore(chain.Name)
+	if err != nil{
 		return s.returnConnectError(msg, err)
 	}
 	if err := store.Add(n); err != nil {

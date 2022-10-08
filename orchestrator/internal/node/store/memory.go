@@ -13,13 +13,13 @@ import (
 type MemoryStore struct {
 	db        collections.NameObjectCollectionI[types.Node]
 	addresses mapset.Set[string]
-	lock      sync.RWMutex
+	lock      sync.Mutex
 }
 
 func NewMemoryStore() *MemoryStore {
 	s := &MemoryStore{
 		addresses: mapset.NewSet[string](),
-		lock:      sync.RWMutex{},
+		lock:      sync.Mutex{},
 	}
 	s.Clear()
 	return s

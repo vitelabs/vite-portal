@@ -25,7 +25,7 @@ type NameObjectCollectionI[T any] interface {
 type NameObjectCollection[T any] struct {
 	entriesMap   map[string]*nameObjectEntry[T]
 	entriesSlice []*nameObjectEntry[T]
-	lock         sync.RWMutex
+	lock         sync.Mutex
 }
 
 // NewNameObjectCollection creates a new collection
@@ -33,7 +33,7 @@ func NewNameObjectCollection[T any]() *NameObjectCollection[T] {
 	return &NameObjectCollection[T]{
 		entriesMap:   map[string]*nameObjectEntry[T]{},
 		entriesSlice: []*nameObjectEntry[T]{},
-		lock:         sync.RWMutex{},
+		lock:         sync.Mutex{},
 	}
 }
 

@@ -10,12 +10,12 @@ import (
 
 type MemoryStore struct {
 	db   collections.NameObjectCollectionI[types.Relayer]
-	lock sync.RWMutex
+	lock sync.Mutex
 }
 
 func NewMemoryStore() *MemoryStore {
 	s := &MemoryStore{
-		lock: sync.RWMutex{},
+		lock: sync.Mutex{},
 	}
 	s.Clear()
 	return s

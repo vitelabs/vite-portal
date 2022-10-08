@@ -8,6 +8,17 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/jsonutil"
 )
 
+func TestJsonMarshal(t *testing.T) {
+	t.Parallel()
+	node := &Node{
+		Id: "1234",
+		LastUpdate: 123, // should be serialized as string
+	}
+	expected := `{"id":"1234","name":"","chain":"","version":"","commit":"","rewardAddress":"","transport":"","remoteAddress":"","clientIp":"","status":0,"lastUpdate":"123","delayTime":"0","httpInfo":{"version":"","userAgent":"","origin":"","host":""}}`
+	actual := jsonutil.ToString(node)
+	require.Equal(t, expected, actual)
+}
+
 func TestJsonUnmarshal(t *testing.T) {
 	t.Parallel()
 	tests := []struct {

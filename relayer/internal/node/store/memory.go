@@ -13,12 +13,12 @@ import (
 type MemoryStore struct {
 	idMap map[string]string
 	db    map[string]collections.NameObjectCollectionI[types.Node]
-	lock  sync.RWMutex
+	lock  sync.Mutex
 }
 
 func NewMemoryStore() *MemoryStore {
 	s := &MemoryStore{
-		lock: sync.RWMutex{},
+		lock: sync.Mutex{},
 	}
 	s.Clear()
 	return s

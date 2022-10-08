@@ -12,7 +12,7 @@ import (
 type Service struct {
 	store    interfaces.StoreI
 	activity map[string]*types.NodeActivityEntry
-	lock     sync.RWMutex
+	lock     sync.Mutex
 }
 
 // NewService creates new instances of the nodes module service
@@ -20,7 +20,7 @@ func NewService(store interfaces.StoreI) *Service {
 	return &Service{
 		store:    store,
 		activity: make(map[string]*types.NodeActivityEntry),
-		lock:     sync.RWMutex{},
+		lock:     sync.Mutex{},
 	}
 }
 

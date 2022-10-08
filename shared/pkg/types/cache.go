@@ -11,7 +11,7 @@ import (
 type Cache struct {
 	lru      simplelru.LRUCache
 	capacity int
-	lock     sync.RWMutex
+	lock     sync.Mutex
 }
 
 // New creates an LRU of the given capacity.
@@ -23,7 +23,7 @@ func NewCache(capacity int) *Cache {
 	c := &Cache{
 		lru:      lru,
 		capacity: capacity,
-		lock:     sync.RWMutex{},
+		lock:     sync.Mutex{},
 	}
 	return c
 }

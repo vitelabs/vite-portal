@@ -3,9 +3,14 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 type Int64 int64
+
+func (u Int64) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%d"`, u)), nil
+}
 
 func (u *Int64) UnmarshalJSON(bs []byte) error {
 	var i int64

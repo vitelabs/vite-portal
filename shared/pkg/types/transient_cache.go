@@ -13,13 +13,13 @@ type TransientContainer[T any] struct {
 
 type TransientCache[T any] struct {
 	cache Cache
-	lock  sync.RWMutex
+	lock  sync.Mutex
 }
 
 func NewTransientCache[T any](capacity int) *TransientCache[T] {
 	s := &TransientCache[T]{
 		cache: *NewCache(capacity),
-		lock:  sync.RWMutex{},
+		lock:  sync.Mutex{},
 	}
 	return s
 }

@@ -112,6 +112,21 @@ func (s *MemoryStore) Update(lastUpdate int64, n types.Node) error {
 	return nil
 }
 
+func (s *MemoryStore) SetStatus(id string, lastUpdate int64, status int) error {
+	existing, found := s.GetById(id)
+	if !found {
+		return errors.New("node does not exist")
+	}
+	if lastUpdate != int64(existing.LastUpdate) {
+		return errors.New("inconsistent state")
+	}
+
+	existing.Status = status
+	s.db.Set(existing.Id, existing)
+	
+	return nil
+}
+
 func (s *MemoryStore) Remove(id string) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()

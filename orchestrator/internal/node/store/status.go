@@ -9,7 +9,7 @@ import (
 
 type StatusStore struct {
 	ProcessedSet *mapset.Set[string]
-	globalHeight int64
+	globalHeight int
 	lastUpdate   int64
 	lock         sync.Mutex
 }
@@ -25,7 +25,7 @@ func NewStatusStore() *StatusStore {
 	return s
 }
 
-func (s *StatusStore) GetGlobalHeight() int64 {
+func (s *StatusStore) GetGlobalHeight() int {
 	return s.globalHeight
 }
 
@@ -33,11 +33,11 @@ func (s *StatusStore) GetLastUpdate() int64 {
 	return s.lastUpdate
 }
 
-func (s *StatusStore) SetGlobalHeight(oldValue int64, newValue int64) bool {
+func (s *StatusStore) SetGlobalHeight(oldValue int, newValue int) bool {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	if s.globalHeight != oldValue {
+	if s.globalHeight != oldValue || oldValue > newValue {
 		return false
 	}
 

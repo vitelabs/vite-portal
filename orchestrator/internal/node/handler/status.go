@@ -91,14 +91,16 @@ func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.
 	node.LastBlock.Hash = block.Hash
 	node.LastBlock.Height = block.Height
 	node.LastBlock.Time = block.Time
+	node.Status = h.getOnlineStatus(block.Height)
 	err := h.nodeStore.Update(int64(lastUpdate), node)
 	if err != nil {
 		logger.Logger().Info().Err(err).Str("id", node.Id).Msg("update node status failed")
+		return err
 	}
-	return err
+	return nil
 }
 
-func (h *Handler) updateGlobalHeight() int64 {
+func (h *Handler) updateGlobalHeight() int {
 	h.heightLock.Lock()
 	defer h.heightLock.Unlock()
 
@@ -119,10 +121,23 @@ func (h *Handler) updateGlobalHeight() int64 {
 
 func (h *Handler) UpdateOnlineStatus() {
 	e := h.nodeStore.GetEnumerator()
-	count := 0
 	for e.MoveNext() {
-		count++
+		n, found := e.Current()
+		if !found {
+			continue
+		}
+		status := h.getOnlineStatus(n.LastBlock.Height)
+		h.nodeStore.SetStatus(n.Id, int64(n.LastUpdate), status)
 	}
+}
+
+func (h *Handler) getOnlineStatus(height int) int {
+	globalHeight := h.statusStore.GetGlobalHeight()
+	// if the height difference is smaller than 3600 (~60 minutes) -> node is online (0)
+	if globalHeight - height < 3600 {
+		return 0
+	}
+	return -1
 }
 
 // SendStatus sends the local status information about every node to Apache Kafka

@@ -85,13 +85,13 @@ func (c *ViteClient) Send(method string, params []interface{}, v interfaces.RpcR
 	return nil
 }
 
-func (c *ViteClient) GetSnapshotChainHeight() (int64, error) {
+func (c *ViteClient) GetSnapshotChainHeight() (int, error) {
 	resp := types.RpcResponse[string]{}
 	err := c.Send("ledger_getSnapshotChainHeight", nil, &resp)
 	if err != nil {
 		return 0, err
 	}
-	return strconv.ParseInt(resp.Result, 10, 64)
+	return strconv.Atoi(resp.Result)
 }
 
 func (c *ViteClient) GetLatestAccountBlock(addr string) (types.RpcViteLatestAccountBlockResponse, error) {

@@ -45,7 +45,7 @@ func TestGetSnapshotChainHeight(t *testing.T) {
 	logger.Logger().Info().Msg(fmt.Sprintf("GetSnapshotChainHeight: %d", h))
 
 	require.Equal(t, uint64(1), c.requestId)
-	require.Greater(t, h, int64(0))
+	require.Greater(t, h, 0)
 }
 
 func TestGetSnapshotChainHeight_Timeout(t *testing.T) {
@@ -60,7 +60,7 @@ func TestGetSnapshotChainHeight_Timeout(t *testing.T) {
 	logger.Logger().Info().Msg(fmt.Sprintf("GetSnapshotChainHeight: %d", h))
 
 	require.Equal(t, uint64(1), c.requestId)
-	require.Equal(t, int64(0), h)
+	require.Equal(t, 0, h)
 }
 
 func TestGetLatestAccountBlock(t *testing.T) {

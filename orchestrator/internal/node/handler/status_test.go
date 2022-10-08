@@ -85,13 +85,13 @@ func TestUpdateGlobalHeight(t *testing.T) {
 	t.Parallel()
 	start := time.Now().UnixMilli()
 	h, _ := newTestHandler(t, 0)
-	require.Equal(t, int64(0), h.statusStore.GetGlobalHeight())
+	require.Equal(t, 0, h.statusStore.GetGlobalHeight())
 	require.Equal(t, int64(0), h.statusStore.GetLastUpdate())
 
 	height := h.updateGlobalHeight()
 	lastHeight := h.statusStore.GetGlobalHeight()
 	lastUpdate := h.statusStore.GetLastUpdate()
-	require.Greater(t, height, int64(0))
+	require.Greater(t, height, 0)
 	require.Equal(t, height, lastHeight)
 	require.GreaterOrEqual(t, lastUpdate, start)
 
@@ -112,28 +112,32 @@ func TestUpdateNodeStatus(t *testing.T) {
 		name string
 		node types.Node
 		info sharedtypes.RpcViteRuntimeInfoResponse
+		status int
 	}{
 		{
 			name: "Test emtpy runtime info",
 			node: testutil.NewNode("chain1"),
 			info: sharedtypes.RpcViteRuntimeInfoResponse{},
+			status: -1,
 		},
 		{
 			name: "Test runtime info",
 			node: testutil.NewNode("chain1"),
 			info: sharedtypes.RpcViteRuntimeInfoResponse{
 				LatestSnapshot: sharedtypes.RpcViteLatestSnapshotResponse{
-					Hash: "1234",
+					Hash:   "1234",
 					Height: 1234,
-					Time: 1234,
+					Time:   1234,
 				},
 			},
+			status: 0,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			h, _ := newTestHandler(t, 0)
+			h.statusStore.SetGlobalHeight(0, 3600)
 			n := tc.node
 			r := tc.info
 			delay := 2 * time.Second
@@ -143,19 +147,20 @@ func TestUpdateNodeStatus(t *testing.T) {
 			err := h.updateNodeStatus(n, r, start)
 			require.Error(t, err)
 			require.Equal(t, "node does not exist", err.Error())
-		
+
 			h.nodeStore.Add(n)
 			err = h.updateNodeStatus(n, r, start)
 			require.NoError(t, err)
 			require.NotEqual(t, start.UnixMilli(), int64(n.LastUpdate))
 			require.Equal(t, sharedtypes.Int64(0), n.DelayTime)
-		
+
 			n, _ = h.nodeStore.GetById(n.Id)
 			require.Equal(t, start.UnixMilli(), int64(n.LastUpdate))
 			require.Equal(t, delay.Milliseconds(), int64(n.DelayTime))
 			require.Equal(t, r.LatestSnapshot.Hash, n.LastBlock.Hash)
 			require.Equal(t, r.LatestSnapshot.Height, n.LastBlock.Height)
 			require.Equal(t, r.LatestSnapshot.Time, n.LastBlock.Time)
+			require.Equal(t, tc.status, n.Status)
 		})
 	}
 }

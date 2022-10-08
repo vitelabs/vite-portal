@@ -19,6 +19,9 @@ type Node struct {
 	Transport     string                      `json:"transport"`
 	RemoteAddress string                      `json:"remoteAddress"`
 	ClientIp      string                      `json:"clientIp"`
+	Status        int                         `json:"status"`
+	LastUpdate    sharedtypes.Int64           `json:"lastUpdate"`
+	DelayTime     sharedtypes.Int64           `json:"delayTime"`
 	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo"`
 	RpcClient     sharedinterfaces.RpcClientI `json:"-"`
 }

@@ -99,7 +99,7 @@ func (h *Handler) updateGlobalHeight() int64 {
 	}
 	height, err := h.client.GetSnapshotChainHeight()
 	if err != nil {
-		return 0
+		return current
 	}
 	h.statusStore.SetGlobalHeight(current, height)
 	return h.statusStore.GetGlobalHeight()

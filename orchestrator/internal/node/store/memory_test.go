@@ -74,25 +74,25 @@ func TestCount(t *testing.T) {
 	assert.Equal(t, 1, s.Count())
 }
 
-func TestUpsertInvalid(t *testing.T) {
+func TestAddInvalid(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name string
 		node *types.Node
 	}{
 		{
-			name: "Test insert emtpy node",
+			name: "Test add emtpy node",
 			node: &types.Node{
 			},
 		},
 		{
-			name: "Test insert node with id only",
+			name: "Test add node with id only",
 			node: &types.Node{
 				Id: "1234",
 			},
 		},
 		{
-			name: "Test insert node with id and chain",
+			name: "Test add node with id and chain",
 			node: &types.Node{
 				Id: "1234",
 				Chain: "chain1234",

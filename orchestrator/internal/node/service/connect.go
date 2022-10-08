@@ -42,6 +42,9 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		Transport:     peerInfo.Transport,
 		RemoteAddress: peerInfo.RemoteAddr,
 		ClientIp:      clientIp,
+		Status:        0,
+		LastUpdate:    0,
+		DelayTime:     0,
 		RpcClient:     c,
 		HTTPInfo: sharedtypes.HTTPInfo{
 			Version:   peerInfo.HTTP.Version,
@@ -52,7 +55,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 	}
 	msg := "failed to add node"
 	store, err := s.context.GetNodeStore(chain.Name)
-	if err != nil{
+	if err != nil {
 		return s.returnConnectError(msg, err)
 	}
 	if err := store.Add(n); err != nil {

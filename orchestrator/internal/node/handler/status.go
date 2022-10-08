@@ -48,6 +48,7 @@ func (h *Handler) UpdateStatus(limit, batchSize int) {
 }
 
 func (h *Handler) updateStatus(batch []nodetypes.Node) {
+	h.updateGlobalHeight()
 	var wg = sync.WaitGroup{}
 	maxGoroutines := len(batch) // could be smaller than batch size if needed
 	guard := make(chan struct{}, maxGoroutines)
@@ -63,7 +64,7 @@ func (h *Handler) updateStatus(batch []nodetypes.Node) {
 				logEvent.Err(err).Int64("elapsed", elapsed.Milliseconds()).Msg("update status failed")
 				return
 			}
-			h.updateNodeStatus(n, runtimeInfo)
+			h.updateNodeStatus(n, runtimeInfo, start)
 			elapsed := time.Since(start)
 			logEvent.Str("height", "0").Int64("elapsed", elapsed.Milliseconds()).Msg("status updated")
 			<-guard
@@ -82,8 +83,19 @@ func (h *Handler) getRuntimeInfo(node nodetypes.Node) (sharedtypes.RpcViteRuntim
 	return runtimeInfo, err
 }
 
-func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse) {
-	// oldHeight := h.statusStore.GetGlobalHeight()
+func (h *Handler) updateNodeStatus(node nodetypes.Node, runtimeInfo sharedtypes.RpcViteRuntimeInfoResponse, start time.Time) error {
+	lastUpdate := node.LastUpdate
+	block := runtimeInfo.LatestSnapshot
+	node.LastUpdate = sharedtypes.Int64(start.UnixMilli())
+	node.DelayTime = sharedtypes.Int64(time.Since(start).Milliseconds())
+	node.LastBlock.Hash = block.Hash
+	node.LastBlock.Height = block.Height
+	node.LastBlock.Time = block.Time
+	err := h.nodeStore.Update(int64(lastUpdate), node)
+	if err != nil {
+		logger.Logger().Info().Err(err).Str("id", node.Id).Msg("update node status failed")
+	}
+	return err
 }
 
 func (h *Handler) updateGlobalHeight() int64 {

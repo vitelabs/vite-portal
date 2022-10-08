@@ -6,8 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
+	"github.com/vitelabs/vite-portal/orchestrator/internal/util/testutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
-	"github.com/vitelabs/vite-portal/shared/pkg/util/testutil"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	sharedtestutil "github.com/vitelabs/vite-portal/shared/pkg/util/testutil"
 )
 
 func TestUpdateStatus_Empty(t *testing.T) {
@@ -68,7 +70,7 @@ func TestGetRuntimeInfo_Empty(t *testing.T) {
 func TestGetRuntimeInfo(t *testing.T) {
 	t.Parallel()
 	h, _ := newTestHandler(t, 0)
-	client, err := rpc.Dial(testutil.DefaultViteBuidlNodeUrl)
+	client, err := rpc.Dial(sharedtestutil.DefaultViteBuidlNodeUrl)
 	node := types.Node{
 		RpcClient: client,
 	}
@@ -102,4 +104,58 @@ func TestUpdateGlobalHeight(t *testing.T) {
 	height = h.updateGlobalHeight()
 	require.Greater(t, h.statusStore.GetGlobalHeight(), lastHeight)
 	require.Greater(t, h.statusStore.GetLastUpdate(), lastUpdate)
+}
+
+func TestUpdateNodeStatus(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		node types.Node
+		info sharedtypes.RpcViteRuntimeInfoResponse
+	}{
+		{
+			name: "Test emtpy runtime info",
+			node: testutil.NewNode("chain1"),
+			info: sharedtypes.RpcViteRuntimeInfoResponse{},
+		},
+		{
+			name: "Test runtime info",
+			node: testutil.NewNode("chain1"),
+			info: sharedtypes.RpcViteRuntimeInfoResponse{
+				LatestSnapshot: sharedtypes.RpcViteLatestSnapshotResponse{
+					Hash: "1234",
+					Height: 1234,
+					Time: 1234,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			h, _ := newTestHandler(t, 0)
+			n := tc.node
+			r := tc.info
+			delay := 2 * time.Second
+			start := time.Now().Add(-delay)
+			require.NotEqual(t, start.UnixMilli(), int64(n.LastUpdate))
+
+			err := h.updateNodeStatus(n, r, start)
+			require.Error(t, err)
+			require.Equal(t, "node does not exist", err.Error())
+		
+			h.nodeStore.Add(n)
+			err = h.updateNodeStatus(n, r, start)
+			require.NoError(t, err)
+			require.NotEqual(t, start.UnixMilli(), int64(n.LastUpdate))
+			require.Equal(t, sharedtypes.Int64(0), n.DelayTime)
+		
+			n, _ = h.nodeStore.GetById(n.Id)
+			require.Equal(t, start.UnixMilli(), int64(n.LastUpdate))
+			require.Equal(t, delay.Milliseconds(), int64(n.DelayTime))
+			require.Equal(t, r.LatestSnapshot.Hash, n.LastBlock.Hash)
+			require.Equal(t, r.LatestSnapshot.Height, n.LastBlock.Height)
+			require.Equal(t, r.LatestSnapshot.Time, n.LastBlock.Time)
+		})
+	}
 }

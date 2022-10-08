@@ -90,6 +90,28 @@ func (s *MemoryStore) Add(n types.Node) error {
 	return nil
 }
 
+func (s *MemoryStore) Update(lastUpdate int64, n types.Node) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	err := n.Validate()
+	if err != nil {
+		return err
+	}
+	
+	existing, found := s.GetById(n.Id)
+	if !found {
+		return errors.New("node does not exist")
+	}
+	if lastUpdate != int64(existing.LastUpdate) {
+		return errors.New("inconsistent state")
+	}
+
+	s.db.Set(n.Id, n)
+
+	return nil
+}
+
 func (s *MemoryStore) Remove(id string) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()

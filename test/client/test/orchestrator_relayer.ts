@@ -23,9 +23,9 @@ export function testOrchestratorRelayer(common: TestCommon) {
       expect(relayer.id).to.not.be.empty
       expect(relayer.transport).to.be.equal("ws")
       expect(relayer.remoteAddress).to.not.be.empty
-      expect(relayer.httpInfo.version).to.be.empty
+      expect(relayer.httpInfo.version).to.be.undefined
       expect(relayer.httpInfo.userAgent).to.be.equal("Go-http-client/1.1")
-      expect(relayer.httpInfo.origin).to.be.empty
+      expect(relayer.httpInfo.origin).to.be.undefined
       expect(relayer.httpInfo.host).to.be.equal("127.0.0.1:57332")
       expect(relayer.httpInfo.auth).to.be.undefined
     })

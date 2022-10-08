@@ -53,3 +53,9 @@ func (c *Chains) GetEnumerator() collections.EnumeratorI[ChainConfig] {
 func (c *Chains) GetAll() []ChainConfig {
 	return c.db.GetEntries()
 }
+
+type ChainBlock struct {
+	Hash   string `json:"hash,omitempty"`
+	Height int    `json:"height,omitempty"`
+	Time   int    `json:"time,omitempty"`
+}

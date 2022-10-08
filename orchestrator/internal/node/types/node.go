@@ -11,18 +11,19 @@ import (
 
 type Node struct {
 	Id            string                      `json:"id"`
-	Name          string                      `json:"name"`
-	Chain         string                      `json:"chain"`
-	Version       string                      `json:"version"`
-	Commit        string                      `json:"commit"`
-	RewardAddress string                      `json:"rewardAddress"`
-	Transport     string                      `json:"transport"`
-	RemoteAddress string                      `json:"remoteAddress"`
-	ClientIp      string                      `json:"clientIp"`
-	Status        int                         `json:"status"`
-	LastUpdate    sharedtypes.Int64           `json:"lastUpdate"`
-	DelayTime     sharedtypes.Int64           `json:"delayTime"`
-	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo"`
+	Name          string                      `json:"name,omitempty"`
+	Chain         string                      `json:"chain,omitempty"`
+	Version       string                      `json:"version,omitempty"`
+	Commit        string                      `json:"commit,omitempty"`
+	RewardAddress string                      `json:"rewardAddress,omitempty"`
+	Transport     string                      `json:"transport,omitempty"`
+	RemoteAddress string                      `json:"remoteAddress,omitempty"`
+	ClientIp      string                      `json:"clientIp,omitempty"`
+	Status        int                         `json:"status,omitempty"`
+	LastUpdate    sharedtypes.Int64           `json:"lastUpdate,omitempty"`
+	DelayTime     sharedtypes.Int64           `json:"delayTime,omitempty"`
+	LastBlock     sharedtypes.ChainBlock      `json:"lastBlock,omitempty"`
+	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo,omitempty"`
 	RpcClient     sharedinterfaces.RpcClientI `json:"-"`
 }
 

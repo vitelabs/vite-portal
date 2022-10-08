@@ -1,8 +1,8 @@
 package types
 
 type HTTPInfo struct {
-	Version   string `json:"version"`
-	UserAgent string `json:"userAgent"`
-	Origin    string `json:"origin"`
-	Host      string `json:"host"`
+	Version   string `json:"version,omitempty"`
+	UserAgent string `json:"userAgent,omitempty"`
+	Origin    string `json:"origin,omitempty"`
+	Host      string `json:"host,omitempty"`
 }

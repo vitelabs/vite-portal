@@ -8,6 +8,7 @@ import (
 	nodetypes "github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
 // UpdateStatus tries to update the local status of a subset of all nodes specified by the limit parameter.
@@ -134,7 +135,7 @@ func (h *Handler) UpdateOnlineStatus() {
 func (h *Handler) getOnlineStatus(height int) int {
 	globalHeight := h.statusStore.GetGlobalHeight()
 	// if the height difference is smaller than 3600 (~60 minutes) -> node is online (0)
-	if globalHeight - height < 3600 {
+	if mathutil.Abs(globalHeight - height) < 3600 {
 		return 0
 	}
 	return -1

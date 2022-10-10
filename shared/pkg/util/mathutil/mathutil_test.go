@@ -47,3 +47,35 @@ func TestMin(t *testing.T) {
 		})
 	}
 }
+
+func TestAbs(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		v int
+		expected int
+	}{
+		{
+			name: "Test 0",
+			v: 0,
+			expected: 0,
+		},
+		{
+			name: "Test 1",
+			v: 1,
+			expected: 1,
+		},
+		{
+			name: "Test -1",
+			v: -1,
+			expected: 1,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			actual := Abs(tc.v)
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}

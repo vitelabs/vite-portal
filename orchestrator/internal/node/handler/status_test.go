@@ -164,3 +164,36 @@ func TestUpdateNodeStatus(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateOnlineStatus(t *testing.T) {
+	t.Parallel()
+	h, nodes := newTestHandler(t, 2)
+	h.statusStore.SetGlobalHeight(0, 3600)
+	require.Equal(t, 0, nodes[0].Status)
+	require.Equal(t, 0, nodes[1].Status)
+	h.UpdateOnlineStatus()
+	nodes = h.nodeStore.GetEntries()
+	require.Equal(t, -1, nodes[0].Status)
+	require.Equal(t, -1, nodes[1].Status)
+	nodes[0].LastBlock.Height = 1
+	h.nodeStore.Update(int64(nodes[0].LastUpdate), nodes[0])
+	h.UpdateOnlineStatus()
+	nodes = h.nodeStore.GetEntries()
+	require.Equal(t, 0, nodes[0].Status)
+	require.Equal(t, -1, nodes[1].Status)
+}
+
+func TestGetOnlineStatus(t *testing.T) {
+	t.Parallel()
+	h, _ := newTestHandler(t, 0)
+	h.statusStore.SetGlobalHeight(0, 3600)
+	status := h.getOnlineStatus(0)
+	require.Equal(t, -1, status)
+	status = h.getOnlineStatus(1)
+	require.Equal(t, 0, status)
+	status = h.getOnlineStatus(3601)
+	require.Equal(t, 0, status)
+	// difference exceeds the limit -> offline
+	status = h.getOnlineStatus(7200)
+	require.Equal(t, -1, status)
+}

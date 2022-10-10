@@ -62,6 +62,10 @@ func (s *MemoryStore) GetByIndex(index int) (n types.Node, found bool) {
 	return node, true
 }
 
+func (s *MemoryStore) GetEntries() []types.Node {
+	return s.db.GetEntries()
+}
+
 func (s *MemoryStore) GetEnumerator() collections.EnumeratorI[types.Node] {
 	return s.db.GetEnumerator()
 }

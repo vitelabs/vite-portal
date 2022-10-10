@@ -106,3 +106,4 @@ dist
 # Custom
 bin/relayer
 bin/orchestrator
+bin/kafka_*

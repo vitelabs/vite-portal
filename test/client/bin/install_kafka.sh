@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
 cd $SCRIPT_DIR
-KAFKA_VERSION=kafka_2.13-3.3.1
+KAFKA_VERSION="$(cat ./$SCRIPTDIR/kafka/version.txt)"
 TAR_NAME=$KAFKA_VERSION.tgz
 DOWNLOAD_URL=https://dlcdn.apache.org/kafka/3.3.1/$TAR_NAME
 DATA_DIR=$SCRIPT_DIR/kafka_data

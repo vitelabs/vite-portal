@@ -2,6 +2,7 @@ import * as vite from "@vite/vuilder"
 import config from "./vite.config.json"
 import { RpcHttpClient } from "../src/client"
 import { TestConstants } from "../src/constants"
+import { Kafka } from "../src/kafka"
 import { HttpMockCollector } from "../src/mock_collector"
 import { DefaultMockNode, MockNode, TimeoutMockNode } from "../src/mock_node"
 import { Orchestrator } from "../src/orchestrator"
@@ -12,6 +13,7 @@ import { CommonUtil } from "../src/utils"
 
 export class TestCommon {
   timeout: number
+  kafka: Kafka
   orchestratorConfig: OrchestratorConfig
   relayerConfig: RelayerConfig
   providerUrl: string
@@ -27,6 +29,7 @@ export class TestCommon {
 
   constructor() {
     this.timeout = 2100
+    this.kafka = new Kafka(this.timeout)
     this.orchestratorConfig = {
       rpcUrl: "http://127.0.0.1:57331",
       rpcAuthUrl: "http://127.0.0.1:57332",
@@ -48,6 +51,7 @@ export class TestCommon {
 
   startAsync = async () => {
     VitePortal.startCleanup()
+    await this.kafka.start()
     this.orchestrator = await VitePortal.startOrchestrator(this.orchestratorConfig, this.timeout)
     this.relayer = await VitePortal.startRelayer(this.relayerConfig, this.timeout)
     this.provider = vite.newProvider(this.providerUrl)
@@ -59,6 +63,7 @@ export class TestCommon {
   }
 
   stopAsync = async () => {
+    await this.kafka.stop()
     await this.orchestrator.stop()
     await this.relayer.stop()
     this.httpMockCollector.stop()

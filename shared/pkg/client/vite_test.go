@@ -14,13 +14,13 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/util/testutil"
 )
 
-var defaultUrl = testutil.DefaultViteMainNodeUrl
-var defaultTimeout = time.Duration(1000) * time.Millisecond
+var defaultViteUrl = testutil.DefaultViteMainNodeUrl
+var defaultViteTimeout = time.Duration(1000) * time.Millisecond
 
 func TestSendError(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl, defaultTimeout)
-	require.Equal(t, defaultUrl, c.url)
+	c := NewViteClient(defaultViteUrl, defaultViteTimeout)
+	require.Equal(t, defaultViteUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
 
 	response := types.RpcResponse[any]{}
@@ -36,8 +36,8 @@ func TestSendError(t *testing.T) {
 
 func TestGetSnapshotChainHeight(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl, defaultTimeout)
-	require.Equal(t, defaultUrl, c.url)
+	c := NewViteClient(defaultViteUrl, defaultViteTimeout)
+	require.Equal(t, defaultViteUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
 
 	h, err := c.GetSnapshotChainHeight()
@@ -50,8 +50,8 @@ func TestGetSnapshotChainHeight(t *testing.T) {
 
 func TestGetSnapshotChainHeight_Timeout(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl, time.Duration(1) * time.Millisecond)
-	require.Equal(t, defaultUrl, c.url)
+	c := NewViteClient(defaultViteUrl, time.Duration(1) * time.Millisecond)
+	require.Equal(t, defaultViteUrl, c.url)
 	require.Equal(t, uint64(0), c.requestId)
 
 	h, err := c.GetSnapshotChainHeight()
@@ -65,7 +65,7 @@ func TestGetSnapshotChainHeight_Timeout(t *testing.T) {
 
 func TestGetLatestAccountBlock(t *testing.T) {
 	t.Parallel()
-	c := NewViteClient(defaultUrl, defaultTimeout)
+	c := NewViteClient(defaultViteUrl, defaultViteTimeout)
 
 	r, err := c.GetLatestAccountBlock("vite_0000000000000000000000000000000000000006e82b8ba657")
 	require.NoError(t, err)

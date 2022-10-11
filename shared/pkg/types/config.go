@@ -25,3 +25,18 @@ type ChainConfig struct {
 	// OfficialNodeUrl is the HTTP URL of the official node
 	OfficialNodeUrl string `json:"officialNodeUrl"`
 }
+
+type KafkaConfig struct {
+	Servers          string `json:"servers"`
+	GroupId          string `json:"groupId"`
+	Topic            string `json:"topic"`
+	KeyStoreLocation string `json:"keyStoreLocation"`
+}
+
+func NewDefaultKafkaConfig() *KafkaConfig {
+	return &KafkaConfig{
+		Servers: DefaultKafkaServer,
+		GroupId: DefaultKafkaGroupId,
+		Topic:   DefaultKafkaTopic,
+	}
+}

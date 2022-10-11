@@ -13,6 +13,12 @@ const (
 	DefaultJwtSecret = "secret1234"
 	// The default JWT expiry timeout
 	DefaultJwtExpiryTimeout = 0
+	// The default Kafka server
+	DefaultKafkaServer = "localhost:9092"
+	// The default Kafka group identifier
+	DefaultKafkaGroupId = "vote_fullnode_award_event_prod"
+	// The default Kafka topic
+	DefaultKafkaTopic = "fullnode_award_event_prod"
 	// The maximum size of the payload in bytes
 	MaxPayloadSize = 1024 * 128
 	// Time allowed to read the next pong message from the peer.

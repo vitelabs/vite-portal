@@ -47,10 +47,12 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// Apache Kafka related configuration
+	Kafka sharedtypes.KafkaConfig `json:"kafka"`
 	// A list of supported chains
 	SupportedChains []sharedtypes.ChainConfig `json:"supportedChains"`
 	supportedChains *sharedtypes.Chains
-	// Logging related configurtion
+	// Logging related configuration
 	Logging sharedtypes.LoggingConfig `json:"logging"`
 }
 
@@ -67,6 +69,7 @@ func NewDefaultConfig() Config {
 		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
 		UserAgent:              DefaultUserAgent,
 		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		Kafka:                  sharedtypes.DefaultKafkaConfig,
 		SupportedChains:        sharedtypes.DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,

@@ -12,7 +12,7 @@ var defaultKafkaTimeout = 1 * time.Second
 
 func TestKafkaWrite(t *testing.T) {
 	t.Skip()
-	cfg := *types.NewDefaultKafkaConfig()
+	cfg := types.DefaultKafkaConfig
 	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
 	round := time.Now().UnixMilli() / 1000 / 60
 	c.Write(fmt.Sprintf("id: %d", round))
@@ -22,7 +22,7 @@ func TestKafkaWrite(t *testing.T) {
 
 func TestKafkaRead(t *testing.T) {
 	t.Skip()
-	cfg := *types.NewDefaultKafkaConfig()
+	cfg := types.DefaultKafkaConfig
 	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
 	fmt.Println("Round 1:")
 	messages := c.Read()

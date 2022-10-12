@@ -30,3 +30,17 @@ const (
 	// Send pings to peer with this period. Must be less than pongWait.
 	WebSocketPingPeriod = (WebSocketPongWait * 9) / 10
 )
+
+var DefaultKafkaConfig = KafkaConfig{
+	Server: KafkaServerConfig{
+		Servers: DefaultKafkaServer,
+	},
+	DefaultTopic: KafkaTopicConfig{
+		GroupId: DefaultKafkaGroupId,
+		Topic:   DefaultKafkaTopic,
+	},
+	RpcTopic: KafkaTopicConfig{
+		GroupId: RpcKafkaGroupId,
+		Topic:   RpcKafkaTopic,
+	},
+}

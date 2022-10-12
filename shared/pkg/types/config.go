@@ -41,19 +41,3 @@ type KafkaTopicConfig struct {
 	GroupId string `json:"groupId"`
 	Topic   string `json:"topic"`
 }
-
-func NewDefaultKafkaConfig() *KafkaConfig {
-	return &KafkaConfig{
-		Server: KafkaServerConfig{
-			Servers: DefaultKafkaServer,
-		},
-		DefaultTopic: KafkaTopicConfig{
-			GroupId: DefaultKafkaGroupId,
-			Topic:   DefaultKafkaTopic,
-		},
-		RpcTopic: KafkaTopicConfig{
-			GroupId: RpcKafkaGroupId,
-			Topic:   RpcKafkaTopic,
-		},
-	}
-}

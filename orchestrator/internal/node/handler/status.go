@@ -166,13 +166,14 @@ func (h *Handler) SendOnlineStatus() {
 			ViteAddress: n.RewardAddress,
 			NodeName:    n.Name,
 			Ip:          n.ClientIp,
+			Chain:       n.Chain,
 		}
 		if n.Status == 1 {
 			status.SuccessTime = 1
 			successCount++
 		}
 		// TODO: write to kafka
-		logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Msg("node status sent")
+		logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Str("chain", n.Chain).Msg("node status sent")
 		sendCount++
 	}
 	logger.Logger().Info().Int64("round", round).

@@ -8,4 +8,5 @@ type KafkaNodeOnlineStatus struct {
 	ViteAddress string `json:"viteAddress"`
 	NodeName    string `json:"nodeName"`
 	Ip          string `json:"ip"`
+	Chain       string `json:"chain"`
 }

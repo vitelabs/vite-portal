@@ -27,16 +27,33 @@ type ChainConfig struct {
 }
 
 type KafkaConfig struct {
+	Server       KafkaServerConfig `json:"servers"`
+	DefaultTopic KafkaTopicConfig  `json:"defaultTopic"`
+	RpcTopic     KafkaTopicConfig  `json:"rpcTopic"`
+}
+
+type KafkaServerConfig struct {
 	Servers          string `json:"servers"`
-	GroupId          string `json:"groupId"`
-	Topic            string `json:"topic"`
 	KeyStoreLocation string `json:"keyStoreLocation"`
+}
+
+type KafkaTopicConfig struct {
+	GroupId string `json:"groupId"`
+	Topic   string `json:"topic"`
 }
 
 func NewDefaultKafkaConfig() *KafkaConfig {
 	return &KafkaConfig{
-		Servers: DefaultKafkaServer,
-		GroupId: DefaultKafkaGroupId,
-		Topic:   DefaultKafkaTopic,
+		Server: KafkaServerConfig{
+			Servers: DefaultKafkaServer,
+		},
+		DefaultTopic: KafkaTopicConfig{
+			GroupId: DefaultKafkaGroupId,
+			Topic:   DefaultKafkaTopic,
+		},
+		RpcTopic: KafkaTopicConfig{
+			GroupId: RpcKafkaGroupId,
+			Topic:   RpcKafkaTopic,
+		},
 	}
 }

@@ -15,10 +15,14 @@ const (
 	DefaultJwtExpiryTimeout = 0
 	// The default Kafka server
 	DefaultKafkaServer = "localhost:9092"
-	// The default Kafka group identifier
+	// The Kafka group identifier related to online status of fullnodes
 	DefaultKafkaGroupId = "vote_fullnode_award_event_prod"
-	// The default Kafka topic
+	// The Kafka topic related to online status of fullnodes
 	DefaultKafkaTopic = "fullnode_award_event_prod"
+	// The Kafka group identifier related to RPC of fullnodes
+	RpcKafkaGroupId = "vote_fullnode_rpc_event_prod"
+	// The Kafka topic related to RPC of fullnodes
+	RpcKafkaTopic = "fullnode_rpc_event_prod"
 	// The maximum size of the payload in bytes
 	MaxPayloadSize = 1024 * 128
 	// Time allowed to read the next pong message from the peer.

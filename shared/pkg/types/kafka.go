@@ -1,6 +1,6 @@
 package types
 
-type KafkaNodeUptimeStatus struct {
+type KafkaNodeOnlineStatus struct {
 	EventId     string `json:"eventId"`
 	Timestamp   string `json:"timestamp"`
 	SuccessTime int64  `json:"successTime"`

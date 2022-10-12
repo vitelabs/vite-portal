@@ -16,13 +16,12 @@ type KafkaClient struct {
 	closed  bool
 	mutex   sync.Mutex
 	timeout time.Duration
-	config  sharedtypes.KafkaConfig
 	dialer  *kafka.Dialer
 	writer  *kafka.Writer
 	reader  *kafka.Reader
 }
 
-func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaConfig) *KafkaClient {
+func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, topic sharedtypes.KafkaTopicConfig) *KafkaClient {
 	if cfg.KeyStoreLocation != "" {
 		logger.Logger().Fatal().Msg("TLS not implemented yet")
 	}
@@ -34,7 +33,7 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaConfig) *KafkaCl
 	servers := strings.Split(cfg.Servers, ",")
 	writer := &kafka.Writer{
 		Addr:                   kafka.TCP(servers...),
-		Topic:                  cfg.Topic,
+		Topic:                  topic.Topic,
 		AllowAutoTopicCreation: true,
 		ReadTimeout:            timeout,
 		WriteTimeout:           timeout,
@@ -43,15 +42,14 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaConfig) *KafkaCl
 		},
 	}
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   servers,
-		Topic:     cfg.Topic,
-		Partition: 0,
-		Dialer:    dialer,
+		Brokers: servers,
+		Topic:   topic.Topic,
+		GroupID: topic.GroupId,
+		Dialer:  dialer,
 	})
 	return &KafkaClient{
 		closed:  false,
 		timeout: timeout,
-		config:  cfg,
 		dialer:  dialer,
 		writer:  writer,
 		reader:  reader,

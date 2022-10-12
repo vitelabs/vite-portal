@@ -143,8 +143,8 @@ func (h *Handler) getOnlineStatus(height int) int {
 	return 0
 }
 
-// SendStatus sends the local status information about every node to Apache Kafka
-func (h *Handler) SendStatus() {
+// SendOnlineStatus sends the local status information about every node to Apache Kafka
+func (h *Handler) SendOnlineStatus() {
 	round := time.Now().UnixMilli() / 1000 / 60
 	logger.Logger().Info().Int64("round", round).Msg("send status started")
 	e := h.nodeStore.GetEnumerator()
@@ -159,7 +159,7 @@ func (h *Handler) SendStatus() {
 			logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Msg("node skipped")
 			continue
 		}
-		status := sharedtypes.KafkaNodeUptimeStatus{
+		status := sharedtypes.KafkaNodeOnlineStatus{
 			EventId:     fmt.Sprintf("%d_%s", round, n.Id),
 			Timestamp:   strconv.FormatInt(time.Now().UnixMilli(), 10),
 			Round:       round,

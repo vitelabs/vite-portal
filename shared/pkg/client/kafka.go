@@ -2,6 +2,9 @@ package client
 
 import (
 	"context"
+	"errors"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -10,12 +13,13 @@ import (
 )
 
 type KafkaClient struct {
-	stopped   bool
-	partition int
-	timeout   time.Duration
-	config    sharedtypes.KafkaConfig
-	dialer    *kafka.Dialer
-	conn      *kafka.Conn
+	closed  bool
+	mutex   sync.Mutex
+	timeout time.Duration
+	config  sharedtypes.KafkaConfig
+	dialer  *kafka.Dialer
+	writer  *kafka.Writer
+	reader  *kafka.Reader
 }
 
 func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaConfig) *KafkaClient {
@@ -27,66 +31,71 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaConfig) *KafkaCl
 		DualStack: true,
 		// TLS: tlsConfig(),
 	}
+	servers := strings.Split(cfg.Servers, ",")
+	writer := &kafka.Writer{
+		Addr:                   kafka.TCP(servers...),
+		Topic:                  cfg.Topic,
+		AllowAutoTopicCreation: true,
+		ReadTimeout:            timeout,
+		WriteTimeout:           timeout,
+		Transport:              &kafka.Transport{
+			// TLS: &tls.Config{},
+		},
+	}
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:   servers,
+		Topic:     cfg.Topic,
+		Partition: 0,
+		Dialer:    dialer,
+	})
 	return &KafkaClient{
-		stopped:   false,
-		partition: 0,
-		timeout:   timeout,
-		config:    cfg,
-		dialer:    dialer,
+		closed:  false,
+		timeout: timeout,
+		config:  cfg,
+		dialer:  dialer,
+		writer:  writer,
+		reader:  reader,
 	}
 }
 
-func (c *KafkaClient) Start() {
-	c.stopped = false
-	c.connect()
-}
+func (c *KafkaClient) Close() {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
-func (c *KafkaClient) connect() {
-	if c.stopped {
+	if c.closed {
 		return
 	}
-	conn, err := c.dialer.DialLeader(context.Background(), "tcp", c.config.Servers, c.config.Topic, c.partition)
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("trying to connect to kafka")
-		time.Sleep(10 * time.Second)
-		c.connect()
-		return
-	}
-	c.conn = conn
-}
-
-func (c *KafkaClient) Stop() {
-	if !c.stopped {
-		c.stopped = true
-		if err := c.conn.Close(); err != nil {
-			logger.Logger().Error().Err(err).Msg("failed to close connection")
-		}
-	}
+	c.closed = true
+	c.writer.Close()
+	c.reader.Close()
 }
 
 func (c *KafkaClient) Write(msg string) {
-	c.conn.SetWriteDeadline(time.Now().Add(c.timeout))
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+
 	m := kafka.Message{
 		Value: []byte(msg),
 	}
-	_, err := c.conn.WriteMessages(m)
-	if err != nil {
+	err := c.writer.WriteMessages(ctx, m)
+	if err != nil && !errors.Is(err, context.DeadlineExceeded) {
 		logger.Logger().Error().Err(err).Msg("failed to write message")
 	}
 }
 
 func (c *KafkaClient) Read() []string {
-	c.conn.SetReadDeadline(time.Now().Add(c.timeout))
-	batch := c.conn.ReadBatch(10e3, 1e6) // fetch 10KB min, 1MB max
 	var messages []string
-	b := make([]byte, 10e3) // 10KB max per message
 	for {
-		n, err := batch.Read(b)
+		ctx, cancelFn := context.WithTimeout(context.Background(), c.timeout)
+		defer cancelFn()
+		m, err := c.reader.ReadMessage(ctx)
 		if err != nil {
+			if !errors.Is(err, context.DeadlineExceeded) {
+				logger.Logger().Error().Err(err).Msg("failed to read message")
+			}
 			break
 		}
-		m := string(b[:n])
-		messages = append(messages, m)
+		messages = append(messages, string(m.Value))
 	}
 	return messages
 }

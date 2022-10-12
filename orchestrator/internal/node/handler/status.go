@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -134,14 +136,46 @@ func (h *Handler) UpdateOnlineStatus() {
 
 func (h *Handler) getOnlineStatus(height int) int {
 	globalHeight := h.statusStore.GetGlobalHeight()
-	// if the height difference is smaller than 3600 (~60 minutes) -> node is online (0)
-	if mathutil.Abs(globalHeight - height) < 3600 {
-		return 0
+	// if the height difference is smaller than 3600 (~60 minutes) -> node is online (1)
+	if mathutil.Abs(globalHeight-height) < 3600 {
+		return 1
 	}
-	return -1
+	return 0
 }
 
 // SendStatus sends the local status information about every node to Apache Kafka
 func (h *Handler) SendStatus() {
-	// round := time.Now().UnixMilli() / 1000 / 60
+	round := time.Now().UnixMilli() / 1000 / 60
+	logger.Logger().Info().Int64("round", round).Msg("send status started")
+	e := h.nodeStore.GetEnumerator()
+	totalCount, sendCount, successCount := 0, 0, 0
+	for e.MoveNext() {
+		totalCount++
+		n, found := e.Current()
+		if !found {
+			continue
+		}
+		if n.LastBlock.Height <= 0 {
+			logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Msg("node skipped")
+			continue
+		}
+		status := sharedtypes.KafkaNodeUptimeStatus{
+			EventId:     fmt.Sprintf("%d_%s", round, n.Id),
+			Timestamp:   strconv.FormatInt(time.Now().UnixMilli(), 10),
+			Round:       round,
+			ViteAddress: n.RewardAddress,
+			NodeName:    n.Name,
+			Ip:          n.ClientIp,
+		}
+		if n.Status == 1 {
+			status.SuccessTime = 1
+			successCount++
+		}
+		// TODO: write to kafka
+		logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Msg("node status sent")
+		sendCount++
+	}
+	logger.Logger().Info().Int64("round", round).
+		Int("totalCount", totalCount).Int("sendCount", sendCount).Int("successCount", successCount).
+		Msg("send status finished")
 }

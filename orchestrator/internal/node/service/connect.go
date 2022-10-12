@@ -42,7 +42,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		Transport:     peerInfo.Transport,
 		RemoteAddress: peerInfo.RemoteAddr,
 		ClientIp:      clientIp,
-		Status:        0,
+		Status:        1,
 		LastUpdate:    0,
 		DelayTime:     0,
 		RpcClient:     c,

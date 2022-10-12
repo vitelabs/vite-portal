@@ -15,6 +15,8 @@ func NewNode(chain string) nodetypes.Node {
 		Chain:      chain,
 		ClientIp:   idutil.NewGuid(),
 		RpcClient:  &rpc.ClientMock{},
+		Status:     1,
 		LastUpdate: sharedtypes.Int64(time.Now().UnixMilli()),
+		DelayTime:  0,
 	}
 }

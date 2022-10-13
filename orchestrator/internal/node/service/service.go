@@ -9,6 +9,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/handler"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	sharedclients "github.com/vitelabs/vite-portal/shared/pkg/client"
+	sharedhandlers "github.com/vitelabs/vite-portal/shared/pkg/handler"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
@@ -20,13 +21,13 @@ type Service struct {
 }
 
 // NewService creates new instances of the relayers module service
-func NewService(cfg types.Config, c interfaces.ContextI) *Service {
+func NewService(cfg types.Config, kafka *sharedhandlers.KafkaHandler, c interfaces.ContextI) *Service {
+	timeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	s := &Service{
 		config:   cfg,
 		context:  c,
 		handlers: map[string]*handler.Handler{},
 	}
-	timeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	for _, v := range cfg.GetChains().GetAll() {
 		cc, err := c.GetChainContext(v.Name)
 		if err != nil {
@@ -37,7 +38,7 @@ func NewService(cfg types.Config, c interfaces.ContextI) *Service {
 			logger.Logger().Warn().Str("chain", v.Name).Msg("OfficialNodeUrl is empty")
 		}
 		client := sharedclients.NewViteClient(url, timeout)
-		s.handlers[v.Name] = handler.NewHandler(cfg, client, cc)
+		s.handlers[v.Name] = handler.NewHandler(cfg, client, kafka, cc)
 	}
 	return s
 }

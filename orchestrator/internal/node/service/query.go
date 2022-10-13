@@ -11,10 +11,11 @@ import (
 
 func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
 	logger.Logger().Debug().Str("chain", chain).Msg("get nodes")
-	store, err := s.context.GetNodeStore(chain)
+	cc, err := s.context.GetChainContext(chain)
 	if err != nil {
 		return *generics.NewGenericPage[types.Node](), err
 	}
+	store := cc.GetNodeStore()
 	total := store.Count()
 	result := *generics.NewGenericPage[types.Node]()
 	result.Offset = offset

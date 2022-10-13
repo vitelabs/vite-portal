@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/vitelabs/vite-portal/orchestrator/internal/interfaces"
 	nodestore "github.com/vitelabs/vite-portal/orchestrator/internal/node/store"
 	relayerstore "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/store"
 
@@ -12,21 +13,18 @@ import (
 
 type Context struct {
 	relayerStore *relayerstore.MemoryStore
-	nodeStores   map[string]*nodestore.MemoryStore
-	statusStores map[string]*nodestore.StatusStore
 	ipBlacklist  *sharedtypes.TransientCache[IpBlacklistItem]
+	chainContexts map[string]interfaces.ChainContextI
 }
 
 func NewContext(config Config) *Context {
 	c := &Context{
 		relayerStore: relayerstore.NewMemoryStore(),
-		nodeStores:   map[string]*nodestore.MemoryStore{},
-		statusStores: map[string]*nodestore.StatusStore{},
 		ipBlacklist:  sharedtypes.NewTransientCache[IpBlacklistItem](config.MaxIpBlacklistEntries),
+		chainContexts: map[string]interfaces.ChainContextI{},
 	}
 	for _, v := range config.GetChains().GetAll() {
-		c.nodeStores[v.Name] = nodestore.NewMemoryStore()
-		c.statusStores[v.Name] = nodestore.NewStatusStore()
+		c.chainContexts[v.Name] = NewChainContext()
 	}
 	return c
 }
@@ -35,22 +33,34 @@ func (c *Context) GetRelayerStore() *relayerstore.MemoryStore {
 	return c.relayerStore
 }
 
-func (c *Context) GetNodeStore(chain string) (*nodestore.MemoryStore, error) {
-	s := c.nodeStores[chain]
-	if s == nil {
-		return nil, errors.New(fmt.Sprintf("node store not found for chain '%s'", chain))
-	}
-	return s, nil
-}
-
-func (c *Context) GetStatusStore(chain string) (*nodestore.StatusStore, error) {
-	s := c.statusStores[chain]
-	if s == nil {
-		return nil, errors.New(fmt.Sprintf("status store not found for chain '%s'", chain))
-	}
-	return s, nil
-}
-
 func (c *Context) GetIpBlacklist() *sharedtypes.TransientCache[IpBlacklistItem] {
 	return c.ipBlacklist
+}
+ 
+func (c *Context) GetChainContext(chain string) (interfaces.ChainContextI, error) {
+	cc := c.chainContexts[chain]
+	if cc == nil {
+		return nil, errors.New(fmt.Sprintf("chain context not found for chain '%s'", chain))
+	}
+	return cc, nil
+}
+
+type ChainContext struct {
+	nodeStore *nodestore.MemoryStore
+	statusStore *nodestore.StatusStore
+}
+
+func NewChainContext() *ChainContext {
+	return &ChainContext{
+		nodeStore: nodestore.NewMemoryStore(),
+		statusStore: nodestore.NewStatusStore(),
+	}
+}
+
+func (c *ChainContext) GetNodeStore() *nodestore.MemoryStore {
+	return c.nodeStore
+}
+
+func (c *ChainContext) GetStatusStore() *nodestore.StatusStore {
+	return c.statusStore
 }

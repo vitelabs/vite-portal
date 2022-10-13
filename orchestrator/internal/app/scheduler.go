@@ -30,11 +30,12 @@ func (a *OrchestratorApp) InitScheduler() {
 func (a *OrchestratorApp) HandleNodeStatusUpdate() {
 	for _, c := range a.config.SupportedChains {
 		start := time.Now()
-		store, err := a.context.GetNodeStore(c.Name)
+		cc, err := a.context.GetChainContext(c.Name)
 		if err != nil {
 			logger.Logger().Error().Msg(err.Error())
 			continue
 		}
+		store := cc.GetNodeStore()
 		n := store.Count() / 10
 		if n < 50 {
 			n = 50

@@ -28,11 +28,7 @@ func NewService(cfg types.Config, c interfaces.ContextI) *Service {
 	}
 	timeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	for _, v := range cfg.GetChains().GetAll() {
-		nodeStore, err := c.GetNodeStore(v.Name)
-		if err != nil {
-			panic(err)
-		}
-		statusStore, err := c.GetStatusStore(v.Name)
+		cc, err := c.GetChainContext(v.Name)
 		if err != nil {
 			panic(err)
 		}
@@ -41,7 +37,7 @@ func NewService(cfg types.Config, c interfaces.ContextI) *Service {
 			logger.Logger().Warn().Str("chain", v.Name).Msg("OfficialNodeUrl is empty")
 		}
 		client := sharedclients.NewViteClient(url, timeout)
-		s.handlers[v.Name] = handler.NewHandler(cfg, client, nodeStore, statusStore)
+		s.handlers[v.Name] = handler.NewHandler(cfg, client, cc)
 	}
 	return s
 }

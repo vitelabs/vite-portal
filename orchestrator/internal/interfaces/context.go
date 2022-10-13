@@ -7,6 +7,10 @@ import (
 
 type ContextI interface {
 	GetRelayerStore() *relayerstore.MemoryStore
-	GetNodeStore(chain string) (*nodestore.MemoryStore, error)
-	GetStatusStore(chain string) (*nodestore.StatusStore, error)
+	GetChainContext(chain string) (ChainContextI, error)
+}
+
+type ChainContextI interface {
+	GetNodeStore() *nodestore.MemoryStore
+	GetStatusStore() *nodestore.StatusStore
 }

@@ -54,10 +54,11 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		},
 	}
 	msg := "failed to add node"
-	store, err := s.context.GetNodeStore(chain.Name)
+	cc, err := s.context.GetChainContext(chain.Name)
 	if err != nil {
 		return s.returnConnectError(msg, err)
 	}
+	store := cc.GetNodeStore()
 	if err := store.Add(n); err != nil {
 		return s.returnConnectError(msg, err)
 	}

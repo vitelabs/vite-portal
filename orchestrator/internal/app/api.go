@@ -54,7 +54,7 @@ func (a *coreAPI) GetAppInfo() sharedtypes.RpcAppInfoResponse {
 	}
 }
 
-// adminAPI expoeses API methods related to relayers
+// adminAPI exposes API methods for authenticated requests only
 type adminAPI struct {
 	app *OrchestratorApp
 }

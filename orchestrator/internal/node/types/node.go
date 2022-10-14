@@ -20,10 +20,10 @@ type Node struct {
 	RemoteAddress string                      `json:"remoteAddress,omitempty"`
 	ClientIp      string                      `json:"clientIp,omitempty"`
 	Status        int                         `json:"status,omitempty"`
-	LastUpdate    sharedtypes.Int64           `json:"lastUpdate,omitempty"`
-	DelayTime     sharedtypes.Int64           `json:"delayTime,omitempty"`
-	LastBlock     sharedtypes.ChainBlock      `json:"lastBlock,omitempty"`
-	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo,omitempty"`
+	LastUpdate    sharedtypes.Int64           `json:"lastUpdate"`
+	DelayTime     sharedtypes.Int64           `json:"delayTime"`
+	LastBlock     sharedtypes.ChainBlock      `json:"lastBlock"`
+	HTTPInfo      sharedtypes.HTTPInfo        `json:"httpInfo"`
 	RpcClient     sharedinterfaces.RpcClientI `json:"-"`
 }
 

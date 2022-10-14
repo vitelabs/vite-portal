@@ -1,14 +1,14 @@
 import { RpcHttpClient } from "./client"
+import { TestConstants } from "./constants"
+import { Orchestrator } from "./orchestrator"
 import { BaseProcess } from "./process"
 import { CommonUtil } from "./utils"
 
 export class NodeCluster extends BaseProcess {
-  url?: string
-  rpcClient: RpcHttpClient
+  orchestrator?: Orchestrator
 
   constructor(timeout: number) {
     super(timeout)
-    this.rpcClient = new RpcHttpClient(timeout)
   }
 
   name(): string {
@@ -35,12 +35,12 @@ export class NodeCluster extends BaseProcess {
     if (this.stopped) {
       process.exit(1)
     }
-    if (CommonUtil.isNullOrWhitespace(this.url)) {
-      console.log(`[${this.name()}] error: url is not initialized`)
+    if (!this.orchestrator) {
+      console.log(`[${this.name()}] error: orchestrator is not initialized`)
       process.exit(1)
     }
-    const response = await this.rpcClient.send(this.url!, "ledger_getSnapshotChainHeight")
-    return response.data?.result > 1
+    const response = await this.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
+    return response.result.total >= 3
   }
 
   async stop() {

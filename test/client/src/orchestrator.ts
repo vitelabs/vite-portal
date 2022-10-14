@@ -70,4 +70,9 @@ export class Orchestrator extends BaseProcess {
     const response = await this.rpcAuthClient.send(this.authUrl, "admin_getRelayers", params)
     return response.data
   }
+
+  updateNodeStatus = async () => {
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_updateNodeStatus", [])
+    return response.data
+  }
 }

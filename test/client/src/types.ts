@@ -57,8 +57,8 @@ export type NodeExtendedEntity = {
   status?: number
   lastUpdate?: string
   delayTime?: string
-  lastBlock?: ChainBlock
-  httpInfo?: HttpInfo
+  lastBlock: ChainBlock
+  httpInfo: HttpInfo
 }
 
 export type NodeResponse = {

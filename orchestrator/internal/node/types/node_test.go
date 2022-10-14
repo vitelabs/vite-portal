@@ -14,7 +14,7 @@ func TestJsonMarshal(t *testing.T) {
 		Id: "1234",
 		LastUpdate: 123, // should be serialized as string
 	}
-	expected := `{"id":"1234","lastUpdate":"123","lastBlock":{},"httpInfo":{}}`
+	expected := `{"id":"1234","lastUpdate":"123","delayTime":"0","lastBlock":{},"httpInfo":{}}`
 	actual := jsonutil.ToString(node)
 	require.Equal(t, expected, actual)
 }

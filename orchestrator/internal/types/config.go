@@ -15,6 +15,7 @@ const (
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
 	DefaultHeaderTrueClientIp          = "CF-Connecting-IP"
+	DefaultAllowClientIpDuplicates     = false
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -47,6 +48,8 @@ type Config struct {
 	UserAgent string `json:"userAgent"`
 	// The true IP address of the client
 	HeaderTrueClientIp string `json:"headerTrueClientIp"`
+	// Indicates whether multiple nodes with the same IP address are allowed
+	AllowClientIpDuplicates bool `json:"allowClientIpDuplicates"`
 	// Apache Kafka related configuration
 	Kafka sharedtypes.KafkaConfig `json:"kafka"`
 	// A list of supported chains
@@ -58,19 +61,20 @@ type Config struct {
 
 func NewDefaultConfig() Config {
 	c := Config{
-		Version:                DefaultConfigVersion,
-		Debug:                  DefaultDebug,
-		RpcPort:                DefaultRpcPort,
-		RpcAuthPort:            DefaultRpcAuthPort,
-		RpcTimeout:             DefaultRpcTimeout,
-		JwtSecret:              sharedtypes.DefaultJwtSecret,
-		JwtExpiryTimeout:       sharedtypes.DefaultJwtExpiryTimeout,
-		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
-		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
-		UserAgent:              DefaultUserAgent,
-		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
-		Kafka:                  sharedtypes.DefaultKafkaConfig,
-		SupportedChains:        sharedtypes.DefaultSupportedChains,
+		Version:                 DefaultConfigVersion,
+		Debug:                   DefaultDebug,
+		RpcPort:                 DefaultRpcPort,
+		RpcAuthPort:             DefaultRpcAuthPort,
+		RpcTimeout:              DefaultRpcTimeout,
+		JwtSecret:               sharedtypes.DefaultJwtSecret,
+		JwtExpiryTimeout:        sharedtypes.DefaultJwtExpiryTimeout,
+		MaxIpBlacklistEntries:   DefaultMaxIpBlacklistEntries,
+		MaxIpBlacklistDuration:  DefaultMaxIpBlacklistDuration,
+		UserAgent:               DefaultUserAgent,
+		HeaderTrueClientIp:      DefaultHeaderTrueClientIp,
+		AllowClientIpDuplicates: DefaultAllowClientIpDuplicates,
+		Kafka:                   sharedtypes.DefaultKafkaConfig,
+		SupportedChains:         sharedtypes.DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{
 			ConsoleOutputEnabled: DefaultLoggingConsoleOutputEnabled,
 			FileOutputEnabled:    DefaultLoggingFileOutputEnabled,

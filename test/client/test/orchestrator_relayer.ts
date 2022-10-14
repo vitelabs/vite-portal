@@ -27,7 +27,6 @@ export function testOrchestratorRelayer(common: TestCommon) {
       expect(relayer.httpInfo.userAgent).to.be.equal("Go-http-client/1.1")
       expect(relayer.httpInfo.origin).to.be.undefined
       expect(relayer.httpInfo.host).to.be.equal("127.0.0.1:57332")
-      expect(relayer.httpInfo.auth).to.be.undefined
     })
 
     describe("testOrchestratorRelayer1.1", () => {

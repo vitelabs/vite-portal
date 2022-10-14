@@ -67,3 +67,15 @@ func (a *adminAPI) GetNodes(chain string, offset int, limit int) (generics.Gener
 	o, l := commonutil.CheckPagination(offset, limit)
 	return a.app.nodeService.Get(chain, o, l)
 }
+
+func (a *adminAPI) UpdateNodeStatus() {
+	a.app.HandleNodeStatusUpdate()
+}
+
+func (a *adminAPI) UpdateNodeOnlineStatus() {
+	a.app.HandleNodeOnlineStatusUpdate()
+}
+
+func (a *adminAPI) DispatchNodeStatus() {
+	a.app.HandleNodeStatusDispatch()
+}

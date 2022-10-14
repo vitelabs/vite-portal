@@ -172,7 +172,7 @@ func (h *Handler) SendOnlineStatus() {
 			status.SuccessTime = 1
 			successCount++
 		}
-		// TODO: write to kafka
+		h.kafka.WriteDefault(status)
 		logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Str("chain", n.Chain).Msg("node status sent")
 		sendCount++
 	}

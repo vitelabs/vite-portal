@@ -1,5 +1,5 @@
 import { BaseProcess } from "./process"
-import { AppInfo, GenericPage, JsonRpcResponse, Jwt, OrchestratorConfig, RelayerEntity } from "../src/types"
+import { AppInfo, GenericPage, JsonRpcResponse, Jwt, NodeExtendedEntity, OrchestratorConfig, RelayerEntity } from "../src/types"
 import { RpcHttpClient } from "./client"
 
 export class Orchestrator extends BaseProcess {
@@ -52,7 +52,7 @@ export class Orchestrator extends BaseProcess {
     return response.data.result
   }
 
-  getNodes = async (chain: string, offset?: number, limit?: number): Promise<JsonRpcResponse<GenericPage<RelayerEntity>>> => {
+  getNodes = async (chain: string, offset?: number, limit?: number): Promise<JsonRpcResponse<GenericPage<NodeExtendedEntity>>> => {
     const params = [
       chain,
       !!offset ? offset : 0,

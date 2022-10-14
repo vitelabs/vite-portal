@@ -12,14 +12,17 @@ import (
 
 type MemoryStore struct {
 	db        collections.NameObjectCollectionI[types.Node]
-	addresses mapset.Set[string]
+	addresses *mapset.Set[string]
 	lock      sync.Mutex
 }
 
-func NewMemoryStore() *MemoryStore {
+func NewMemoryStore(allowClientIpDuplicates bool) *MemoryStore {
 	s := &MemoryStore{
-		addresses: mapset.NewSet[string](),
-		lock:      sync.Mutex{},
+		lock: sync.Mutex{},
+	}
+	if !allowClientIpDuplicates {
+		addresses := mapset.NewSet[string]()
+		s.addresses = &addresses
 	}
 	s.Clear()
 	return s
@@ -33,7 +36,9 @@ func (s *MemoryStore) Clear() {
 	defer s.lock.Unlock()
 
 	s.db = collections.NewNameObjectCollection[types.Node]()
-	s.addresses.Clear()
+	if s.addresses != nil {
+		(*s.addresses).Clear()
+	}
 }
 
 func (s *MemoryStore) Close() {
@@ -84,12 +89,14 @@ func (s *MemoryStore) Add(n types.Node) error {
 	}
 
 	addr := n.ClientIp
-	if s.addresses.Contains(addr) {
+	if s.addresses != nil && (*s.addresses).Contains(addr) {
 		return errors.New("a node with the same ip address already exists")
 	}
 
 	s.db.Add(n.Id, n)
-	s.addresses.Add(addr)
+	if s.addresses != nil {
+		(*s.addresses).Add(addr)
+	}
 
 	return nil
 }
@@ -102,7 +109,7 @@ func (s *MemoryStore) Update(lastUpdate int64, n types.Node) error {
 	if err != nil {
 		return err
 	}
-	
+
 	existing, found := s.GetById(n.Id)
 	if !found {
 		return errors.New("node does not exist")
@@ -127,7 +134,7 @@ func (s *MemoryStore) SetStatus(id string, lastUpdate int64, status int) error {
 
 	existing.Status = status
 	s.db.Set(existing.Id, existing)
-	
+
 	return nil
 }
 
@@ -141,7 +148,9 @@ func (s *MemoryStore) Remove(id string) error {
 	}
 
 	s.db.Remove(id)
-	s.addresses.Remove(existing.ClientIp)
+	if s.addresses != nil {
+		(*s.addresses).Remove(existing.ClientIp)
+	}
 
 	return nil
 }

@@ -24,7 +24,7 @@ func NewContext(config Config) *Context {
 		chainContexts: map[string]interfaces.ChainContextI{},
 	}
 	for _, v := range config.GetChains().GetAll() {
-		c.chainContexts[v.Name] = NewChainContext()
+		c.chainContexts[v.Name] = NewChainContext(config)
 	}
 	return c
 }
@@ -50,9 +50,9 @@ type ChainContext struct {
 	statusStore *nodestore.StatusStore
 }
 
-func NewChainContext() *ChainContext {
+func NewChainContext(config Config) *ChainContext {
 	return &ChainContext{
-		nodeStore: nodestore.NewMemoryStore(),
+		nodeStore: nodestore.NewMemoryStore(config.AllowClientIpDuplicates),
 		statusStore: nodestore.NewStatusStore(),
 	}
 }

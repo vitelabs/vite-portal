@@ -11,7 +11,7 @@ import (
 func TestGet(t *testing.T) {
 	t.Parallel()
 	node := testutil.NewNode("chain1")
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	n, found := s.GetById(node.Id)
 	require.Empty(t, n)
@@ -42,7 +42,7 @@ func TestGet(t *testing.T) {
 func TestGetById(t *testing.T) {
 	t.Parallel()
 	node := testutil.NewNode("chain1")
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	n, found := s.GetById(node.Id)
 	require.Empty(t, n)
@@ -57,7 +57,7 @@ func TestGetById(t *testing.T) {
 func TestCount(t *testing.T) {
 	t.Parallel()
 	node := testutil.NewNode("chain1")
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	require.Equal(t, 0, s.Count())
 
@@ -100,7 +100,7 @@ func TestAddInvalid(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			s := NewMemoryStore()
+			s := NewMemoryStore(false)
 			err := s.Add(*tc.node)
 			require.Error(t, err)
 			require.Equal(t, "node is invalid", err.Error())
@@ -112,7 +112,7 @@ func TestUpdate(t *testing.T) {
 	t.Parallel()
 	n := testutil.NewNode("chain1")
 	lastUpdate := int64(n.LastUpdate)
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	require.Equal(t, 0, s.Count())
 	require.NoError(t, s.Add(n))
@@ -140,7 +140,7 @@ func TestUpdate(t *testing.T) {
 func TestRemove(t *testing.T) {
 	t.Parallel()
 	node1 := testutil.NewNode("chain1")
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	require.Equal(t, 0, s.Count())
 	require.NoError(t, s.Add(node1))
@@ -160,7 +160,7 @@ func TestRemove(t *testing.T) {
 func TestClear(t *testing.T) {
 	t.Parallel()
 	node := testutil.NewNode("chain1")
-	s := NewMemoryStore()
+	s := NewMemoryStore(false)
 
 	s.Clear()
 	require.Equal(t, 0, s.Count())
@@ -174,6 +174,26 @@ func TestClear(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, "a node with the same ip address already exists", err.Error())
 	require.Equal(t, 1, s.Count())
+
+	s.Clear()
+	require.Equal(t, 0, s.Count())
+}
+
+func TestAllowClientIpDuplicates(t *testing.T) {
+	t.Parallel()
+	node := testutil.NewNode("chain1")
+	s := NewMemoryStore(true)
+
+	s.Clear()
+	require.Equal(t, 0, s.Count())
+
+	require.NoError(t, s.Add(node))
+	require.Equal(t, 1, s.Count())
+
+	node.Id = "2"
+
+	require.NoError(t, s.Add(node))
+	require.Equal(t, 2, s.Count())
 
 	s.Clear()
 	require.Equal(t, 0, s.Count())

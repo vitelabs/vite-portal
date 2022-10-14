@@ -35,7 +35,6 @@ export type HttpInfo = {
   userAgent: string
   origin: string
   host: string
-  auth: string
 }
 
 export type NodeEntity = {
@@ -43,6 +42,23 @@ export type NodeEntity = {
   chain: string
   rpcHttpUrl: string
   rpcWsUrl: string
+}
+
+export type NodeExtendedEntity = {
+  id: string
+  name?: string
+  chain?: string
+  version?: string
+  commit?: string
+  rewardAddress?: string
+  transport?: string
+  remoteAddress?: string
+  clientIp?: string
+  status?: number
+  lastUpdate?: string
+  delayTime?: string
+  lastBlock?: ChainBlock
+  httpInfo?: HttpInfo
 }
 
 export type NodeResponse = {
@@ -100,4 +116,10 @@ export type Jwt = {
   secret: string
   subject?: string
   issuer?: string
+}
+
+export type ChainBlock = {
+  hash?: string
+  height?: number
+  time?: number
 }

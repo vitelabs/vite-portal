@@ -52,7 +52,7 @@ type ChainContext struct {
 
 func NewChainContext(config Config) *ChainContext {
 	return &ChainContext{
-		nodeStore: nodestore.NewMemoryStore(config.AllowClientIpDuplicates),
+		nodeStore: nodestore.NewMemoryStore(),
 		statusStore: nodestore.NewStatusStore(),
 	}
 }

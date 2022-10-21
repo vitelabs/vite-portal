@@ -23,7 +23,6 @@ From a full node perspective the basic flow is:
 
 This monorepo is organized as follows:
 
-- [lb](./lb) - the load balancer accepts incoming traffic from clients and routes requests to its registered relayers
 - [relayer](./relayer) - the relayer forwards every RPC request to multiple full nodes and handles the responses
 - [orchestrator](./orchestrator) - the orchestrator keeps track of the global state such as participating full nodes
 - [worker](./worker) - the worker is responsible to send out rewards to full nodes on a daily basis

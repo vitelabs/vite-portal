@@ -12,7 +12,7 @@ export function testRelayer(common: TestCommon) {
 
   describe("testRelayer", () => {
     it('test getAppInfo', async function () {
-      const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
+      const expectedVersion = await fileUtil.readFileAsync("../shared/pkg/version/buildversion")
       const actual1 = await common.relayer.getAppInfo1()
       expect(actual1.id).to.not.be.empty
       expect(actual1.version).to.be.equal(expectedVersion.trim())

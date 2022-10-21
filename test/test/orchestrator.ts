@@ -12,7 +12,7 @@ export function testOrchestrator(common: TestCommon) {
 
   describe("testOrchestrator", () => {
     it('test getAppInfo', async function () {
-      const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
+      const expectedVersion = await fileUtil.readFileAsync("../shared/pkg/version/buildversion")
       const actual = await common.orchestrator.getAppInfo()
       expect(actual.id).to.not.be.empty
       expect(actual.version).to.be.equal(expectedVersion.trim())

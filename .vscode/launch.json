@@ -30,7 +30,7 @@
       "type": "node",
       "request": "launch",
       "name": "Mocha all",
-      "program": "${workspaceFolder}/test/client/node_modules/mocha/bin/mocha",
+      "program": "${workspaceFolder}/test/node_modules/mocha/bin/mocha",
       "args": [
         "./test/*.spec.ts",
         "--require",
@@ -40,7 +40,7 @@
         "--colors",
         "--resolveJsonModule"
       ],
-      "cwd": "${workspaceFolder}/test/client/",
+      "cwd": "${workspaceFolder}/test/",
       "console": "integratedTerminal"
     }
   ]

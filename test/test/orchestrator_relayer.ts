@@ -18,7 +18,7 @@ export function testOrchestratorRelayer(common: TestCommon) {
       const relayers = await common.orchestrator.getRelayers()
       expect(relayers.result.total).to.be.equal(1)
       const relayer = relayers.result.entries[0]
-      const expectedVersion = await fileUtil.readFileAsync("../../shared/pkg/version/buildversion")
+      const expectedVersion = await fileUtil.readFileAsync("../shared/pkg/version/buildversion")
       expect(relayer.version).to.be.equal(expectedVersion.trim())
       expect(relayer.id).to.not.be.empty
       expect(relayer.transport).to.be.equal("ws")

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
@@ -25,17 +26,20 @@ func TestKafkaRead(t *testing.T) {
 	cfg := types.DefaultKafkaConfig
 	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
 	fmt.Println("Round 1:")
-	messages := c.Read()
+	messages, err := c.Read(0, 2, defaultKafkaTimeout)
+	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
 	}
 	fmt.Println("Round 2:")
-	messages = c.Read()
+	messages, err = c.Read(2, 2, defaultKafkaTimeout)
+	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
 	}
 	fmt.Println("Round 3:")
-	messages = c.Read()
+	messages, err = c.Read(4, 10000, defaultKafkaTimeout)
+	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
 	}

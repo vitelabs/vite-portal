@@ -71,8 +71,38 @@ export class Orchestrator extends BaseProcess {
     return response.data
   }
 
+  getKafkaDefaultMessages = async (offset?: number, limit?: number, timeout?: number): Promise<JsonRpcResponse<string[]>> => {
+    const params = [
+      !!offset ? offset : 0,
+      !!limit ? limit : 0,
+      !!timeout ? timeout : 1000,
+    ]
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_getKafkaDefaultMessages", params)
+    return response.data
+  }
+
+  getKafkaRpcMessages = async (offset?: number, limit?: number, timeout?: number): Promise<JsonRpcResponse<string[]>> => {
+    const params = [
+      !!offset ? offset : 0,
+      !!limit ? limit : 0,
+      !!timeout ? timeout : 1000,
+    ]
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_getKafkaRpcMessages", params)
+    return response.data
+  }
+
   updateNodeStatus = async () => {
     const response = await this.rpcAuthClient.send(this.authUrl, "admin_updateNodeStatus", [])
+    return response.data
+  }
+
+  updateNodeOnlineStatus = async () => {
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_updateNodeOnlineStatus", [])
+    return response.data
+  }
+
+  dispatchNodeStatus = async () => {
+    const response = await this.rpcAuthClient.send(this.authUrl, "admin_dispatchNodeStatus", [])
     return response.data
   }
 }

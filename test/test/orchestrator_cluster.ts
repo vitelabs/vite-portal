@@ -25,7 +25,7 @@ export function testOrchestratorCluster(common: TestCommon) {
       await cluster.stop()
     })
 
-    it('test local cluster', async function () {
+    xit('test node status update', async function () {
       const start = Date.now()
       const chain = TestConstants.SupportedChains.ViteBuidl
       let nodes = await common.orchestrator.getNodes(chain)
@@ -76,6 +76,13 @@ export function testOrchestratorCluster(common: TestCommon) {
       afterUpdate(node2, "s2")
       node3 = nodes.result.entries.find(e => e.id === nodeId3)
       afterUpdate(node3, "s3")
+    })
+
+    it('test node status dispatch', async function () {
+      const limit = 1000
+      const messages = await common.orchestrator.getKafkaDefaultMessages(0, limit)
+      console.log(messages)
+      await common.orchestrator.dispatchNodeStatus()
     })
   })
 }

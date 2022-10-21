@@ -68,6 +68,16 @@ func (a *adminAPI) GetNodes(chain string, offset int, limit int) (generics.Gener
 	return a.app.nodeService.Get(chain, o, l)
 }
 
+func (a *adminAPI) GetKafkaDefaultMessages(offset, limit, timeout int) ([]string, error) {
+	o, l := commonutil.CheckPagination(offset, limit)
+	return a.app.kafka.ReadDefault(o, l, timeout)
+}
+
+func (a *adminAPI) GetKafkaRpcMessages(offset, limit, timeout int) ([]string, error) {
+	o, l := commonutil.CheckPagination(offset, limit)
+	return a.app.kafka.ReadRpc(o, l, timeout)
+}
+
 func (a *adminAPI) UpdateNodeStatus() {
 	a.app.HandleNodeStatusUpdate()
 }

@@ -10,17 +10,19 @@ import (
 )
 
 type KafkaHandler struct {
-	closed  bool
-	mutex   sync.Mutex
+	closed        bool
+	mutex         sync.Mutex
+	timeout       time.Duration
 	defaultClient *client.KafkaClient
-	rpcClient *client.KafkaClient
+	rpcClient     *client.KafkaClient
 }
 
 func NewKafkaHandler(timeout time.Duration, cfg types.KafkaConfig) *KafkaHandler {
 	return &KafkaHandler{
-		closed: false,
+		closed:        false,
+		timeout:       timeout,
 		defaultClient: client.NewKafkaClient(timeout, cfg.Server, cfg.DefaultTopic),
-		rpcClient: client.NewKafkaClient(timeout, cfg.Server, cfg.RpcTopic),
+		rpcClient:     client.NewKafkaClient(timeout, cfg.Server, cfg.RpcTopic),
 	}
 }
 
@@ -40,6 +42,14 @@ func (h *KafkaHandler) WriteDefault(msg types.KafkaNodeOnlineStatus) {
 	h.defaultClient.Write(jsonutil.ToString(msg))
 }
 
+func (h *KafkaHandler) ReadDefault(offset, limit, timeout int) ([]string, error) {
+	return h.defaultClient.Read(int64(offset), limit, time.Duration(timeout) * time.Millisecond)
+}
+
 func (h *KafkaHandler) WriteRpc(msg any) {
 	h.rpcClient.Write(jsonutil.ToString(msg))
+}
+
+func (h *KafkaHandler) ReadRpc(offset, limit, timeout int) ([]string, error) {
+	return h.rpcClient.Read(int64(offset), limit, time.Duration(timeout) * time.Millisecond)
 }

@@ -9,15 +9,15 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-var defaultKafkaTimeout = 1 * time.Second
+var defaultKafkaTimeout = 2 * time.Second
 
 func TestKafkaWrite(t *testing.T) {
 	t.Skip()
 	cfg := types.DefaultKafkaConfig
 	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
 	round := time.Now().UnixMilli() / 1000 / 60
-	c.Write(fmt.Sprintf("id: %d", round))
-	c.Write(fmt.Sprintf("id: %d (2)", round))
+	c.Write(fmt.Sprintf("id: %d", round), "a")
+	c.Write(fmt.Sprintf("id: %d (2)", round), "b")
 	c.Close()
 }
 

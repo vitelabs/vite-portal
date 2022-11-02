@@ -2,7 +2,10 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
+	"io/ioutil"
 	"strings"
 	"sync"
 	"time"
@@ -22,13 +25,11 @@ type KafkaClient struct {
 }
 
 func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, topic sharedtypes.KafkaTopicConfig) *KafkaClient {
-	if cfg.KeyStoreLocation != "" {
-		logger.Logger().Fatal().Msg("TLS not implemented yet")
-	}
+	tlsConfig := newTLSConfig(cfg)
 	dialer := &kafka.Dialer{
 		Timeout:   timeout,
 		DualStack: true,
-		// TLS: tlsConfig(),
+		TLS: tlsConfig,
 	}
 	servers := strings.Split(cfg.Servers, ",")
 	writer := &kafka.Writer{
@@ -38,7 +39,7 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, to
 		ReadTimeout:            timeout,
 		WriteTimeout:           timeout,
 		Transport:              &kafka.Transport{
-			// TLS: &tls.Config{},
+			TLS: tlsConfig,
 		},
 	}
 	reader := kafka.NewReader(kafka.ReaderConfig{
@@ -69,15 +70,22 @@ func (c *KafkaClient) Close() {
 	c.reader.Close()
 }
 
-func (c *KafkaClient) Write(msg string) {
+func (c *KafkaClient) Write(msgs ...string) {
+	if len(msgs) == 0 {
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
 	defer cancel()
 
-	m := kafka.Message{
-		Value: []byte(msg),
+	m := make([]kafka.Message, len(msgs))
+	for i := 0; i < len(msgs); i++ {
+		m[i] = kafka.Message{
+			Value: []byte(msgs[i]),
+		}
 	}
-	err := c.writer.WriteMessages(ctx, m)
-	if err != nil && !errors.Is(err, context.DeadlineExceeded) {
+	err := c.writer.WriteMessages(ctx, m...)
+	if err != nil {
 		logger.Logger().Error().Err(err).Msg("failed to write message")
 	}
 }
@@ -115,4 +123,29 @@ func (c *KafkaClient) Read(offset int64, limit int, timeout time.Duration) ([]st
 	elapsed := time.Since(start)
 	logger.Logger().Debug().Int64("elapsed", elapsed.Milliseconds()).Int("count", len(messages)).Msg("read kafka messages ended")
 	return messages, err
+}
+
+func newTLSConfig(cfg sharedtypes.KafkaServerConfig) *tls.Config {
+	if cfg.CertLocation == "" || cfg.CertKeyLocation == "" || cfg.CertPoolLocation	== "" {
+		return nil
+	}
+
+	certPEM, _ := ioutil.ReadFile(cfg.CertLocation)
+	keyPEM, _ := ioutil.ReadFile(cfg.CertKeyLocation)
+	certificate, err := tls.X509KeyPair([]byte(certPEM), []byte(keyPEM))
+	if err != nil {
+		logger.Logger().Fatal().Err(err).Msg("failed to read certs")
+	}
+
+	caPEM, _ := ioutil.ReadFile(cfg.CertKeyLocation)
+	caCertPool := x509.NewCertPool()
+	if ok := caCertPool.AppendCertsFromPEM([]byte(caPEM)); !ok {
+		logger.Logger().Fatal().Err(err).Msg("failed to read cert pool")
+	}
+
+	return &tls.Config{
+		Certificates:       []tls.Certificate{certificate},
+		RootCAs:            caCertPool,
+		InsecureSkipVerify: true,
+	}
 }

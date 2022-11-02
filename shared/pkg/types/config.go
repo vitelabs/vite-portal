@@ -34,7 +34,9 @@ type KafkaConfig struct {
 
 type KafkaServerConfig struct {
 	Servers          string `json:"servers"`
-	KeyStoreLocation string `json:"keyStoreLocation"`
+	CertLocation     string `json:"certLocation"`
+	CertKeyLocation  string `json:"certKeyLocation"`
+	CertPoolLocation string `josn:"certPoolLocation"`
 }
 
 type KafkaTopicConfig struct {

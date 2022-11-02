@@ -25,7 +25,7 @@ export function testOrchestratorCluster(common: TestCommon) {
       await cluster.stop()
     })
 
-    xit('test node status update', async function () {
+    it('test node status update', async function () {
       const start = Date.now()
       const chain = TestConstants.SupportedChains.ViteBuidl
       let nodes = await common.orchestrator.getNodes(chain)
@@ -80,9 +80,42 @@ export function testOrchestratorCluster(common: TestCommon) {
 
     it('test node status dispatch', async function () {
       const limit = 1000
-      const messages = await common.orchestrator.getKafkaDefaultMessages(0, limit)
-      console.log(messages)
+      const response1 = await common.orchestrator.getKafkaDefaultMessages(0, limit)
       await common.orchestrator.dispatchNodeStatus()
+      await CommonUtil.sleep(2000)
+      const response2 = await common.orchestrator.getKafkaDefaultMessages(response1.result?.length ?? 0, limit, 500)
+      if (!response2.result || response2.result.length !== 3) {
+        console.log("response1", response1)
+        console.log("response2", response2)
+      }
+      const events = response2.result.map(e => JSON.parse(e))
+      const event1 = events.find(e => e.nodeName == "s1")
+      expect(event1).to.not.be.undefined
+      expect(event1.eventId).to.not.be.undefined
+      expect(event1.timestamp).to.not.be.undefined
+      expect(event1.round).to.not.be.undefined
+      expect(event1.ip).to.not.be.undefined
+      expect(event1.successTime).to.be.equal(1)
+      expect(event1.viteAddress).to.be.equal("vite_xxxxxxxxxxxxxxxxxx")
+      expect(event1.chain).to.be.equal("vite_buidl")
+      const event2 = events.find(e => e.nodeName == "s2")
+      expect(event2).to.not.be.undefined
+      expect(event2.eventId).to.not.be.undefined
+      expect(event2.timestamp).to.not.be.undefined
+      expect(event2.round).to.not.be.undefined
+      expect(event2.ip).to.not.be.undefined
+      expect(event2.successTime).to.be.equal(1)
+      expect(event2.viteAddress).to.be.empty
+      expect(event2.chain).to.be.equal("vite_buidl")
+      const event3 = events.find(e => e.nodeName == "s3")
+      expect(event3).to.not.be.undefined
+      expect(event3.eventId).to.not.be.undefined
+      expect(event3.timestamp).to.not.be.undefined
+      expect(event3.round).to.not.be.undefined
+      expect(event3.ip).to.not.be.undefined
+      expect(event3.successTime).to.be.equal(1)
+      expect(event3.viteAddress).to.be.empty
+      expect(event3.chain).to.be.equal("vite_buidl")
     })
   })
 }

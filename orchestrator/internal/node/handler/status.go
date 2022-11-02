@@ -149,6 +149,8 @@ func (h *Handler) SendOnlineStatus() {
 	logger.Logger().Info().Int64("round", round).Msg("send status started")
 	e := h.nodeStore.GetEnumerator()
 	totalCount, sendCount, successCount := 0, 0, 0
+	// limit concurrency to 10
+	semaphore := make(chan struct{}, 10)
 	for e.MoveNext() {
 		totalCount++
 		n, found := e.Current()
@@ -172,8 +174,14 @@ func (h *Handler) SendOnlineStatus() {
 			status.SuccessTime = 1
 			successCount++
 		}
-		h.kafka.WriteDefault(status)
-		logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Str("chain", n.Chain).Msg("node status sent")
+		semaphore <- struct{}{}
+		go func() {
+			writeStart := time.Now()
+			h.kafka.WriteDefault(status)
+			writeElapsed := time.Since(writeStart).Milliseconds()
+			logger.Logger().Debug().Str("name", n.Name).Str("id", n.Id).Int("status", n.Status).Str("chain", n.Chain).Int64("elapsed", writeElapsed).Msg("node status sent")
+			<-semaphore
+		}()
 		sendCount++
 	}
 	logger.Logger().Info().Int64("round", round).

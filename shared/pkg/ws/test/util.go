@@ -49,7 +49,7 @@ func (r *TestWsRpc) Start() {
 	}
 	r.pid = cmd.Process.Pid
 
-	commonutil.WaitFor(r.Timeout, out.Changed, func(p []byte) bool {
+	commonutil.WaitForChan(r.Timeout, out.Changed, func(p []byte) bool {
 		return true
 	})
 	r.Url = strings.TrimSpace(out.String())

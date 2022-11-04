@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func WaitFor[T any](timeout time.Duration, c chan T, checkFn func(result T) bool) {
+func WaitForChan[T any](timeout time.Duration, c chan T, checkFn func(result T) bool) {
 	for {
 		select {
 		case res := <-c:
@@ -15,6 +15,19 @@ func WaitFor[T any](timeout time.Duration, c chan T, checkFn func(result T) bool
 		case <-time.After(timeout):
 			return
 		}
+	}
+}
+
+func WaitFor(timeout time.Duration, checkFn func() bool) {
+	start := time.Now()
+	for {
+		if time.Now().UnixMilli() > start.Add(timeout).UnixMilli() {
+			break
+		}
+		if checkFn() {
+			return
+		}
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 

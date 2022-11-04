@@ -23,7 +23,7 @@ func NewOrchestrator(relayerId, url, jwtSecret string, timeout, jwtExpiryTimeout
 		logger.Logger().Error().Err(e).Msg("orchestrator URL parse failed")
 	}
 	if u.Scheme != "ws" && u.Scheme != "wss" {
-		logger.Logger().Error().Msg("orchestrator URL does not match WebSocket protocol")
+		logger.Logger().Error().Str("url", url).Msg("orchestrator URL does not match WebSocket protocol")
 	}
 	return &Orchestrator{
 		relayerId: relayerId,
@@ -77,6 +77,7 @@ func (o *Orchestrator) connect(s *rpc.Server) {
 		return
 	}
 	o.setStatus(ws.Connected)
+	// TODO: notify subscribers
 }
 
 func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {

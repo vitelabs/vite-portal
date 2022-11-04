@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWaitFor(t *testing.T) {
+func TestWaitForChan(t *testing.T) {
 	t.Parallel()
 	c := make(chan string)
 	timeout := 100 * time.Millisecond
@@ -19,14 +19,14 @@ func TestWaitFor(t *testing.T) {
 		time.Sleep(sleepDuration)
 		c<-"test2"
 	}()
-	WaitFor(timeout, c, func(result string) bool {
+	WaitForChan(timeout, c, func(result string) bool {
 		return result == "test2"
 	})
 	endTime := time.Now()
 	assert.Less(t, endTime.UnixNano()-startTime.UnixNano(), timeout.Nanoseconds())
 }
 
-func TestWaitForTimeout(t *testing.T) {
+func TestWaitForChanTimeout(t *testing.T) {
 	t.Parallel()
 	c := make(chan string)
 	timeout := 100 * time.Millisecond
@@ -38,7 +38,7 @@ func TestWaitForTimeout(t *testing.T) {
 		time.Sleep(sleepDuration)
 		c<-"test1"
 	}()
-	WaitFor(timeout, c, func(result string) bool {
+	WaitForChan(timeout, c, func(result string) bool {
 		return result == "test2"
 	})
 	endTime := time.Now()

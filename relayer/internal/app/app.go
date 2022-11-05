@@ -19,11 +19,21 @@ import (
 	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
 )
 
+type RelayerAppStatus int64
+
+const (
+	Unknown RelayerAppStatus = iota
+	Starting
+	Started
+	Stopping
+	Stopped
+)
+
 type RelayerApp struct {
 	id            string
 	config        types.Config
 	startStopLock sync.Mutex // Start/Stop are protected by an additional lock
-	state         int        // Tracks state of node lifecycle
+	status        RelayerAppStatus
 	lock          sync.Mutex
 	rpcAPIs       []rpc.API // List of APIs currently provided by the app
 	rpc           *rpc.HTTPServer
@@ -71,6 +81,8 @@ func (a *RelayerApp) Start(profile bool) error {
 	a.startStopLock.Lock()
 	defer a.startStopLock.Unlock()
 
+	a.status = Starting
+
 	// start RPC endpoints
 	err := a.startRPC(profile)
 	if err != nil {
@@ -79,6 +91,9 @@ func (a *RelayerApp) Start(profile bool) error {
 	}
 
 	a.orchestrator.Start(a.inprocHandler)
+	a.handleOrchestratorStatusChange()
+
+	a.status = Started
 
 	return nil
 }
@@ -88,11 +103,19 @@ func (a *RelayerApp) Shutdown() {
 	a.startStopLock.Lock()
 	defer a.startStopLock.Unlock()
 
+	a.status = Stopping
+
 	a.stopRPC()
 	a.context.nodeStore.Close()
+
+	a.status = Stopped
 }
 
 func (a *RelayerApp) HandleRelay(r coretypes.Relay) (string, error) {
+	if a.status != Started {
+		return "", errors.New(fmt.Sprintf("relay not possible: %d", a.status))
+	}
+
 	a.setClientIp(&r)
 	err := a.setChain(&r)
 	if err != nil {
@@ -106,6 +129,20 @@ func (a *RelayerApp) HandleRelay(r coretypes.Relay) (string, error) {
 		return "", errors.New(err1.InnerError())
 	}
 	return res.Response, nil
+}
+
+func (a *RelayerApp) handleOrchestratorStatusChange() {
+	a.coreService.HandleOrchestratorStatusChange(a.orchestrator.GetStatus())
+	c := a.orchestrator.SubscribeStatusChange()
+	go func() {
+		for {
+			select {
+			case status := <-c:
+				_ = status
+				a.coreService.HandleOrchestratorStatusChange(a.orchestrator.GetStatus())
+			}
+		}
+	}()
 }
 
 func (a *RelayerApp) setClientIp(r *coretypes.Relay) {

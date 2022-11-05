@@ -2,9 +2,11 @@ package orchestrator
 
 import (
 	urlutil "net/url"
+	"strconv"
 	"time"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/client"
+	"github.com/vitelabs/vite-portal/shared/pkg/handler"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
@@ -15,6 +17,7 @@ type Orchestrator struct {
 	stopped   bool
 	status    ws.ConnectionStatus
 	client    *client.Client
+	ps        *handler.Pubsub
 }
 
 func NewOrchestrator(relayerId, url, jwtSecret string, timeout, jwtExpiryTimeout time.Duration) *Orchestrator {
@@ -30,6 +33,7 @@ func NewOrchestrator(relayerId, url, jwtSecret string, timeout, jwtExpiryTimeout
 		stopped:   false,
 		status:    ws.Unknown,
 		client:    client.NewClient(url, jwtSecret, timeout, jwtExpiryTimeout),
+		ps:        handler.NewPubsub(),
 	}
 }
 
@@ -64,6 +68,10 @@ func (o *Orchestrator) Stop() {
 	}
 }
 
+func (o *Orchestrator) SubscribeStatusChange() <-chan string {
+	return o.ps.Subscribe()
+}
+
 func (o *Orchestrator) connect(s *rpc.Server) {
 	if o.stopped {
 		return
@@ -77,7 +85,6 @@ func (o *Orchestrator) connect(s *rpc.Server) {
 		return
 	}
 	o.setStatus(ws.Connected)
-	// TODO: notify subscribers
 }
 
 func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
@@ -87,5 +94,6 @@ func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
 			Int64("after", int64(newStatus)).
 			Msg("connection status changed")
 		o.status = newStatus
+		o.ps.Publish(strconv.FormatInt(int64(newStatus), 10))
 	}
 }

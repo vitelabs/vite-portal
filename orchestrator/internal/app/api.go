@@ -59,6 +59,10 @@ type adminAPI struct {
 	app *OrchestratorApp
 }
 
+func (a *adminAPI) GetChains() []sharedtypes.ChainConfig {
+	return a.app.config.SupportedChains
+}
+
 func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.Relayer], error) {
 	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
 }

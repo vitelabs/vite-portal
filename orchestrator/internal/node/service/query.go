@@ -24,8 +24,8 @@ func (s *Service) Get(chain string, offset, limit int) (generics.GenericPage[typ
 	if offset >= total {
 		return result, nil
 	}
-	result.Entries = make([]types.Node, mathutil.Min(total-result.Offset, limit))
-	count := mathutil.Min(result.Offset+result.Limit, total)
+	count := mathutil.Min(total-result.Offset, limit)
+	result.Entries = make([]types.Node, count)
 	current := 0
 	for i := result.Offset; i < count; i++ {
 		item, found := store.GetByIndex(i)

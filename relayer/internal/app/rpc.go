@@ -2,6 +2,11 @@ package app
 
 import "github.com/vitelabs/vite-portal/shared/pkg/rpc"
 
+// Attach creates an RPC client attached to an in-process API handler.
+func (a *RelayerApp) Attach() (*rpc.Client, error) {
+	return rpc.DialInProc(a.inprocHandler), nil
+}
+
 func (a *RelayerApp) startRPC(profile bool) error {
 	a.StartHttpRpc(profile)
 	a.StartWsRpc()

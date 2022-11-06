@@ -31,6 +31,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 const (
@@ -197,10 +198,13 @@ func parseOriginURL(origin string) (string, string, string, error) {
 
 // DialWebsocketWithDialer creates a new RPC client that communicates with a JSON-RPC server
 // that is listening on the given endpoint using the provided dialer.
-func DialWebsocketWithDialer(ctx context.Context, endpoint, origin string, dialer websocket.Dialer) (*Client, error) {
+func DialWebsocketWithDialer(ctx context.Context, endpoint, origin, auth string, dialer websocket.Dialer) (*Client, error) {
 	endpoint, header, err := wsClientHeaders(endpoint, origin)
 	if err != nil {
 		return nil, err
+	}
+	if auth != "" {
+		header.Set(sharedtypes.HTTPHeaderAuthorization, auth)
 	}
 	return newClient(ctx, func(ctx context.Context) (ServerCodec, error) {
 		conn, resp, err := dialer.DialContext(ctx, endpoint, header)
@@ -226,7 +230,7 @@ func DialWebsocket(ctx context.Context, endpoint, origin string) (*Client, error
 		WriteBufferSize: wsWriteBuffer,
 		WriteBufferPool: wsBufferPool,
 	}
-	return DialWebsocketWithDialer(ctx, endpoint, origin, dialer)
+	return DialWebsocketWithDialer(ctx, endpoint, origin, "", dialer)
 }
 
 func wsClientHeaders(endpoint, origin string) (string, http.Header, error) {
@@ -240,7 +244,7 @@ func wsClientHeaders(endpoint, origin string) (string, http.Header, error) {
 	}
 	if endpointURL.User != nil {
 		b64auth := base64.StdEncoding.EncodeToString([]byte(endpointURL.User.String()))
-		header.Add("authorization", "Basic "+b64auth)
+		header.Add(sharedtypes.HTTPHeaderAuthorization, "Basic "+b64auth)
 		endpointURL.User = nil
 	}
 	return endpointURL.String(), header, nil

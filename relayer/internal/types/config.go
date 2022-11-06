@@ -136,5 +136,5 @@ func (c *Config) Validate() error {
 	if c.SessionNodeCount <= 0 {
 		return errors.New(fmt.Sprintf("%s SessionNodeCount must be greater than 0", prefix))
 	}
-	return configutil	.ValidateJwt(c.JwtSecret, c.JwtExpiryTimeout)
+	return configutil.ValidateJwt(c.JwtSecret, c.JwtExpiryTimeout)
 }

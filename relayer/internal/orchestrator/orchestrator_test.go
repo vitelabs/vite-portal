@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/vitelabs/vite-portal/relayer/internal/types"
-	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 	wstest "github.com/vitelabs/vite-portal/shared/pkg/ws/test"
@@ -21,7 +20,7 @@ func TestInit(t *testing.T) {
 	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	o.Start(rpc.NewServer())
+	o.Start(nil)
 	require.Equal(t, ws.Connected, o.GetStatus())
 	require.True(t, ws.CanConnect(r.Url, timeout))
 	r.Stop()
@@ -37,7 +36,7 @@ func TestMockInit(t *testing.T) {
 	o := NewOrchestrator(idutil.NewGuid(), mock.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	o.Start(rpc.NewServer())
+	o.Start(nil)
 	require.Equal(t, ws.Connected, o.GetStatus())
 	require.True(t, ws.CanConnect(mock.Url, timeout))
 	mock.Close()
@@ -59,7 +58,7 @@ func TestStop(t *testing.T) {
 	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
-	o.Start(rpc.NewServer())
+	o.Start(nil)
 	require.Equal(t, ws.Connected, o.GetStatus())
 	require.True(t, ws.CanConnect(r.Url, timeout))
 	o.Stop()

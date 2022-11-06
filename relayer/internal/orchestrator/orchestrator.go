@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/client"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/handler"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
@@ -41,19 +42,18 @@ func (o *Orchestrator) GetStatus() ws.ConnectionStatus {
 	return o.status
 }
 
-func (o *Orchestrator) Start(s *rpc.Server) {
+func (o *Orchestrator) Start(apis []rpc.API) {
 	o.stopped = false
-	o.connect(s)
+	o.connect()
 
-	codec := rpc.NewFuncCodec(o.client.Conn, o.client.Conn.WriteJSON, o.client.Conn.ReadJSON)
-	go s.ServeCodec(codec, 0, nil, nil)
+	o.client.RegisterNames(apis)
 
 	go func() {
-		<-codec.Closed()
+		<-o.client.Closed()
 		o.setStatus(ws.Disconnected)
 		if !o.stopped {
 			time.Sleep(10 * time.Second)
-			o.Start(s)
+			o.Start(apis)
 		}
 	}()
 }
@@ -61,10 +61,7 @@ func (o *Orchestrator) Start(s *rpc.Server) {
 func (o *Orchestrator) Stop() {
 	if !o.stopped {
 		o.stopped = true
-		conn := o.client.Conn
-		if conn != nil {
-			conn.Close()
-		}
+		o.client.Close()
 	}
 }
 
@@ -72,7 +69,7 @@ func (o *Orchestrator) SubscribeStatusChange() <-chan string {
 	return o.ps.Subscribe()
 }
 
-func (o *Orchestrator) connect(s *rpc.Server) {
+func (o *Orchestrator) connect() {
 	if o.stopped {
 		return
 	}
@@ -81,7 +78,7 @@ func (o *Orchestrator) connect(s *rpc.Server) {
 	if err != nil {
 		logger.Logger().Error().Err(err).Msg("trying to connect to orchestrator")
 		time.Sleep(10 * time.Second)
-		o.connect(s)
+		o.connect()
 		return
 	}
 	o.setStatus(ws.Connected)
@@ -96,4 +93,13 @@ func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
 		o.status = newStatus
 		o.ps.Publish(strconv.FormatInt(int64(newStatus), 10))
 	}
+}
+
+func (o *Orchestrator) GetChains() []string {
+	return make([]string, 0)
+}
+
+func (o *Orchestrator) GetNodes(chain string, offset int, limit int) (generics.GenericPage[string], error) {
+	result := *generics.NewGenericPage[string]()
+	return result, nil
 }

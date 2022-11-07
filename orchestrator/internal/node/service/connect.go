@@ -56,6 +56,14 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 			Host:      peerInfo.HTTP.Host,
 		},
 	}
+	// TODO: remove defaults below after new go-vite version has been released
+	// TODO: reject nodes with invalid ports (0)
+	if n.HTTPort == 0 {
+		n.HTTPort = sharedtypes.DefaultRpcNodeHttpPort
+	}
+	if n.WSPort == 0 {
+		n.WSPort = sharedtypes.DefaultRpcNodeWsPort
+	}
 	msg := "failed to add node"
 	cc, err := s.context.GetChainContext(chain.Name)
 	if err != nil {

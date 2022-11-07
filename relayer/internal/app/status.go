@@ -1,8 +1,10 @@
 package app
 
 import (
+	"fmt"
 	"time"
 
+	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
@@ -47,9 +49,15 @@ func (a *RelayerApp) getNodesRecursive(chain string, offset, limit int) {
 		return
 	}
 
-	// for _, n := range res.Entries {
-	// 	a.nodeService.PutNode(n)
-	// }
+	for _, e := range res.Entries {
+		n := nodetypes.Node{
+			Id:         e.Id,
+			Chain:      e.Chain,
+			RpcHttpUrl: fmt.Sprintf("http://%s:%d", e.ClientIp, e.HTTPort),
+			RpcWsUrl:   fmt.Sprintf("ws://%s:%d", e.ClientIp, e.WSPort),
+		}
+		a.nodeService.PutNode(n)
+	}
 
 	elapsed := time.Since(start)
 	logger.Logger().Info().Int64("elapsed", elapsed.Milliseconds()).Str("chain", chain).

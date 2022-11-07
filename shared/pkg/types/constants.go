@@ -9,6 +9,10 @@ const (
 	HTTPHeaderAuthorization = "Authorization"
 	// The issuer representing a relayer used in JSON Web Tokens
 	JWTRelayerIssuer = "vite-portal-relayer"
+	// The default RPC HTTP port of a node
+	DefaultRpcNodeHttpPort = 48132
+	// The default RPC WS port of a node
+	DefaultRpcNodeWsPort = 41420
 	// The default JWT secret
 	DefaultJwtSecret = "secret1234"
 	// The default JWT expiry timeout

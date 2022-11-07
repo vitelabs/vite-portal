@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/client"
+	"github.com/vitelabs/vite-portal/relayer/internal/orchestrator/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/handler"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
@@ -105,7 +106,11 @@ func (o *Orchestrator) GetChains() ([]sharedtypes.ChainConfig, error) {
 	return resp, nil
 }
 
-func (o *Orchestrator) GetNodes(chain string, offset int, limit int) (generics.GenericPage[string], error) {
-	result := *generics.NewGenericPage[string]()
-	return result, nil
+func (o *Orchestrator) GetNodes(chain string, offset int, limit int) (generics.GenericPage[types.Node], error) {
+	var resp generics.GenericPage[types.Node]
+	if err := o.client.Call(&resp, "admin_getNodes", chain, offset, limit); err != nil {
+		logger.Logger().Error().Err(err).Msg("getting nodes failed")
+		return *generics.NewGenericPage[types.Node](), err
+	}
+	return resp, nil
 }

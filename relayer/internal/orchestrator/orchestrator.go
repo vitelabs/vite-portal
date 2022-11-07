@@ -10,6 +10,7 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/handler"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
@@ -95,8 +96,13 @@ func (o *Orchestrator) setStatus(newStatus ws.ConnectionStatus) {
 	}
 }
 
-func (o *Orchestrator) GetChains() []string {
-	return make([]string, 0)
+func (o *Orchestrator) GetChains() ([]sharedtypes.ChainConfig, error) {
+	var resp []sharedtypes.ChainConfig
+	if err := o.client.Call(&resp, "admin_getChains"); err != nil {
+		logger.Logger().Error().Err(err).Msg("getting chains failed")
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (o *Orchestrator) GetNodes(chain string, offset int, limit int) (generics.GenericPage[string], error) {

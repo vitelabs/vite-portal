@@ -42,7 +42,10 @@ type RpcViteNodeInfoResponse struct {
 	Name                  string  `json:"name"`
 	NetID                 int     `json:"netId"`
 	Version               int     `json:"version"`
+	Port                  int     `json:"port"`
+	FilePort              int     `json:"filePort"`
 	Address               string  `json:"address"`
+	AddressSignature      string  `json:"addressSignature"`
 	PeerCount             int     `json:"peerCount"`
 	Height                uint64  `json:"height"`
 	Nodes                 int     `json:"nodes"`
@@ -55,6 +58,8 @@ type RpcViteProcessInfoResponse struct {
 	CommitVersion string `json:"commit_version"`
 	NodeName      string `json:"nodeName"`
 	RewardAddress string `json:"rewardAddress"`
+	HTTPPort      int    `json:"httpPort"`
+	WSPort        int    `json:"wsPort"`
 	Pid           int    `json:"pid"`
 }
 

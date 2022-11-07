@@ -64,3 +64,9 @@ func (c *Client) RegisterNames(apis []rpc.API) error {
 func (c *Client) Closed() <-chan interface{} {
 	return c.ws.WriteConn.Closed()
 }
+
+func (c *Client) Call(result interface{}, method string, args ...interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	return c.ws.CallContext(ctx, result, method, args...)
+}

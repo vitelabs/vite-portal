@@ -19,6 +19,8 @@ type Node struct {
 	Transport     string                      `json:"transport,omitempty"`
 	RemoteAddress string                      `json:"remoteAddress,omitempty"`
 	ClientIp      string                      `json:"clientIp,omitempty"`
+	HTTPort       int                         `json:"httpPort,omitempty"`
+	WSPort        int                         `json:"wsPort,omitempty"`
 	Status        int                         `json:"status,omitempty"`
 	LastUpdate    sharedtypes.Int64           `json:"lastUpdate"`
 	DelayTime     sharedtypes.Int64           `json:"delayTime"`

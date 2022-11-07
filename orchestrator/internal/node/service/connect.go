@@ -32,6 +32,7 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 	}
 	logger.Logger().Debug().Str("processInfo", fmt.Sprintf("%#v", processInfo)).Msg("handle connect response")
 	clientIp := httputil.GetClientIp(peerInfo.HTTP.Header, s.config.HeaderTrueClientIp)
+	// TODO: ensure `clientIp` and `address` are identical and verify `addressSignature`
 	n := types.Node{
 		Id:            nodeInfo.ID,
 		Name:          nodeInfo.Name,
@@ -42,6 +43,8 @@ func (s *Service) HandleConnect(timeout time.Duration, c *rpc.Client, peerInfo r
 		Transport:     peerInfo.Transport,
 		RemoteAddress: peerInfo.RemoteAddr,
 		ClientIp:      clientIp,
+		HTTPort:       processInfo.HTTPPort,
+		WSPort:        processInfo.WSPort,
 		Status:        1,
 		LastUpdate:    0,
 		DelayTime:     0,

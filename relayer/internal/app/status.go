@@ -8,14 +8,14 @@ import (
 )
 
 func (a *RelayerApp) initOrchestrator() {
-	a.coreService.HandleOrchestratorStatusChange(a.orchestrator.GetStatus())
+	a.handleOrchestratorStatusChange(a.orchestrator.GetStatus())
 	c := a.orchestrator.SubscribeStatusChange()
 	go func() {
 		for {
 			select {
 			case status := <-c:
 				_ = status
-				a.coreService.HandleOrchestratorStatusChange(a.orchestrator.GetStatus())
+				a.handleOrchestratorStatusChange(a.orchestrator.GetStatus())
 			}
 		}
 	}()
@@ -28,9 +28,12 @@ func (a *RelayerApp) handleOrchestratorStatusChange(status ws.ConnectionStatus) 
 		return
 	}
 	// get all nodes for all supported chains
-	chains := a.orchestrator.GetChains()
+	chains, err := a.orchestrator.GetChains()
+	if err != nil {
+		return
+	}
 	for _, chain := range chains {
-		a.getNodesRecursive(chain, 0, 0)
+		a.getNodesRecursive(chain.Name, 0, 0)
 	}
 	elapsed := time.Since(start)
 	logger.Logger().Info().Int64("elapsed", elapsed.Milliseconds()).Int64("status", int64(status)).Msg("orchestrator status change handled")

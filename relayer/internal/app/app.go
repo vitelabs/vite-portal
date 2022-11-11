@@ -11,8 +11,10 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 
+	coreinterfaces "github.com/vitelabs/vite-portal/relayer/internal/core/interfaces"
 	nodeinterfaces "github.com/vitelabs/vite-portal/relayer/internal/node/interfaces"
 	nodeservice "github.com/vitelabs/vite-portal/relayer/internal/node/service"
+	orchinterfaces "github.com/vitelabs/vite-portal/relayer/internal/orchestrator/interfaces"
 )
 
 type RelayerAppStatus int64
@@ -36,8 +38,8 @@ type RelayerApp struct {
 	rpcAuth       *rpc.HTTPServer
 	inprocHandler *rpc.Server // In-process RPC request handler to process the API requests
 	context       *Context
-	coreService   *coreservice.Service
-	orchestrator  *orchestrator.Orchestrator
+	coreService   coreinterfaces.ServiceI
+	orchestrator  orchinterfaces.OrchestratorI
 	nodeService   nodeinterfaces.ServiceI
 }
 

@@ -38,6 +38,7 @@ This monorepo is organized as follows:
 ### Build
 
 ```
+docker build -f orchestrator.Dockerfile --tag vitelabs/portal-orchestrator:test .
 docker build -f relayer.Dockerfile --tag vitelabs/portal-relayer:test .
 ```
 

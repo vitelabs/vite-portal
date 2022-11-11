@@ -59,7 +59,9 @@ Note: Consider deleting `relayer_config.json` and `logs` in `cmd/relayer` before
 
 ### Build image
 
-See root README.md
+```
+docker build -f relayer.Dockerfile --tag vitelabs/portal-relayer:test .
+```
 
 ### Run image
 

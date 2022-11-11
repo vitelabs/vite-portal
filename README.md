@@ -33,15 +33,6 @@ This monorepo is organized as follows:
 	<img src="assets/images/session.jpg" alt="Session handling">
 </h1>
 
-## Docker
-
-### Build
-
-```
-docker build -f orchestrator.Dockerfile --tag vitelabs/portal-orchestrator:test .
-docker build -f relayer.Dockerfile --tag vitelabs/portal-relayer:test .
-```
-
 ## Docker compose
 
 ### Build

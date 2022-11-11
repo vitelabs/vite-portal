@@ -5,7 +5,7 @@ services:
     container_name: vite-portal_r1
     build:
       context: .
-      dockerfile: relayer.Dockerfile
+      dockerfile: ./relayer/relayer.Dockerfile
     ports:
       - 56331:56331
       - 56332:56332

@@ -125,3 +125,11 @@ Example requests:
     Content-Length: 41
 
     {"jsonrpc":"2.0","id":1,"result":"v0.1"}
+
+## Docker
+
+### Build image
+
+```
+docker build -f orchestrator.Dockerfile --tag vitelabs/portal-orchestrator:test .
+```

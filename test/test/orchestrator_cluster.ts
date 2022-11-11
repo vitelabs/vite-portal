@@ -3,7 +3,8 @@ import { expect } from "chai"
 import { TestCommon } from "./common"
 import { NodeCluster } from "../src/cluster"
 import { TestConstants } from "../src/constants"
-import { NodeExtendedEntity } from "../src/types"
+import { VitePortal } from "../src/portal"
+import { NodeExtendedEntity, RelayerConfig } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
 export function testOrchestratorCluster(common: TestCommon) {
@@ -76,6 +77,35 @@ export function testOrchestratorCluster(common: TestCommon) {
       afterUpdate(node2, "s2")
       node3 = nodes.result.entries.find(e => e.id === nodeId3)
       afterUpdate(node3, "s3")
+    })
+
+    it('test relayer nodes', async function () {
+      // make sure ports are not used by another process
+      const relayerConfig: RelayerConfig = {
+        rpcUrl: "http://127.0.0.1:55331",
+        rpcAuthUrl: "http://127.0.0.1:55332",
+        rpcRelayHttpUrl: "http://127.0.0.1:55333",
+        rpcRelayWsUrl: "http://127.0.0.1:55334",
+        jwtSecret: TestConstants.DefaultJwtSecret
+      }
+      const relayer = await VitePortal.startRelayer(relayerConfig, common.timeout)
+      const chain1 = TestConstants.SupportedChains.ViteBuidl
+      let response1 = await relayer.getNodes(chain1)
+      expect(response1.result.limit).to.be.equal(1000)
+      expect(response1.result.offset).to.be.equal(0)
+      expect(response1.result.total).to.be.equal(3)
+      expect(response1.result.entries.length).to.be.equal(3)
+      expect(response1.result.entries[0].id).to.not.be.empty
+      expect(response1.result.entries[0].chain).to.equal(chain1)
+      expect(response1.result.entries[0].rpcHttpUrl).to.satisfy((e: string) => e.startsWith("http://") && e.endsWith("48132"))
+      expect(response1.result.entries[0].rpcWsUrl).to.satisfy((e: string) => e.startsWith("ws://") && e.endsWith("41420"))
+      const chain2 = TestConstants.SupportedChains.ViteMain
+      let response2 = await relayer.getNodes(chain2)
+      expect(response2.result.limit).to.be.equal(1000)
+      expect(response2.result.offset).to.be.equal(0)
+      expect(response2.result.total).to.be.equal(0)
+      expect(response2.result.entries.length).to.be.equal(0)
+      await relayer.stop()
     })
 
     it('test node status dispatch', async function () {

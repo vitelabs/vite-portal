@@ -7,7 +7,9 @@ import (
 
 	"github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/collections"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
 type MemoryStore struct {
@@ -87,10 +89,37 @@ func (s *MemoryStore) GetById(id string) (n types.Node, found bool) {
 	return s.Get(s.idMap[id], id)
 }
 
+func (s *MemoryStore) GetPaginated(chain string, offset, limit int) (generics.GenericPage[types.Node], error) {
+	total := s.Count(chain)
+	result := *generics.NewGenericPage[types.Node]()
+	result.Offset = offset
+	result.Limit = limit
+	result.Total = total
+	if offset >= total {
+		return result, nil
+	}
+	result.Entries = make([]types.Node, mathutil.Min(total-result.Offset, limit))
+	count := mathutil.Min(result.Offset+result.Limit, total)
+	current := 0
+	for i := result.Offset; i < count; i++ {
+		item, found := s.GetByIndex(chain, i)
+		if !found {
+			return *generics.NewGenericPage[types.Node](), errors.New("inconsistent state")
+		}
+		result.Entries[current] = item
+		current++
+	}
+	return result, nil
+}
+
 func (s *MemoryStore) Upsert(n types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
+	return s.upsert(n)
+}
+
+func (s *MemoryStore) upsert(n types.Node) error {
 	err := n.Validate()
 	if err != nil {
 		return err
@@ -104,11 +133,18 @@ func (s *MemoryStore) Upsert(n types.Node) error {
 	return nil
 }
 
-func (s *MemoryStore) UpsertMany(n []types.Node) error {
+func (s *MemoryStore) UpsertMany(nodes []types.Node) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	return errors.New("not yet implemented")
+	for _, n := range nodes {
+		err := s.upsert(n)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *MemoryStore) Remove(chain string, id string) error {

@@ -6,6 +6,7 @@ import (
 
 	nodetypes "github.com/vitelabs/vite-portal/relayer/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 )
 
@@ -42,10 +43,11 @@ func (a *RelayerApp) handleOrchestratorStatusChange(status ws.ConnectionStatus) 
 }
 
 func (a *RelayerApp) getNodesRecursive(chain string, offset, limit int) {
+	o, l := commonutil.CheckPagination(offset, limit)
 	start := time.Now()
-	res, err := a.orchestrator.GetNodes(chain, offset, limit)
+	res, err := a.orchestrator.GetNodes(chain, o, l)
 	if err != nil {
-		logger.Logger().Error().Err(err).Str("chain", chain).Int("offset", offset).Int("limit", limit).Msg("get nodes failed")
+		logger.Logger().Error().Err(err).Str("chain", chain).Int("offset", o).Int("limit", l).Msg("get nodes failed")
 		return
 	}
 

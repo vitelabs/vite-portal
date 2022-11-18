@@ -7,7 +7,9 @@ import (
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/collections"
+	"github.com/vitelabs/vite-portal/shared/pkg/generics"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/commonutil"
+	"github.com/vitelabs/vite-portal/shared/pkg/util/mathutil"
 )
 
 type MemoryStore struct {
@@ -60,6 +62,29 @@ func (s *MemoryStore) GetByIndex(index int) (n types.Node, found bool) {
 	}
 
 	return node, true
+}
+
+func (s *MemoryStore) GetPaginated(offset, limit int) (generics.GenericPage[types.Node], error) {
+	total := s.Count()
+	result := *generics.NewGenericPage[types.Node]()
+	result.Offset = offset
+	result.Limit = limit
+	result.Total = total
+	if offset >= total {
+		return result, nil
+	}
+	result.Entries = make([]types.Node, mathutil.Min(total-result.Offset, limit))
+	count := mathutil.Min(result.Offset+result.Limit, total)
+	current := 0
+	for i := result.Offset; i < count; i++ {
+		item, found := s.GetByIndex(i)
+		if !found {
+			return *generics.NewGenericPage[types.Node](), errors.New("inconsistent state")
+		}
+		result.Entries[current] = item
+		current++
+	}
+	return result, nil
 }
 
 func (s *MemoryStore) GetEntries() []types.Node {

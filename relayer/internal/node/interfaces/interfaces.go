@@ -24,6 +24,7 @@ type StoreI interface {
 	Get(chain string, id string) (types.Node, bool)
 	GetByIndex(chain string, index int) (n types.Node, found bool)
 	GetById(id string) (n types.Node, found bool)
+	GetPaginated(chain string, offset, limit int) (generics.GenericPage[types.Node], error)
 	Upsert(n types.Node) error
 	UpsertMany(nodes []types.Node) error
 	Remove(chain string, id string) error

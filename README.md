@@ -35,6 +35,12 @@ This monorepo is organized as follows:
 
 ## Docker compose
 
+Depending on the operation system it might be needed to install `gettext` for envsubst first.
+
+```
+apt-get update && apt-get install gettext
+```
+
 ### Build
 
 ```
@@ -68,4 +74,4 @@ docker exec -it vite-portal_r1_1 /bin/bash
 5. Setup test AWS Load Balancer which serves requests from e.g. https://portal-buidl.vite.net
 6. Point AWS Load Balancer to the [relay request](./relayer#post_relay) endpoint
 
-The current experimental deployment contains the relayer only. Afer developing [orchestrator](./orchestrator) the third step to insert nodes manually will not be needed anymore. In the planned/final deployment all nodes will automatically connect to the orchestrator if configured correctly and the orchestrator will broadcast newly added or updated nodes to all relayers.
+Step 3 is optional. All nodes connect to the orchestrator automatically and the orchestrator broadcasts newly added or updated nodes to all relayers.

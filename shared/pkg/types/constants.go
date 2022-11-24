@@ -7,8 +7,12 @@ const (
 	HTTPHeaderFallbackClientIp = "VP-Fallback-Client-IP"
 	// Can be used to provide credentials that authenticate a user agent with a server, allowing access to a protected resource.
 	HTTPHeaderAuthorization = "Authorization"
+	// The issuer representing the orchestrator used in JSON Web Tokens
+	JWTOrchestratorIssuer = "vite-portal-orchestrator"
 	// The issuer representing a relayer used in JSON Web Tokens
 	JWTRelayerIssuer = "vite-portal-relayer"
+	// The default header indicating the true IP address of the client
+	DefaultHeaderTrueClientIp = "CF-Connecting-IP"
 	// The default RPC HTTP port of a node
 	DefaultRpcNodeHttpPort = 48132
 	// The default RPC WS port of a node

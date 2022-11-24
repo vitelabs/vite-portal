@@ -20,6 +20,7 @@ RUN apk update \
     && apk add --no-cache bash \
     bash-doc \
     bash-completion \
+    gettext \
     && rm -rf /var/cache/apk/* \
     && /bin/bash
 

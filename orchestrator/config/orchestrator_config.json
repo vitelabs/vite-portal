@@ -1,0 +1,50 @@
+{
+    "version": "v0.1",
+    "debug": false,
+    "rpcPort": 57331,
+    "rpcAuthPort": 57332,
+    "rpcTimeout": 5000,
+    "jwtSecret": "secret1234",
+    "jwtExpiryTimeout": 0,
+    "maxIpBlacklistEntries": 10000,
+    "maxIpBlacklistDuration": 5000,
+    "userAgent": "",
+    "headerTrueClientIp": "CF-Connecting-IP",
+    "kafka": {
+        "servers": {
+            "servers": "localhost:9092",
+            "certLocation": "",
+            "certKeyLocation": "",
+            "CertPoolLocation": ""
+        },
+        "defaultTopic": {
+            "groupId": "vote_fullnode_award_event_prod",
+            "topic": "fullnode_award_event_prod"
+        },
+        "rpcTopic": {
+            "groupId": "vote_fullnode_rpc_event_prod",
+            "topic": "fullnode_rpc_event_prod"
+        }
+    },
+    "supportedChains": [
+        {
+            "id": "1",
+            "name": "vite_main",
+            "officialNodeUrl": "http://127.0.0.1:23456/"
+        },
+        {
+            "id": "9",
+            "name": "vite_buidl",
+            "officialNodeUrl": "http://127.0.0.1:23456/"
+        }
+    ],
+    "logging": {
+        "consoleOutputEnabled": true,
+        "fileOutputEnabled": true,
+        "directory": "logs",
+        "filename": "orchestrator.log",
+        "maxSize": 100,
+        "maxBackups": 10,
+        "maxAge": 28
+    }
+}

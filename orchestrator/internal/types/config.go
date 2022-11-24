@@ -14,7 +14,6 @@ const (
 	DefaultMaxIpBlacklistEntries       = 10000
 	DefaultMaxIpBlacklistDuration      = 5000
 	DefaultUserAgent                   = ""
-	DefaultHeaderTrueClientIp          = "CF-Connecting-IP"
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
 	DefaultLoggingDirectory            = "logs"
@@ -68,7 +67,7 @@ func NewDefaultConfig() Config {
 		MaxIpBlacklistEntries:  DefaultMaxIpBlacklistEntries,
 		MaxIpBlacklistDuration: DefaultMaxIpBlacklistDuration,
 		UserAgent:              DefaultUserAgent,
-		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		HeaderTrueClientIp:     sharedtypes.DefaultHeaderTrueClientIp,
 		Kafka:                  sharedtypes.DefaultKafkaConfig,
 		SupportedChains:        sharedtypes.DefaultSupportedChains,
 		Logging: sharedtypes.LoggingConfig{

@@ -29,7 +29,7 @@ func TestJwt_GetClaims_ExpiresAt(t *testing.T) {
 	claims, err := h.GetClaims(header)
 	require.NoError(t, err)
 	require.NotNil(t, claims)
-	require.Equal(t, now + 1, claims.ExpiresAt.Unix())
+	require.Equal(t, now+1, claims.ExpiresAt.Unix())
 }
 
 func TestJwt_GetClaims_Ivalid(t *testing.T) {

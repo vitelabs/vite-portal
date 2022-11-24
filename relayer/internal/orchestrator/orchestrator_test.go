@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vitelabs/vite-portal/relayer/internal/types"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/ws"
 	wstest "github.com/vitelabs/vite-portal/shared/pkg/ws/test"
@@ -17,7 +17,7 @@ var jwtExpiryTimeout = 0 * time.Millisecond
 func TestInit(t *testing.T) {
 	r := wstest.NewTestWsRpc(timeout)
 	r.Start()
-	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
+	o := NewOrchestrator(idutil.NewGuid(), r.Url, sharedtypes.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
 	o.Start(nil)
@@ -33,7 +33,7 @@ func TestMockInit(t *testing.T) {
 	mock := ws.NewMockWsRpc(0)
 	require.NotNil(t, mock)
 	go mock.Serve(timeout)
-	o := NewOrchestrator(idutil.NewGuid(), mock.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
+	o := NewOrchestrator(idutil.NewGuid(), mock.Url, sharedtypes.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
 	o.Start(nil)
@@ -48,14 +48,14 @@ func TestMockInit(t *testing.T) {
 
 func TestInitInvalidUrl(t *testing.T) {
 	t.Parallel()
-	o := NewOrchestrator(idutil.NewGuid(), "http://localhost:1234", types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
+	o := NewOrchestrator(idutil.NewGuid(), "http://localhost:1234", sharedtypes.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 }
 
 func TestStop(t *testing.T) {
 	r := wstest.NewTestWsRpc(timeout)
 	r.Start()
-	o := NewOrchestrator(idutil.NewGuid(), r.Url, types.DefaultJwtSecret, timeout, jwtExpiryTimeout)
+	o := NewOrchestrator(idutil.NewGuid(), r.Url, sharedtypes.DefaultJwtSecret, timeout, jwtExpiryTimeout)
 	require.NotNil(t, o)
 	require.Equal(t, ws.Unknown, o.GetStatus())
 	o.Start(nil)

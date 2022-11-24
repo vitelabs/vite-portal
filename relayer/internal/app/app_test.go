@@ -8,6 +8,7 @@ import (
 	"github.com/vitelabs/vite-portal/relayer/internal/core/types"
 	roottypes "github.com/vitelabs/vite-portal/relayer/internal/types"
 	"github.com/vitelabs/vite-portal/relayer/internal/util/testutil"
+	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
 func TestSetChain(t *testing.T) {
@@ -115,7 +116,7 @@ func TestSetClientIp(t *testing.T) {
 			name: "Test default",
 			relay: types.Relay{
 				Payload: types.Payload{
-					Headers: map[string][]string{roottypes.DefaultHeaderTrueClientIp: {"1.2.3.4"}},
+					Headers: map[string][]string{sharedtypes.DefaultHeaderTrueClientIp: {"1.2.3.4"}},
 				},
 			},
 			expected: "1.2.3.4",
@@ -124,7 +125,7 @@ func TestSetClientIp(t *testing.T) {
 			name: "Test default multiple",
 			relay: types.Relay{
 				Payload: types.Payload{
-					Headers: map[string][]string{roottypes.DefaultHeaderTrueClientIp: {"4.3.2.1", "1.2.3.4"}},
+					Headers: map[string][]string{sharedtypes.DefaultHeaderTrueClientIp: {"4.3.2.1", "1.2.3.4"}},
 				},
 			},
 			expected: "4.3.2.1",

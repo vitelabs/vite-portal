@@ -7,6 +7,8 @@
     "rpcRelayWsPort": 56334,
     "rpcTimeout": 10000,
     "rpcNodeTimeout": 5000,
+    "jwtSecret": "secret1234",
+    "jwtExpiryTimeout": 0,
     "userAgent": "",
     "sortJsonResponse": false,
     "consensusNodeCount": 5,

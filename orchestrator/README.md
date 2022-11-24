@@ -81,7 +81,7 @@ Example response:
 {"jsonrpc": "2.0", "id": 1, "result": {"id": "1234", "version": 0, "netId": 1}}
 ```
 
-Create Bearer token with `relayer/internal/orchestrator/client/client_test.go`:
+Create `Bearer` token with `relayer/internal/orchestrator/client/client_test.go`:
 
 ```
 websocat ws://localhost:57332/ -E -H='Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjQ2MTQ2MzksImlzcyI6InZpdGUtcG9ydGFsLXJlbGF5ZXIiLCJzdWIiOiJ0ZXN0MTIzNCJ9.e3dbqQ9RG656Pk4UaKL1IgIVi9IFqk05u_9orBvx1AA'
@@ -100,7 +100,40 @@ Example requests:
 {"jsonrpc": "2.0", "id": 2, "method": "admin_getRelayers", "params": [0, 0]}
 ```
 
+## Docker
+
+### Build image
+
+```
+docker build -f orchestrator.Dockerfile --tag vitelabs/portal-orchestrator:test .
+```
+
+### Run image
+
+Before running the image you can create and modify the configuration file to be used by the orchestrator: `$HOME/.orchestrator/orchestrator_config.json`
+
+A description of the different configuration options can be found [here](./internal/types/config.go).
+
+```
+docker run -v $HOME/.orchestrator/:/var/orchestrator/ -p 57331:57331 -p 57332:57332 --name portal-orchestrator --detach vitelabs/portal-orchestrator:test start --config /var/orchestrator/orchestrator_config.json
+```
+
+### Inspect container
+
+```
+docker exec -it portal-orchestrator /bin/bash
+```
+
+### Stop/remove container
+
+```
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-orchestrator:test --format="{{.ID}}")) || docker container prune --force
+```
+
 # API
+
+* [Get version](#get_version)
+* [Get list of relayers](#get_relayers)
 
 ## Get version <a name="get_version"></a>
 
@@ -124,7 +157,59 @@ Example requests:
     Date: Thu, 25 Aug 2022 14:21:14 GMT
     Content-Length: 41
 
-    {"jsonrpc":"2.0","id":1,"result":"v0.1"}
+    {"jsonrpc":"2.0","id":1,"result":{"id":"ccb6cf52-5a74-4846-a7f5-a579f4cb49c6","version":"v0.0.1-alpha.6","name":"vite-portal-orchestrator"}}
+
+## Get list of nodes <a name="get_nodes"></a>
+
+Those nodes are managed by the orchestrator and used to serve relays.
+
+### Request
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `offset` | `number` | The pagination offset |
+| `limit` | `number` | The pagination limit |
+
+    curl -i -X POST http://localhost:57332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjQ2MTQ2MzksImlzcyI6InZpdGUtcG9ydGFsLXJlbGF5ZXIiLCJzdWIiOiJ0ZXN0MTIzNCJ9.e3dbqQ9RG656Pk4UaKL1IgIVi9IFqk05u_9orBvx1AA' \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getRelayers", 
+        "params": [0,0]
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 07:02:04 GMT
+    Content-Length: 271
+
+    {
+      "jsonrpc":"2.0",
+      "id":1,
+      "result":{
+          "entries":[
+            {
+                "id":"4b75732d-0e10-46f8-964c-4e79e3a88674",
+                "version":"v0.0.1-alpha.6",
+                "transport":"ws",
+                "remoteAddress":"172.20.0.3:46474",
+                "httpInfo":{
+                  "userAgent":"Go-http-client/1.1",
+                  "host":"o1:57332"
+                }
+            }
+          ],
+          "limit":1000,
+          "offset":0,
+          "total":1
+      }
+    }
 
 ## Docker
 

@@ -87,6 +87,7 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-rela
 
 # API
 
+* [Get version](#get_version)
 * [Get list of nodes](#get_nodes)
 * [Create or update a node](#put_node)
 * [Get a node by identifier](#get_node)
@@ -94,9 +95,35 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-rela
 * [Get list of chains](#get_chains)
 * [Relay request](#post_relay) ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 
+Create `Bearer` token with `orchestrator/internal/relayer/jwt_test.go`
+
+## Get version <a name="get_version"></a>
+
+### Request
+
+    curl -i -X POST http://localhost:56331/ \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "core_getAppInfo",
+      "params": null
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Thu, 25 Aug 2022 14:21:14 GMT
+    Content-Length: 136
+
+    {"jsonrpc":"2.0","id":1,"result":{"id":"4b75732d-0e10-46f8-964c-4e79e3a88674","version":"v0.0.1-alpha.6","name":"vite-portal-relayer"}}
+
 ## Get list of nodes <a name="get_nodes"></a>
 
-Those nodes are managed by the orchestrator (TODO) and used to serve relays.
+Those nodes are managed by the orchestrator and used to serve relays.
 
 ### Request
 
@@ -107,6 +134,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 | `limit` | `number` | The pagination limit |
 
     curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -147,6 +175,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 ### Request
 
     curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -182,6 +211,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 | `id` | `string` | **Required**. The unique identifier of the node |
 
     curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -219,6 +249,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 | `id` | `string` | **Required**. The unique identifier of the node |
 
     curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {
@@ -243,6 +274,7 @@ Those nodes are managed by the orchestrator (TODO) and used to serve relays.
 ### Request
 
     curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
     -H 'Content-Type: application/json; charset=UTF-8' \
     --data-raw '
     {

@@ -17,7 +17,6 @@ const (
 	DefaultRpcRelayWsPort              = 56334
 	DefaultRpcTimeout                  = 10000
 	DefaultRpcNodeTimeout              = 5000
-	DefaultJwtSecret                   = "secret1234"
 	DefaultJwtExpiryTimeout            = 0
 	DefaultUserAgent                   = ""
 	DefaultSortJsonResponse            = false
@@ -25,7 +24,6 @@ const (
 	DefaultSessionNodeCount            = 24
 	DefaultMaxSessionCacheEntries      = 10000
 	DefaultMaxSessionDuration          = 3600000
-	DefaultHeaderTrueClientIp          = "CF-Connecting-IP"
 	DefaultOrchestratorWsUrl           = ""
 	DefaultLoggingConsoleOutputEnabled = true
 	DefaultLoggingFileOutputEnabled    = true
@@ -91,7 +89,7 @@ func NewDefaultConfig() Config {
 		RpcRelayWsPort:         DefaultRpcRelayWsPort,
 		RpcTimeout:             DefaultRpcTimeout,
 		RpcNodeTimeout:         DefaultRpcNodeTimeout,
-		JwtSecret:              DefaultJwtSecret,
+		JwtSecret:              sharedtypes.DefaultJwtSecret,
 		JwtExpiryTimeout:       DefaultJwtExpiryTimeout,
 		UserAgent:              DefaultUserAgent,
 		SortJsonResponse:       DefaultSortJsonResponse,
@@ -99,7 +97,7 @@ func NewDefaultConfig() Config {
 		SessionNodeCount:       DefaultSessionNodeCount,
 		MaxSessionCacheEntries: DefaultMaxSessionCacheEntries,
 		MaxSessionDuration:     DefaultMaxSessionDuration,
-		HeaderTrueClientIp:     DefaultHeaderTrueClientIp,
+		HeaderTrueClientIp:     sharedtypes.DefaultHeaderTrueClientIp,
 		OrchestratorWsUrl:      DefaultOrchestratorWsUrl,
 		HostToChainMap:         map[string]string{},
 		Logging: sharedtypes.LoggingConfig{

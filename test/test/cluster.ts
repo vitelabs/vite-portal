@@ -7,16 +7,18 @@ import { VitePortal } from "../src/portal"
 import { NodeExtendedEntity, RelayerConfig } from "../src/types"
 import { CommonUtil } from "../src/utils"
 
-export function testOrchestratorCluster(common: TestCommon) {
-  describe("testOrchestratorCluster", () => {
+export function testCluster(common: TestCommon) {
+  describe("testCluster", () => {
     let cluster: NodeCluster
     let nodeId1 = "d7e63ddca1e41d311db9668bb0f6ff549cab9c24de03ecaa1643940a8fdc3937"
     let nodeId2 = "5037da9f811f390bcf4046ae70b3c9fd88d912ccbfacd74a352412a32c6166a8"
     let nodeId3 = "1f5dcf96afb50a30f574f78fdac9b5da19d7c392de44e99826e0fca8cc5b83d3"
 
     before(async function () {
-      const nodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
-      expect(nodes.result.total).to.be.equal(0)
+      const orchestratorNodes = await common.orchestrator.getNodes(TestConstants.SupportedChains.ViteBuidl)
+      expect(orchestratorNodes.result.total).to.be.equal(0)
+      const relayerNodes = await common.relayer.getNodes(TestConstants.SupportedChains.ViteBuidl)
+      expect(relayerNodes.result.total).to.be.equal(0)
       cluster = new NodeCluster(30000)
       cluster.orchestrator = common.orchestrator
       await cluster.start()

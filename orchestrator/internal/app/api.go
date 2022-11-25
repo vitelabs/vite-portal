@@ -63,13 +63,14 @@ func (a *adminAPI) GetChains() []sharedtypes.ChainConfig {
 	return a.app.config.SupportedChains
 }
 
-func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.Relayer], error) {
-	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
-}
 
 func (a *adminAPI) GetNodes(chain string, offset int, limit int) (generics.GenericPage[nodetypes.Node], error) {
 	o, l := commonutil.CheckPagination(offset, limit)
 	return a.app.nodeService.Get(chain, o, l)
+}
+
+func (a *adminAPI) GetRelayers(offset int, limit int) (generics.GenericPage[relayertypes.Relayer], error) {
+	return a.app.relayerService.Get(commonutil.CheckPagination(offset, limit))
 }
 
 func (a *adminAPI) GetKafkaDefaultMessages(offset, limit, timeout int) ([]string, error) {

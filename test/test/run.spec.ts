@@ -1,7 +1,7 @@
 import { describe } from "mocha"
 import { TestCommon } from "./common"
 import { testEmpty } from "./empty"
-import { testOrchestratorCluster } from "./orchestrator_cluster"
+import { testCluster } from "./cluster"
 import { testOrchestratorJwt } from "./orchestrator_jwt"
 import { testOrchestratorNode } from "./orchestrator_node"
 import { testOrchestratorRelayer } from "./orchestrator_relayer"
@@ -40,7 +40,7 @@ describe('run tests', () => {
 
   testEmpty(common)
   testRelayer(common)
-  testOrchestratorCluster(common)
+  testCluster(common)
   testOrchestratorJwt(common)
   testOrchestratorNode(common)
   testOrchestratorRelayer(common)

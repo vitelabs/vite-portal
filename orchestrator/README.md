@@ -133,6 +133,7 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-orch
 # API
 
 * [Get version](#get_version)
+* [Get list of nodes](#get_nodes)
 * [Get list of relayers](#get_relayers)
 
 ## Get version <a name="get_version"></a>
@@ -161,7 +162,50 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-orch
 
 ## Get list of nodes <a name="get_nodes"></a>
 
-Those nodes are managed by the orchestrator and used to serve relays.
+Nodes listed here have established a connection with the orchestrator automatically based on the `DashboardTargetURL` configured in `node_config.json`
+
+### Request
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `chain` | `string` | **Required**. The identifier of the chain |
+| `offset` | `number` | The pagination offset |
+| `limit` | `number` | The pagination limit |
+
+    curl -i -X POST http://localhost:57332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjQ2MTQ2MzksImlzcyI6InZpdGUtcG9ydGFsLXJlbGF5ZXIiLCJzdWIiOiJ0ZXN0MTIzNCJ9.e3dbqQ9RG656Pk4UaKL1IgIVi9IFqk05u_9orBvx1AA' \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getNodes", 
+        "params": ["vite_buidl",0,0]
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 07:02:04 GMT
+    Content-Length: 83
+
+    {
+      "jsonrpc":"2.0",
+      "id":1,
+      "result":{
+          "entries":[
+          ],
+          "limit":1000,
+          "offset":0,
+          "total":1
+      }
+    }
+
+## Get list of relayers <a name="get_relayers"></a>
+
+Relayers listed here have established a connection with the orchestrator automatically based on the `orchestratorWsUrl` configured in `relayer_config.json`
 
 ### Request
 

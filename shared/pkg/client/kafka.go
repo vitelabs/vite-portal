@@ -29,7 +29,7 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, to
 	dialer := &kafka.Dialer{
 		Timeout:   timeout,
 		DualStack: true,
-		TLS: tlsConfig,
+		TLS:       tlsConfig,
 	}
 	servers := strings.Split(cfg.Servers, ",")
 	writer := &kafka.Writer{
@@ -38,7 +38,7 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, to
 		AllowAutoTopicCreation: true,
 		ReadTimeout:            timeout,
 		WriteTimeout:           timeout,
-		Transport:              &kafka.Transport{
+		Transport: &kafka.Transport{
 			TLS: tlsConfig,
 		},
 	}
@@ -68,26 +68,6 @@ func (c *KafkaClient) Close() {
 	c.closed = true
 	c.writer.Close()
 	c.reader.Close()
-}
-
-func (c *KafkaClient) Write(msgs ...string) {
-	if len(msgs) == 0 {
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
-	defer cancel()
-
-	m := make([]kafka.Message, len(msgs))
-	for i := 0; i < len(msgs); i++ {
-		m[i] = kafka.Message{
-			Value: []byte(msgs[i]),
-		}
-	}
-	err := c.writer.WriteMessages(ctx, m...)
-	if err != nil {
-		logger.Logger().Error().Err(err).Msg("failed to write message")
-	}
 }
 
 func (c *KafkaClient) Read(offset int64, limit int, timeout time.Duration) ([]string, error) {
@@ -125,8 +105,28 @@ func (c *KafkaClient) Read(offset int64, limit int, timeout time.Duration) ([]st
 	return messages, err
 }
 
+func (c *KafkaClient) Write(msgs ...string) {
+	if len(msgs) == 0 {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+
+	m := make([]kafka.Message, len(msgs))
+	for i := 0; i < len(msgs); i++ {
+		m[i] = kafka.Message{
+			Value: []byte(msgs[i]),
+		}
+	}
+	err := c.writer.WriteMessages(ctx, m...)
+	if err != nil {
+		logger.Logger().Error().Err(err).Msg("failed to write message")
+	}
+}
+
 func newTLSConfig(cfg sharedtypes.KafkaServerConfig) *tls.Config {
-	if cfg.CertLocation == "" || cfg.CertKeyLocation == "" || cfg.CertPoolLocation	== "" {
+	if cfg.CertLocation == "" || cfg.CertKeyLocation == "" || cfg.CertPoolLocation == "" {
 		return nil
 	}
 

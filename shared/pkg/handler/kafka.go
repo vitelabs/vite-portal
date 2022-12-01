@@ -38,18 +38,18 @@ func (h *KafkaHandler) Close() {
 	h.rpcClient.Close()
 }
 
+func (h *KafkaHandler) ReadDefault(offset, limit, timeout int) ([]string, error) {
+	return h.defaultClient.Read(int64(offset), limit, time.Duration(timeout)*time.Millisecond)
+}
+
+func (h *KafkaHandler) ReadRpc(offset, limit, timeout int) ([]string, error) {
+	return h.rpcClient.Read(int64(offset), limit, time.Duration(timeout)*time.Millisecond)
+}
+
 func (h *KafkaHandler) WriteDefault(msg types.KafkaNodeOnlineStatus) {
 	h.defaultClient.Write(jsonutil.ToString(msg))
 }
 
-func (h *KafkaHandler) ReadDefault(offset, limit, timeout int) ([]string, error) {
-	return h.defaultClient.Read(int64(offset), limit, time.Duration(timeout) * time.Millisecond)
-}
-
 func (h *KafkaHandler) WriteRpc(msg any) {
 	h.rpcClient.Write(jsonutil.ToString(msg))
-}
-
-func (h *KafkaHandler) ReadRpc(offset, limit, timeout int) ([]string, error) {
-	return h.rpcClient.Read(int64(offset), limit, time.Duration(timeout) * time.Millisecond)
 }

@@ -133,6 +133,7 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-orch
 # API
 
 * [Get version](#get_version)
+* [Get list of chains](#get_chains)
 * [Get list of nodes](#get_nodes)
 * [Get list of relayers](#get_relayers)
 
@@ -159,6 +160,46 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-orch
     Content-Length: 41
 
     {"jsonrpc":"2.0","id":1,"result":{"id":"ccb6cf52-5a74-4846-a7f5-a579f4cb49c6","version":"v0.0.1-alpha.6","name":"vite-portal-orchestrator"}}
+
+## Get list of chains <a name="get_chains"></a>
+
+### Request
+
+    curl -i -X POST http://localhost:57332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjQ2MTQ2MzksImlzcyI6InZpdGUtcG9ydGFsLXJlbGF5ZXIiLCJzdWIiOiJ0ZXN0MTIzNCJ9.e3dbqQ9RG656Pk4UaKL1IgIVi9IFqk05u_9orBvx1AA' \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getChains", 
+        "params": []
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 27 Nov 2022 14:04:39 GMT
+    Content-Length: 194
+
+    {
+      "jsonrpc":"2.0",
+      "id":1,
+      "result":[
+          {
+            "id":"1",
+            "name":"vite_main",
+            "officialNodeUrl":"https://node.vite.net/gvite"
+          },
+          {
+            "id":"9",
+            "name":"vite_buidl",
+            "officialNodeUrl":"https://buidl.vite.net/gvite"
+          }
+      ]
+    }
 
 ## Get list of nodes <a name="get_nodes"></a>
 

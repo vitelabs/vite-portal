@@ -25,7 +25,7 @@ This monorepo is organized as follows:
 
 - [relayer](./relayer) - the relayer forwards every RPC request to multiple full nodes and handles the responses
 - [orchestrator](./orchestrator) - the orchestrator keeps track of the global state such as participating full nodes
-- [worker](./worker) - the worker is responsible to send out rewards to full nodes on a daily basis
+- [test](./test) - contains all integration tests and the logic to start a cluster of nodes locally
 
 ## Session handling
 

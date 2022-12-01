@@ -88,11 +88,11 @@ docker rm $(docker stop $(docker ps -a -q --filter ancestor=vitelabs/portal-rela
 # API
 
 * [Get version](#get_version)
+* [Get list of chains](#get_chains)
 * [Get list of nodes](#get_nodes)
 * [Create or update a node](#put_node)
 * [Get a node by identifier](#get_node)
 * [Delete a node](#delete_node)
-* [Get list of chains](#get_chains)
 * [Relay request](#post_relay) ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 
 Create `Bearer` token with `orchestrator/internal/relayer/jwt_test.go`
@@ -120,6 +120,31 @@ Create `Bearer` token with `orchestrator/internal/relayer/jwt_test.go`
     Content-Length: 136
 
     {"jsonrpc":"2.0","id":1,"result":{"id":"4b75732d-0e10-46f8-964c-4e79e3a88674","version":"v0.0.1-alpha.6","name":"vite-portal-relayer"}}
+
+## Get list of chains <a name="get_chains"></a>
+
+### Request
+
+    curl -i -X POST http://localhost:56332/ \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
+    -H 'Content-Type: application/json; charset=UTF-8' \
+    --data-raw '
+    {
+        "jsonrpc": "2.0", 
+        "id": 1, 
+        "method": "admin_getChains", 
+        "params": []
+    }'
+
+### Response
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Vary: Origin
+    Date: Sun, 04 Sep 2022 06:58:59 GMT
+    Content-Length: 51
+
+    {"jsonrpc":"2.0","id":1,"result":["vite_buidl"]}
 
 ## Get list of nodes <a name="get_nodes"></a>
 
@@ -268,31 +293,6 @@ Those nodes are managed by the orchestrator and used to serve relays.
     Content-Length: 39
 
     {"jsonrpc":"2.0","id":1,"result":null}
-
-## Get list of chains <a name="get_chains"></a>
-
-### Request
-
-    curl -i -X POST http://localhost:56332/ \
-    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjkwNDEzNTQsImlzcyI6InZpdGUtcG9ydGFsLW9yY2hlc3RyYXRvciIsInN1YiI6InNlY3JldDEyMzQifQ.DAWl0FaHXKVTAKLUHxfBQjeIjikk-cfdCiEf_BRQGVE' \
-    -H 'Content-Type: application/json; charset=UTF-8' \
-    --data-raw '
-    {
-        "jsonrpc": "2.0", 
-        "id": 1, 
-        "method": "admin_getChains", 
-        "params": []
-    }'
-
-### Response
-
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Vary: Origin
-    Date: Sun, 04 Sep 2022 06:58:59 GMT
-    Content-Length: 51
-
-    {"jsonrpc":"2.0","id":1,"result":["vite_buidl"]}
 
 ## Relay request <a name="post_relay"></a> ![](https://img.shields.io/static/v1?label=&message=important&color=yellow)
 

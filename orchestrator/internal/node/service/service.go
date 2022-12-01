@@ -9,7 +9,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/node/handler"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	sharedclients "github.com/vitelabs/vite-portal/shared/pkg/client"
-	sharedhandlers "github.com/vitelabs/vite-portal/shared/pkg/handler"
+	sharedkafka "github.com/vitelabs/vite-portal/shared/pkg/kafka"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 )
 
@@ -21,7 +21,7 @@ type Service struct {
 }
 
 // NewService creates new instances of the relayers module service
-func NewService(cfg types.Config, kafka *sharedhandlers.KafkaHandler, c interfaces.ContextI) *Service {
+func NewService(cfg types.Config, kafka *sharedkafka.Handler, c interfaces.ContextI) *Service {
 	timeout := time.Duration(cfg.RpcTimeout) * time.Millisecond
 	s := &Service{
 		config:   cfg,

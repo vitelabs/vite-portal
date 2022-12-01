@@ -1,4 +1,4 @@
-package client
+package kafka
 
 import (
 	"context"
@@ -11,45 +11,46 @@ import (
 	"time"
 
 	"github.com/segmentio/kafka-go"
+	kafkago "github.com/segmentio/kafka-go"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	sharedtypes "github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-type KafkaClient struct {
+type Client struct {
 	closed  bool
 	mutex   sync.Mutex
 	timeout time.Duration
-	dialer  *kafka.Dialer
-	writer  *kafka.Writer
-	reader  *kafka.Reader
+	dialer  *kafkago.Dialer
+	writer  *kafkago.Writer
+	reader  *kafkago.Reader
 }
 
-func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, topic sharedtypes.KafkaTopicConfig) *KafkaClient {
+func NewClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, topic sharedtypes.KafkaTopicConfig) *Client {
 	tlsConfig := newTLSConfig(cfg)
-	dialer := &kafka.Dialer{
+	dialer := &kafkago.Dialer{
 		Timeout:   timeout,
 		DualStack: true,
 		TLS:       tlsConfig,
 	}
 	servers := strings.Split(cfg.Servers, ",")
-	writer := &kafka.Writer{
-		Addr:                   kafka.TCP(servers...),
+	writer := &kafkago.Writer{
+		Addr:                   kafkago.TCP(servers...),
 		Topic:                  topic.Topic,
 		AllowAutoTopicCreation: true,
 		ReadTimeout:            timeout,
 		WriteTimeout:           timeout,
-		Transport: &kafka.Transport{
+		Transport: &kafkago.Transport{
 			TLS: tlsConfig,
 		},
 	}
-	reader := kafka.NewReader(kafka.ReaderConfig{
+	reader := kafkago.NewReader(kafkago.ReaderConfig{
 		Brokers: servers,
 		Topic:   topic.Topic,
 		// Set GroupId if offsets should be managed by the broker
 		// GroupID: topic.GroupId,
 		Dialer: dialer,
 	})
-	return &KafkaClient{
+	return &Client{
 		closed:  false,
 		timeout: timeout,
 		dialer:  dialer,
@@ -58,7 +59,7 @@ func NewKafkaClient(timeout time.Duration, cfg sharedtypes.KafkaServerConfig, to
 	}
 }
 
-func (c *KafkaClient) Close() {
+func (c *Client) Close() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -70,7 +71,7 @@ func (c *KafkaClient) Close() {
 	c.reader.Close()
 }
 
-func (c *KafkaClient) Read(offset int64, limit int, timeout time.Duration) ([]string, error) {
+func (c *Client) Read(offset int64, limit int, timeout time.Duration) ([]string, error) {
 	start := time.Now()
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -105,7 +106,7 @@ func (c *KafkaClient) Read(offset int64, limit int, timeout time.Duration) ([]st
 	return messages, err
 }
 
-func (c *KafkaClient) Write(msgs ...string) {
+func (c *Client) Write(msgs ...string) {
 	if len(msgs) == 0 {
 		return
 	}

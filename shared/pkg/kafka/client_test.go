@@ -1,4 +1,4 @@
-package client
+package kafka
 
 import (
 	"fmt"
@@ -9,26 +9,26 @@ import (
 	"github.com/vitelabs/vite-portal/shared/pkg/types"
 )
 
-var defaultKafkaTimeout = 2 * time.Second
+var defaultTimeout = 2 * time.Second
 
-func TestKafkaRead(t *testing.T) {
+func TestRead(t *testing.T) {
 	t.Skip()
 	cfg := types.DefaultKafkaConfig
-	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
+	c := NewClient(defaultTimeout, cfg.Server, cfg.DefaultTopic)
 	fmt.Println("Round 1:")
-	messages, err := c.Read(0, 2, defaultKafkaTimeout)
+	messages, err := c.Read(0, 2, defaultTimeout)
 	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
 	}
 	fmt.Println("Round 2:")
-	messages, err = c.Read(2, 2, defaultKafkaTimeout)
+	messages, err = c.Read(2, 2, defaultTimeout)
 	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
 	}
 	fmt.Println("Round 3:")
-	messages, err = c.Read(4, 10000, defaultKafkaTimeout)
+	messages, err = c.Read(4, 10000, defaultTimeout)
 	require.NoError(t, err)
 	for _, m := range messages {
 		fmt.Println(m)
@@ -36,10 +36,10 @@ func TestKafkaRead(t *testing.T) {
 	c.Close()
 }
 
-func TestKafkaWrite(t *testing.T) {
+func TestWrite(t *testing.T) {
 	t.Skip()
 	cfg := types.DefaultKafkaConfig
-	c := NewKafkaClient(defaultKafkaTimeout, cfg.Server, cfg.DefaultTopic)
+	c := NewClient(defaultTimeout, cfg.Server, cfg.DefaultTopic)
 	round := time.Now().UnixMilli() / 1000 / 60
 	c.Write(fmt.Sprintf("id: %d", round), "a")
 	c.Write(fmt.Sprintf("id: %d (2)", round), "b")

@@ -9,7 +9,7 @@ import (
 	relayerservice "github.com/vitelabs/vite-portal/orchestrator/internal/relayer/service"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/shared/pkg/crypto"
-	sharedhandlers "github.com/vitelabs/vite-portal/shared/pkg/handler"
+	sharedkafka "github.com/vitelabs/vite-portal/shared/pkg/kafka"
 	"github.com/vitelabs/vite-portal/shared/pkg/logger"
 	"github.com/vitelabs/vite-portal/shared/pkg/rpc"
 	"github.com/vitelabs/vite-portal/shared/pkg/util/idutil"
@@ -34,7 +34,7 @@ type OrchestratorApp struct {
 	inprocHandler  *rpc.Server // In-process RPC request handler to process the API requests
 	context        *types.Context
 	jwtHandler     *crypto.JWTHandler
-	kafka          *sharedhandlers.KafkaHandler
+	kafka          *sharedkafka.Handler
 	nodeService    *nodeservice.Service
 	relayerService *relayerservice.Service
 	scheduler      *gocron.Scheduler
@@ -50,7 +50,7 @@ func NewOrchestratorApp(cfg types.Config) *OrchestratorApp {
 		context:       c,
 	}
 	a.jwtHandler = crypto.NewJWTHandler([]byte(cfg.JwtSecret), time.Duration(cfg.JwtExpiryTimeout)*time.Millisecond)
-	a.kafka = sharedhandlers.NewKafkaHandler(defaultTimeout, cfg.Kafka)
+	a.kafka = sharedkafka.NewHandler(defaultTimeout, cfg.Kafka)
 	a.nodeService = nodeservice.NewService(cfg, a.kafka, c)
 	a.relayerService = relayerservice.NewService(cfg, c.GetRelayerStore())
 	a.scheduler = gocron.NewScheduler(time.UTC)

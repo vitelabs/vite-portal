@@ -9,7 +9,7 @@ import (
 	"github.com/vitelabs/vite-portal/orchestrator/internal/types"
 	"github.com/vitelabs/vite-portal/orchestrator/internal/util/testutil"
 	"github.com/vitelabs/vite-portal/shared/pkg/client"
-	sharedhandlers "github.com/vitelabs/vite-portal/shared/pkg/handler"
+	sharedkafka "github.com/vitelabs/vite-portal/shared/pkg/kafka"
 	sharedtestutil "github.com/vitelabs/vite-portal/shared/pkg/util/testutil"
 )
 
@@ -23,7 +23,7 @@ func newTestHandler(t *testing.T, nodeCount int) (*Handler, []nodetypes.Node) {
 	require.NoError(t, err)
 	nodeStore := cc.GetNodeStore()
 	client := client.NewViteClient(sharedtestutil.DefaultViteMainNodeUrl, time.Duration(0) * time.Millisecond)
-	kafka := sharedhandlers.NewKafkaHandler(time.Duration(0) * time.Millisecond, cfg.Kafka)
+	kafka := sharedkafka.NewHandler(time.Duration(0) * time.Millisecond, cfg.Kafka)
 	handler := NewHandler(cfg, client, kafka, cc)
 	nodes := make([]nodetypes.Node, 0, nodeCount)
 	for i := 0; i < nodeCount; i++ {

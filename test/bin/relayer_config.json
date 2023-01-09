@@ -1,0 +1,31 @@
+{
+    "version": "v0.1",
+    "debug": false,
+    "rpcPort": 56331,
+    "rpcAuthPort": 56332,
+    "rpcRelayHttpPort": 56333,
+    "rpcRelayWsPort": 56334,
+    "rpcTimeout": 10000,
+    "rpcNodeTimeout": 2000,
+    "userAgent": "test-relayer",
+    "sortJsonResponse": false,
+    "consensusNodeCount": 5,
+    "sessionNodeCount": 24,
+    "maxSessionCacheEntries": 100,
+    "maxSessionDuration": 3600000,
+    "headerTrueClientIp": "CF-Connecting-IP",
+    "httpCollectorUrl": "http://127.0.0.1:23460",
+    "orchestratorWsUrl": "ws://127.0.0.1:57332",
+    "hostToChainMap": {
+        "http://127.0.0.1:23460": "mockchain"
+    },
+    "logging": {
+        "consoleOutputEnabled": true,
+        "fileOutputEnabled": true,
+        "directory": "logs",
+        "filename": "relayer.log",
+        "maxSize": 100,
+        "maxBackups": 10,
+        "maxAge": 28
+    }
+}

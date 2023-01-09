@@ -1,0 +1,11 @@
+{
+  "go.testFlags": [
+    "-count=1"
+  ],
+  "gopls": {
+    "experimentalWorkspaceModule": true,
+    "ui.diagnostic.analyses": {
+      "deepequalerrors": false
+    }
+  }
+}

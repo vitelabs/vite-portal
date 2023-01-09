@@ -1,0 +1,18 @@
+{
+    "version": "v0.1",
+    "debug": false,
+    "rpcPort": 57331,
+    "rpcAuthPort": 57332,
+    "rpcTimeout": 2000,
+    "userAgent": "",
+    "headerTrueClientIp": "CF-Connecting-IP",
+    "logging": {
+        "consoleOutputEnabled": true,
+        "fileOutputEnabled": true,
+        "directory": "logs",
+        "filename": "orchestrator.log",
+        "maxSize": 100,
+        "maxBackups": 10,
+        "maxAge": 28
+    }
+}

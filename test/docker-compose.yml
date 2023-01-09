@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  s1:
+    restart: always
+    container_name: vite-portal_s1
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
+    ports:
+      - 48132:48132
+      - 41420:41420
+    expose:
+      - 8483
+      - 8484
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./bin/gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node1 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node1/node_config.json"
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+  s2:
+    restart: always
+    container_name: vite-portal_s2
+    ports:
+      - 48133:48133
+      - 41421:41421
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./bin/gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node2 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node2/node_config.json"
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+  s3:
+    restart: always
+    container_name: vite-portal_s3
+    ports:
+      - 48134:48134
+      - 41422:41422
+    image: vitelabs/gvite-nightly:v2.11.3-202209130843
+    volumes:
+      - gvite_data:/root/.gvite
+      - ./bin/gvite:/root/gvite-bin
+    entrypoint: /bin/bash -c "cp -R /root/gvite-bin/node3 /root/.gvite && cp /root/gvite-bin/genesis.json /root/.gvite && ./gvite --config /root/.gvite/node3/node_config.json"
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+
+volumes:
+  gvite_data:
+    name: vite-portal_gvite_data

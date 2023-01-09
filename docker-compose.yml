@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  o1:
+    restart: always
+    container_name: vite-portal_o1
+    build:
+      context: .
+      dockerfile: ./orchestrator.Dockerfile
+    ports:
+      - 57331:57331
+      - 57332:57332
+    volumes:
+      - o1_data:/root/.orchestrator
+      - ./orchestrator/bin:/root/orchestrator-bin
+    entrypoint: /bin/bash -c "cp -R /root/orchestrator-bin/o1 /root/.orchestrator && ./orchestrator start --config /root/.orchestrator/o1/orchestrator_config.json"
+  r1:
+    restart: always
+    container_name: vite-portal_r1
+    build:
+      context: .
+      dockerfile: ./relayer.Dockerfile
+    ports:
+      - 56331:56331
+      - 56332:56332
+      - 56333:56333
+      - 56334:56334
+    volumes:
+      - r1_data:/root/.relayer
+      - ./relayer/bin:/root/relayer-bin
+    entrypoint: /bin/bash -c "cp -R /root/relayer-bin/r1 /root/.relayer && envsubst '$$ORCHESTRATOR_HOST' < /root/.relayer/r1/relayer_config.template > /root/.relayer/r1/relayer_config.json && ./relayer start --config /root/.relayer/r1/relayer_config.json"
+    depends_on:
+      - o1
+    environment:
+      - ORCHESTRATOR_HOST=o1
+volumes:
+  o1_data:
+    name: vite-portal_o1_data
+  r1_data:
+    name: vite-portal_r1_data
